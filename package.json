@@ -1,0 +1,44 @@
+{
+  "name": "librarywebsite-react",
+  "version": "1.0.0",
+  "description": "A new spin on the old OPAC system",
+  "private": true,
+  "dependencies": {
+    "react": "^16.8.3",
+    "react-dom": "^16.8.3",
+    "react-scripts": "2.1.5",
+    "express": "^4.16.4",
+    "pg": "^7.8.1",
+    "react-redux": "^6.0.1",
+    "redux": "^4.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ],
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YFLooi/libraryWebsite-React.git"
+  },
+  "keywords": [
+    "react"
+  ],
+  "author": "YFLooi",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/YFLooi/libraryWebsite-React/issues"
+  },
+  "homepage": "https://github.com/YFLooi/libraryWebsite-React#readme"
+}
