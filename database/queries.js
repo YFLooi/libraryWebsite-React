@@ -3,7 +3,7 @@ const Pool = require('pg').Pool
 const pool = new Pool({
   user: 'me',
   host: 'localhost',
-  database: 'api',
+  database: 'booklibrary',
   password: 'x',
   port: 5432,
 })
@@ -21,7 +21,7 @@ const pool = new Pool({
 */
 /*Selects all users and ORDER-s by ID*/
 const getUsers = (request, response) => {
-    pool.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
+    pool.query('SELECT * FROM newarrival ORDER BY id ASC', (error, results) => {
         if (error) {
             throw error
         }

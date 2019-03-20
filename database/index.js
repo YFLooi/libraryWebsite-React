@@ -1,11 +1,15 @@
 /*Require the express module,
 built in bodyParser middlware, and set our app and port variables.*/
-const express = require('express')
-const bodyParser = require('body-parser')
-const app = express()
-const port = 3000 /*Allows acces on browser at http://localhost:3000*/
+const express = require('express');
+const bodyParser = require('body-parser');
+const morgan = require('morgan');
+const cors = require('cors');
+const app = express();
+const port = 3005 /*Allows access on browser at http://localhost:3001*/
 
-/*To get all the exported functions from queries.js, we’ll 'require' the file and assign it to a variable.*/
+/*morgan and bodyparser too?*/
+
+/*To get all the exported functions from queries.js, weï¿½ll 'require' the file and assign it to a variable.*/
 const db = require('./queries.js')
 
 app.use(bodyParser.json())
@@ -15,10 +19,18 @@ app.use(
   })
 )
 
+/*Allows CORS to allow cross-origin requests on browser. Typically blocked to prevent attacks, but we'll need this for testing*/
+app.use(cors())
+app.use(function(request, response, next){
+  response.header("Access-Control-Allow-Origin","*");
+  response.header("Access-Control-Allow-Header","Origin, X-Requested-With, Content-Type, Access");
+  next();
+})
+
 /*tell a route to look for a GET request on the root (/) URL, 
 and return some JSON.*/
-app.get('/', (request, response) => {
-    response.json({ info: 'Node.js, Express, and Postgres API' })
+app.get('/', db.getUsers, (request, response) => {
+  response.json({ info: 'Server running on Node.js, Express, and Postgres API' });
 })
 /*This sets up the HTTP request method, the endpoint URL path, and the relevant function to access each function 
 that modifies the db specified in queries.js*/
