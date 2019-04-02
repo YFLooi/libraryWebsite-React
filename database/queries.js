@@ -21,7 +21,7 @@ const getNewArrivals = (request, response) => {
 const getSearch = (request, response) => {
     let input = request.params.input;
     console.log(input);
-    //response.status(200).json(input+" received!");
+    response.status(200).json(input+" received!");
     /* 
     pool.query('SELECT * FROM newarrival ORDER BY id ASC', (error, results) => {
         if (error) {
