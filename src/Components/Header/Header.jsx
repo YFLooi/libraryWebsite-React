@@ -5,23 +5,14 @@ import "./Header.css";
 export default class App extends React.Component {
     constructor(props) {
         super(props);		
-        this.state = {
-			input: '' 
-        }
 
-        this.handlechange = this.handlechange.bind(this);
         this.searchbarcheck = this.searchbarcheck.bind(this);
     }
     searchbarcheck(event){
         event.preventDefault();
         console.log(this.refs.searchbar.value)
     }
-    handlechange(event){
-        event.preventDefault();
-        this.setState({
-			input: event.target.value,
-        });
-    }
+   
     render() {
 		return (
             <header>
@@ -35,8 +26,8 @@ export default class App extends React.Component {
                             name="searchbar"
                             className="searchbar"
                             ref="searchbar"
-                            value={this.state.input}
-                            onChange = {this.handlechange}
+                            value={this.props.input}
+                            onChange = {this.props.handleChange}
                             placeholder="Search for books..."
                             autoComplete="on"
                             style={{borderColor:"none"}}
