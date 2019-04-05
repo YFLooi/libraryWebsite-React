@@ -1,7 +1,7 @@
 import React from 'react';
 import "./NewArrivals.css";
 
-export default class NewArrivals extends React.Component {
+export default class Search extends React.Component {
     constructor(props) {
         super(props);		
         
@@ -17,7 +17,7 @@ export default class NewArrivals extends React.Component {
             this.generateArrivals()
         } catch (e) {
             if (this.props.newarrivals === []) {
-                console.log("Error loading top 20 books");
+                console.log("Error loading search results");
             }        
         }
     }

@@ -6,11 +6,7 @@ export default class App extends React.Component {
     constructor(props) {
         super(props);		
 
-        this.searchbarcheck = this.searchbarcheck.bind(this);
-    }
-    searchbarcheck(event){
-        event.preventDefault();
-        console.log(this.refs.searchbar.value)
+       
     }
    
     render() {
@@ -28,11 +24,12 @@ export default class App extends React.Component {
                             ref="searchbar"
                             value={this.props.input}
                             onChange = {this.props.handleChange}
+                            onSubmit = {this.props.handleSubmit}
                             placeholder="Search for books..."
                             autoComplete="on"
                             style={{borderColor:"none"}}
                         /> 
-                        <button className="searchbutton" onClick={this.searchbarcheck}></button>
+                        <button className="searchbutton" onClick={this.props.handleSubmit}></button>
                         <button className="advancedbutton"></button>
                     </form>          
                 </span>

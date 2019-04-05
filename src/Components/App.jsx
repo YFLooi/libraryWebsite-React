@@ -48,12 +48,11 @@ export default class App extends React.Component {
 			input: event.target.value,
         });
     }
-    handleSubmit(event) {
+    handleSubmit(event) { 
         event.preventDefault();
-        /* const currentQuery = this.state.input;
-        this.props.submitNewQuery(currentQuery);*/
-        
-        const input = "Ladybird";
+        const input = this.state.input;
+
+        if(input !== ""){
         fetch("http://localhost:3005/Search/"+input, {mode:'cors'})
             //Here we chain 2 promise functions: The first fetches data (response), the second examines text in response (data)
             .then(function(response){
@@ -65,6 +64,9 @@ export default class App extends React.Component {
             .catch(function(error){
                 console.log('Request failed', error)
             })
+        } else {
+            console.log("Blank query made. No query submitted");
+        }
     }
     checkinput(event){
         event.preventDefault();

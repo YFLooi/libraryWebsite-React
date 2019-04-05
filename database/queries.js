@@ -21,14 +21,15 @@ const getNewArrivals = (request, response) => {
 const getSearch = (request, response) => {
     let input = request.params.input;
     console.log(input);
-    response.status(200).json(input+" received!");
-    /* 
-    pool.query('SELECT * FROM newarrival ORDER BY id ASC', (error, results) => {
+    //response.status(200).json(input+" received!");
+    
+    
+    pool.query('SELECT * FROM catalog WHERE title ~* $1', [input], (error, results) => {
         if (error) {
             throw error
         }
         response.status(200).json(results.rows)
-    })*/
+    })
 }
 
 /* 
