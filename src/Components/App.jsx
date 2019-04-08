@@ -13,14 +13,26 @@ export default class App extends React.Component {
 	constructor(props) {
         super(props);		
         this.state = {
-            input:'',
             newarrivals: [],
-            isLoaded: false 
+            isLoaded: false,
+            
+            basicInput:'',
+
+            advTitle:'',
+            advAuthor:'',
+            advYearStart: '',
+            advYearEnd: '',
+            advPublisher:'',
+            advSynopsis:''
         }
         
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
-        this.checkinput = this.checkinput.bind(this);
+        this.handleBasicSearchChange = this.handleBasicSearchChange.bind(this);
+        this.handleBasicSearchSubmit = this.handleBasicSearchSubmit.bind(this);
+        this.handleAdvSearchChange = this.handleAdvSearchChange.bind(this);
+        this.handleAdvSearchSubmit = this.handleAdvSearchSubmit.bind(this);
+
+        this.checkbasicInput = this.checkbasicInput.bind(this);
+        this.checkadvInput = this.checkadvInput.bind(this);
     }
 	componentDidMount(){
         let that = this; //Prevents 'this' from being undefined
@@ -42,18 +54,18 @@ export default class App extends React.Component {
                 console.log('Request failed', error)
             })
     }
-    handleChange(event){
+    handleBasicSearchChange(event){
         event.preventDefault();
         this.setState({
-			input: event.target.value,
+			basicInput: event.target.value,
         });
     }
-    handleSubmit(event) { 
+    handleBasicSearchSubmit(event) { 
         event.preventDefault();
-        const input = this.state.input;
+        const basicInput = this.state.basicInput;
 
-        if(input !== ""){
-        fetch("http://localhost:3005/Search/"+input, {mode:'cors'})
+        if(basicInput !== ""){
+        fetch("http://localhost:3005/BasicSearch/"+basicInput, {mode:'cors'})
             //Here we chain 2 promise functions: The first fetches data (response), the second examines text in response (data)
             .then(function(response){
                 return response.json()
@@ -68,24 +80,165 @@ export default class App extends React.Component {
             console.log("Blank query made. No query submitted");
         }
     }
-    checkinput(event){
+    handleAdvSearchChange(event){
         event.preventDefault();
-        console.log(this.state.input);
+        
+        /*Everything gets passed into event? Need to sort so that only <input> which was changed
+        is set to state. Otherwise, all will change at once. A switch?*/
+        this.setState({
+            
+            advTitle: event.target.value,
+            advAuthor: event.target.value,
+            advYearStart: event.target.value,
+            advYearEnd: event.target.value,
+            advPublisher: event.target.value,
+            advSynopsis:event.target.value
+        });
     }
+    handleAdvSearchSubmit(event){
+        event.preventDefault();
+    }
+    checkbasicInput(){
+        console.log("Basic input query stored: "+this.state.basicInput);
+    }
+    checkadvInput(){
+        console.log("Advanced input query stored: ");
+        console.log("Title: "+this.state.advTitle);
+        console.log("Auth: "+this.state.advAuthor);
+        console.log("Yr start: "+this.state.advYearStart);
+        console.log("Yr end: "+this.state.advYearEnd);
+        console.log("Publ: "+this.state.advPublisher);
+        console.log("Synp short: "+this.state.advSynopsis);
+    }
+
 	render() {	
         if (this.state.isNewArrivalsLoaded === true){
             return (
                 <div>
                     <Header 
-                        input={this.state.input} 
-                        handleChange={this.handleChange} 
-                        handleSubmit = {this.handleSubmit}
+                        basicInput={this.state.basicInput} 
+                        handleBasicSearchChange={this.handleBasicSearchChange} 
+                        handleBasicSearchSubmit = {this.handleBasicSearchSubmit}
                     />
                 
                     <NewArrivals newarrivals={this.state.newarrivals}/>
 
-                    <button onClick={this.checkinput}>Check this.state.input</button>
-                    <button onClick={this.handleSubmit}>test search query send</button>
+                    <h1>Advanced search</h1>
+                    <form name="advsearch" onSubmit={this.handleAdvSearchSubmit}>
+                        Search books matching the following criteria...
+                        <p>
+                            Title:&nbsp;
+                            <input
+                                type="text"
+                                name="title"
+                                className="title"
+                                value={this.state.advTitle}
+                                onChange = {this.handleAdvSearchChange}
+                                onSubmit = {this.handleAdvSearchSubmit}
+                                placeholder="'Robin' or 'Robin Hood'"
+                                autoComplete="on"
+                                style={{borderColor:"none"}}
+                            />
+                            
+                        </p>
+                        <div>
+                            <input type="radio" name="conditional1" value="AND" id="ANDconditional1"/><label htmlFor="ANDconditional1">AND</label>
+                            <input type="radio" name="conditional1" value="OR" id="ORconditional1"/><label htmlFor="ORconditional1">OR</label>
+                        </div>
+                        <p>
+                            Author:&nbsp;
+                            <input
+                            type="text"
+                            name="author"
+                            className="author"
+                            value={this.state.advAuthor}
+                            onChange = {this.handleAdvSearchChange}
+                            onSubmit = {this.handleAdvSearchSubmit}
+                            placeholder="'Jane' or 'Jane Austen'"
+                            autoComplete="on"
+                            style={{borderColor:"none"}}
+                        />
+                        </p>
+                        <div>
+                            <input type="radio" name="conditional2" value="AND" id="ANDconditional2"/><label htmlFor="ANDconditional2">AND</label>
+                            <input type="radio" name="conditional2" value="OR" id="ORconditional2"/><label htmlFor="ORconditional2">OR</label>
+                        </div>
+                        <p>
+                            Year range:&nbsp;
+                            <input
+                                type="text"
+                                name="yearstart"
+                                className="yearstart"
+                                value={this.state.advYearStart}
+                                onChange = {this.handleAdvSearchChange}
+                                onSubmit = {this.handleAdvSearchSubmit}
+                                placeholder="From..."
+                                autoComplete="on"
+                                style={{borderColor:"none"}}
+                            />
+                            &nbsp;-&nbsp; 
+                            <input
+                                type="text"
+                                name="yearend"
+                                className="yearend"
+                                value={this.state.advYearEnd}
+                                onChange = {this.handleAdvSearchChange}
+                                onSubmit = {this.handleAdvSearchSubmit}
+                                placeholder="To..."
+                                autoComplete="on"
+                                style={{borderColor:"none"}}
+                            />
+                        </p>
+                        <div>
+                            <input type="radio" name="conditional3" value="AND" id="ANDconditional3"/><label htmlFor="ANDconditional3">AND</label>
+                            <input type="radio" name="conditional3" value="OR" id="ORconditional3"/><label htmlFor="ORconditional3">OR</label>
+                        </div>
+                        <p>
+                            Publisher:&nbsp;
+                            <input
+                                type="text"
+                                name="publisher"
+                                className="publisher"
+                                value={this.state.advPublisher}
+                                onChange = {this.handleAdvSearchChange}
+                                onSubmit = {this.handleAdvSearchSubmit}
+                                placeholder="'Penguin Books'"
+                                autoComplete="on"
+                                style={{borderColor:"none"}}
+                            />
+                        </p>
+                        <div>
+                            <input type="radio" name="conditional4" value="AND" id="ANDconditional4"/><label htmlFor="ANDconditional4">AND</label>
+                            <input type="radio" name="conditional4" value="OR" id="ORconditional4"/><label htmlFor="ORconditional4">OR</label>
+                        </div>
+                        <p>
+                            Synopsis key words:&nbsp;
+                            <input
+                                type="text"
+                                name="synopsis"
+                                className="synopsis"
+                                value={this.state.advSynopsis}
+                                onChange = {this.handleAdvSearchChange}
+                                onSubmit = {this.handleAdvSearchSubmit}
+                                placeholder="Retrieves partial matches"
+                                autoComplete="on"
+                                style={{borderColor:"none"}}
+                            /> 
+                        </p>
+
+                        
+
+                        {/* 
+                        <input type="checkbox" id="safe" name="safe" value="on" defaultChecked="true"/><label htmlFor="safe">SafeSearch</label>
+                        */}    
+                        <button className="searchbutton" onClick={this.handleAdvSearchSubmit}></button>
+                        <button className="advancedbutton"></button>
+                    </form>          
+
+                 
+                    <button onClick={this.checkbasicInput}>Check basic search query stored in state</button>
+                    <button onClick={this.checkadvInput}>Check adv search query stored in state</button>
+                    <button onClick={this.handleAdvSearchSubmit}>test search query send</button>
                     
 			    </div>
             )

@@ -24,7 +24,7 @@ const getSearch = (request, response) => {
     //response.status(200).json(input+" received!");
     
     
-    pool.query('SELECT * FROM catalog WHERE title ~* $1', [input], (error, results) => {
+    pool.query('SELECT * FROM catalog WHERE title ~* $1 OR author ~*$1 OR publisher ~* $1', [input], (error, results) => {
         if (error) {
             throw error
         }

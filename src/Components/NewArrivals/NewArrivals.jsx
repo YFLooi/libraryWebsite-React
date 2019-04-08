@@ -11,7 +11,7 @@ export default class NewArrivals extends React.Component {
     }
 
     componentDidMount(){
-       console.log("Results component mounted");
+       console.log("All 20 new arrivals mounted");
         
         try {
             this.generateArrivals()

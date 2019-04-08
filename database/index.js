@@ -36,7 +36,7 @@ app.get('/', (request, response) => {
 
 app.get('/NewArrivals', db.getNewArrivals)
 
-app.get('/Search/:input', db.getSearch)
+app.get('/BasicSearch/:input', db.getSearch)
 
 
 /*This sets up the HTTP request method, the endpoint URL path, and the relevant function to access each function 

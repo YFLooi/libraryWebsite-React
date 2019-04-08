@@ -11,7 +11,7 @@ export default class Search extends React.Component {
     }
 
     componentDidMount(){
-       console.log("Results component mounted");
+        console.log("Results component mounted");
         
         try {
             this.generateArrivals()
