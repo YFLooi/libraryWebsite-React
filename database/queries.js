@@ -18,18 +18,48 @@ const getNewArrivals = (request, response) => {
     })
 }
 
-const getSearch = (request, response) => {
+/*Basic search*/
+const getBasicSearch = (request, response) => {
     let input = request.params.input;
     console.log(input);
-    //response.status(200).json(input+" received!");
     
-    
-    pool.query('SELECT * FROM catalog WHERE title ~* $1 OR author ~*$1 OR publisher ~* $1', [input], (error, results) => {
+    pool.query('SELECT * FROM catalog WHERE title ~* $1 OR author ~*$1', [input], (error, results) => {
         if (error) {
             throw error
         }
         response.status(200).json(results.rows)
     })
+}
+
+/*Adv search*/
+const getAdvSearch = (request, response) => {
+    let advTitle = request.params.advTitle;
+    let condTitAuth = request.params.condTitAuth;
+    let advAuthor = request.params.advAuthor;
+   
+    
+    let condAuthYr = request.params.condAuthYr;
+    let advYearStart = request.params.advYearStart;
+
+    let advYearEnd = request.params.advYearEnd;
+    let condYrPub = request.params.condYrPub;
+    let advPublisher = request.params.advPublisher;
+    let condPubSynp = request.params.condPubSynp;
+    let advSynopsis = request.params.advSynopsis; /** */
+    console.log("Query received: Title:"+advTitle+" "+condTitAuth+" Author:"+advAuthor+" "
+    +condAuthYr+" Where YearStart:"+advYearStart+" until YearEnd:"+advYearEnd+" "+condYrPub+" Publisher:"+advPublisher+" "+condPubSynp+" Synopsis text:"+advSynopsis);
+    
+    /*This way of inserting AND/OR causes SQL query to bug out. How to fix?
+    response.status(200).json("Advanced query received at server")
+
+    pool.query("SELECT * FROM catalog WHERE title ~* $1 "+condTitAuth+" author ~*$2", [advTitle,advAuthor], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+        
+    })
+    */
 }
 
 /* 
@@ -87,7 +117,8 @@ const deleteUser = (request, response) => {
  With ES6 syntax, its getUsers instead of getUsers:getUsers*/
 module.exports = {
     getNewArrivals,
-    getSearch,
+    getBasicSearch,
+    getAdvSearch,
     /*Trailing comma ok*/
 }
 

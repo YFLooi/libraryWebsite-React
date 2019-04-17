@@ -10,7 +10,7 @@ export default class App extends React.Component {
                     <img className="logo" src="./assets/logo.png" alt="library"/>
                 </span>
                 <span className="header-search">
-                    <form>
+                    <form onSubmit={this.props.handleBasicSearchSubmit}>
                         {/*This default search is set to search partial, case-insensitive matches of title, author, and publisher*/}
                         <input
                             type="text"
@@ -24,7 +24,7 @@ export default class App extends React.Component {
                             autoComplete="on"
                             style={{borderColor:"none"}}
                         /> 
-                        <button className="searchbutton" onClick={this.props.handleBasicSearchSubmit}></button>
+                        <button className="searchbutton" type="submit"></button>
                         <button className="advancedbutton"></button>
                     </form>          
                 </span>

@@ -19,7 +19,8 @@ app.use(
   })
 )
 
-/*Allows CORS to allow cross-origin requests on browser. Typically blocked to prevent attacks, but we'll need this for testing */
+/*Allows CORS to allow cross-origin requests on browser. Typically blocked to prevent attacks, 
+but we'll need this for testing */
 app.use(cors())
 app.use(function(request, response, next){
   response.header("Access-Control-Allow-Origin","*");
@@ -30,16 +31,19 @@ app.use(function(request, response, next){
 
 /*tell a route to look for a GET request on the root (/) URL, 
 and return some JSON.*/
-app.get('/', (request, response) => {
-  response.json({ info: 'Server running on Node.js, Express, and Postgres API' });
+app.get("/", (request, response) => {
+  response.json({ info: "Server running on Node.js, Express, and Postgres API" });
 })
 
-app.get('/NewArrivals', db.getNewArrivals)
+app.get("/NewArrivals", db.getNewArrivals)
 
-app.get('/BasicSearch/:input', db.getSearch)
+app.get("/BasicSearch/:input", db.getBasicSearch)
 
+app.get("/AdvSearch/:advTitle/:condTitAuth/:advAuthor/:condAuthYr/:advYearStart/:advYearEnd/:condYrPub/:advPublisher/:condPubSynp/:advSynopsis"
+, db.getAdvSearch)
 
-/*This sets up the HTTP request method, the endpoint URL path, and the relevant function to access each function 
+/*This sets up the HTTP request method, the endpoint URL path, and the relevant function 
+to access each function 
 that modifies the db specified in queries.js
 app.get('/users/:id', db.getUserById)
 app.post('/users', db.createUser)
