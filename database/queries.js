@@ -49,17 +49,21 @@ const getAdvSearch = (request, response) => {
     console.log("Query received: Title:"+advTitle+" "+condTitAuth+" Author:"+advAuthor+" "
     +condAuthYr+" Where YearStart:"+advYearStart+" until YearEnd:"+advYearEnd+" "+condYrPub+" Publisher:"+advPublisher+" "+condPubSynp+" Synopsis text:"+advSynopsis);
     
-    /*This way of inserting AND/OR causes SQL query to bug out. How to fix?
-    response.status(200).json("Advanced query received at server")
-
-    pool.query("SELECT * FROM catalog WHERE title ~* $1 "+condTitAuth+" author ~*$2", [advTitle,advAuthor], (error, results) => {
+    /*Inserting AND/OR must use graves (``) for string interpolation. Using ("++") causes the SQL query 
+    to bug out
+    How to insert a range of years for the query?*/
+    const text = `SELECT * FROM catalog WHERE title ~* $1 ${condTitAuth} author ~* $2
+    ${condAuthYr} (year >=$3 AND year <=$4) ${condYrPub} publisher ~* $5 ${condPubSynp}
+    synopsis ~* $6`;
+    const values = [advTitle, advAuthor, advYearStart, advYearEnd, advPublisher, advSynopsis]
+    pool.query(text, values, (error, results) => {
         if (error) {
             throw error
         }
         response.status(200).json(results.rows)
         
     })
-    */
+    
 }
 
 /* 

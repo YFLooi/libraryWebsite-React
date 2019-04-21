@@ -111,8 +111,11 @@ export default class App extends React.Component {
         const condPubSynp = this.state.condPubSynp;
         const advSynopsis = this.state.advSynopsis === "" ? "null" : this.state.advSynopsis;
 
+        console.log(advTitle+condTitAuth+advAuthor+condAuthYr+advYearStart+" to "+advYearEnd+condYrPub+advPublisher+condPubSynp+advSynopsis)
+
         /*Search occurs as long as one advSearch parameter is not a "null" string*/
-        if(advTitle && advAuthor && advPublisher && advYearStart && advYearEnd && advPublisher 
+        if(advTitle === "null" &&  advAuthor === "null" && advPublisher === "null" && 
+        advYearStart === "null" && advYearEnd === "null" && advPublisher === "null" 
         && advSynopsis === "null"){
             console.log("Blank query made. No query submitted");
         } else {
