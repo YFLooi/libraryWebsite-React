@@ -34,7 +34,8 @@ export default class App extends React.Component {
             advSynopsis: "",
 
             /*For displaying results*/
-            searchResults: []
+            searchResults: [],
+            borrowCart: []
         }
         
         this.handleBasicSearchChange = this.handleBasicSearchChange.bind(this);
@@ -48,6 +49,9 @@ export default class App extends React.Component {
         this.checkbasicInput = this.checkbasicInput.bind(this);
         this.checkadvInput = this.checkadvInput.bind(this);
         this.checkSearchResults = this.checkSearchResults.bind(this);
+        this.borrowRequest = this.borrowRequest.bind(this);
+        this.checkborrowCart = this.checkborrowCart.bind(this);
+
     }
 	componentDidMount(){
         let that = this; //Prevents 'this' from being undefined
@@ -184,6 +188,35 @@ export default class App extends React.Component {
         resultContent.appendChild(resultList);
         renderTarget.appendChild(resultContent);
     }
+    borrowRequest(id){
+        //'id' here is the book id
+        let buttonText = document.getElementById("borrow."+id).innerHTML;
+        let cart = this.state.borrowCart;
+        console.log(buttonText);
+
+        if(buttonText === "Borrow"){
+            /*This method adds each new book id to the end of the existing array immutably*/
+            this.setState({
+                borrowCart: [...cart, id]
+            })
+            document.getElementById("borrow."+id).innerHTML = "Cancel";
+        }else if(buttonText === "Cancel"){
+            //Remove added book id from borrowCart
+            let targetPosition = cart.indexOf(id);
+            console.log("Target of removal position: "+targetPosition);
+
+            //Prevents splice if id to remove not in cart 
+            if(targetPosition !== -1){
+                /*Removes item at targetPosition. If we set const new = cart.splice(), 
+                "const new" has a value = the removed item*/
+                cart.splice(targetPosition,1);                 
+                this.setState({
+                    borrowCart: [...cart] //Keep state immutable with spread syntax!
+                })
+            }
+            document.getElementById("borrow."+id).innerHTML = "Borrow";       
+        }
+    }
     checkbasicInput(){
         console.log("Basic input query stored: "+this.state.basicInput);
     }
@@ -202,6 +235,9 @@ export default class App extends React.Component {
     }
     checkSearchResults(){
         console.log(this.state.searchResults);
+    }
+    checkborrowCart(){
+        console.log("Book ids in cart: "+this.state.borrowCart);
     }
 
 	render() {	
@@ -327,17 +363,54 @@ export default class App extends React.Component {
                         
                     </form>          
                     
-                    <button onClick={this.checkbasicInput}>Check basic search query stored in state</button>
-                    <button onClick={this.checkadvInput}>Check adv search query stored in state</button>
-                    <button onClick={this.handleAdvSearchSubmit}>test search query send</button>
-                    <button onClick={this.checkSearchResults}>Chk search results in state</button>
+                    <p></p>
+
+                    <div><u>Mock search results</u>
+                        <div >
+                            <span>
+                                The Elder Scrolls: Do you even?
+                                <button id="borrow.1" onClick={(event) => {this.borrowRequest("1")}}>Borrow</button>
+                            </span>
+                        </div>
+                        <div >
+                            <span>
+                                The Lusty Argonian Maid: Scaly Hentai
+                                <button id="borrow.2" onClick={(event) => {this.borrowRequest("2")}}>Borrow</button>
+                            </span>
+                        </div>
+                        <div >
+                            <span>
+                                Big book of poison
+                                <button id="borrow.3" onClick={(event) => {this.borrowRequest("3")}}>Borrow</button>
+                            </span>
+                        </div>
+                        <div >
+                            <span>
+                                Sorenova: Him, her, it?
+                                <button id="borrow.4" onClick={(event) => {this.borrowRequest("4")}}>Borrow</button>
+                            </span>
+                        </div>
+                    </div>
                     
+                    <p>
+                        <button onClick={this.checkbasicInput}>Check basic search query stored in state</button>
+                        <button onClick={this.checkadvInput}>Check adv search query stored in state</button>
+                        <button onClick={this.handleAdvSearchSubmit}>test search query send</button>
+                        <button onClick={this.checkSearchResults}>Chk search results in state</button>
+                        <button onClick={this.checkborrowCart}>Check book id-s in cart</button>
+                    </p>
+
                     {/*Need to prevent last set of search results from stacking together. how to clear?*/}
+                    <div>Generated search results</div>
                     <div id="searchResults"></div>
+
+
 			    </div>
             )
         } else {
-            return null;
+            return (
+                <div>Retriving database data...</div>
+            );
         }
 	}
 }
