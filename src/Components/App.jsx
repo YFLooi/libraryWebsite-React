@@ -14,11 +14,14 @@ export default class App extends React.Component {
         
         /*Conditionals need to be pre-initialised, otherwise will be blank if user does not change*/
         this.state = {
+            /*For new arrivals top 20*/
             newarrivals: [],
             isLoaded: false,
             
+            /*For basic search*/
             basicInput: "",
 
+            /*For advanced search*/
             advTitle: "",
             condTitAuth:'OR',
             advAuthor: "",
@@ -28,7 +31,10 @@ export default class App extends React.Component {
             condYrPub: "OR",
             advPublisher: "",
             condPubSynp:'OR',
-            advSynopsis: ""
+            advSynopsis: "",
+
+            /*For displaying results*/
+            searchResults: []
         }
         
         this.handleBasicSearchChange = this.handleBasicSearchChange.bind(this);
@@ -37,8 +43,11 @@ export default class App extends React.Component {
         this.handleAdvSearchChange = this.handleAdvSearchChange.bind(this);
         this.handleAdvSearchSubmit = this.handleAdvSearchSubmit.bind(this);
 
+        this.rendersearchResults = this.rendersearchResults.bind(this);
+
         this.checkbasicInput = this.checkbasicInput.bind(this);
         this.checkadvInput = this.checkadvInput.bind(this);
+        this.checkSearchResults = this.checkSearchResults.bind(this);
     }
 	componentDidMount(){
         let that = this; //Prevents 'this' from being undefined
@@ -68,6 +77,14 @@ export default class App extends React.Component {
     }
     handleBasicSearchSubmit(event) { 
         event.preventDefault();
+        let that = this;
+
+        /*Clears this.state.searchResults to prevent stacking of each new set of 
+        search results*/
+        this.setState({
+			searchResults: []
+        });
+
         const basicInput = this.state.basicInput;
 
         if(basicInput !== ""){
@@ -77,6 +94,9 @@ export default class App extends React.Component {
                     return response.json()
                     .then(function(data){
                         console.log(data);
+                         
+                        /**let that=this to prevent 'this is undefined error' */
+                        that.rendersearchResults(data);
                     })
                 })  
                 .catch(function(error){
@@ -96,9 +116,16 @@ export default class App extends React.Component {
         })   
     }
     handleAdvSearchSubmit(event){
+        let that = this;
         event.preventDefault();
 
-        /*JSON parse cannot accept blank strings, "". The if-else here inserts string "null"
+        /*Clears this.state.searchResults on each new search to prevent arrays 
+        of each search's results within arrays!*/
+        this.setState({
+			searchResults: []
+        });
+
+        /*JSON.parse cannot accept blank strings, "". The if-else here inserts string "null"
         if it detects the submitted state is ""*/
         const advTitle = this.state.advTitle === "" ? "null" : this.state.advTitle;
         const condTitAuth = this.state.condTitAuth 
@@ -127,25 +154,35 @@ export default class App extends React.Component {
                     return response.json()
                     .then(function(data){
                         console.log(data);
+
+                        /**let that=this to prevent 'this is undefined error' */
+                        that.rendersearchResults(data);
                     })
                 })  
                 .catch(function(error){
                     console.log('Request failed', error)
                 })
         }
+    }
+    rendersearchResults(data){
+        this.setState(prevState => ({
+            /*Works similar to array.concat() method*/
+            searchResults: [...prevState.searchResults, ...data]
+        }))
 
-        /** 
-        advTitle:'',
-        condTitAuth:'OR',
-        advAuthor:'',
-        condAuthYr:'OR',
-        advYearStart: '',
-        advYearEnd: '',
-        condYrPub:'OR',
-        advPublisher:'',
-        condPubSynp:'OR',
-        advSynopsis:''
-        */
+        const renderTarget = document.getElementById("searchResults");
+        const resultContent = document.createElement("div");
+        const resultList = document.createElement("ul");
+        const renderLength = this.state.searchResults.length;
+
+        for(let i=0; i<renderLength; i++){
+            const resultCard = document.createElement("li");
+            resultCard.appendChild(document.createTextNode(this.state.searchResults[i].title))
+            resultList.appendChild(resultCard);
+        }
+
+        resultContent.appendChild(resultList);
+        renderTarget.appendChild(resultContent);
     }
     checkbasicInput(){
         console.log("Basic input query stored: "+this.state.basicInput);
@@ -162,6 +199,9 @@ export default class App extends React.Component {
         console.log("Publ: "+this.state.advPublisher);
         console.log("Publisher-synopsis conditional: "+this.state.condPubSynp);
         console.log("Synp short: "+this.state.advSynopsis);
+    }
+    checkSearchResults(){
+        console.log(this.state.searchResults);
     }
 
 	render() {	
@@ -286,12 +326,14 @@ export default class App extends React.Component {
                         <button className="searchbutton" type="submit"></button>
                         
                     </form>          
-
-                 
+                    
                     <button onClick={this.checkbasicInput}>Check basic search query stored in state</button>
                     <button onClick={this.checkadvInput}>Check adv search query stored in state</button>
                     <button onClick={this.handleAdvSearchSubmit}>test search query send</button>
+                    <button onClick={this.checkSearchResults}>Chk search results in state</button>
                     
+                    {/*Need to prevent last set of search results from stacking together. how to clear?*/}
+                    <div id="searchResults"></div>
 			    </div>
             )
         } else {
