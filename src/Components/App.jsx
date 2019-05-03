@@ -169,6 +169,8 @@ export default class App extends React.Component {
         }
     }
     rendersearchResults(data){
+        let that = this;
+
         this.setState(prevState => ({
             /*Works similar to array.concat() method*/
             searchResults: [...prevState.searchResults, ...data]
@@ -181,8 +183,28 @@ export default class App extends React.Component {
 
         for(let i=0; i<renderLength; i++){
             const resultCard = document.createElement("li");
-            resultCard.appendChild(document.createTextNode(this.state.searchResults[i].title))
+
+            const resultSpan = document.createElement("span");
+            resultSpan.appendChild(document.createTextNode(this.state.searchResults[i].title+" "));
+
+            let borrowButton = document.createElement("button");            
+            borrowButton.id = "borrow."+that.state.searchResults[i].id;
+            borrowButton.onclick = function(event){that.borrowRequest(that.state.searchResults[i].id);};
+            borrowButton.innerHTML = "Borrow";
+
+            resultSpan.appendChild(borrowButton);
+
+            resultCard.appendChild(resultSpan);
             resultList.appendChild(resultCard);
+
+            /** Net output:
+            <li> (resultCard)
+                <span>
+                    The Elder Scrolls: Do you even?
+                    <button id="borrow.1" onClick={(event) => {this.borrowRequest("1")}}>Borrow</button>
+                </span>
+            </li> 
+            */
         }
 
         resultContent.appendChild(resultList);
@@ -199,13 +221,14 @@ export default class App extends React.Component {
             this.setState({
                 borrowCart: [...cart, id]
             })
+            /*Changes button to say "Cancel" after being clicked*/
             document.getElementById("borrow."+id).innerHTML = "Cancel";
         }else if(buttonText === "Cancel"){
             //Remove added book id from borrowCart
             let targetPosition = cart.indexOf(id);
             console.log("Target of removal position: "+targetPosition);
 
-            //Prevents splice if id to remove not in cart 
+            //Condition prevents .splice if id to remove not in cart 
             if(targetPosition !== -1){
                 /*Removes item at targetPosition. If we set const new = cart.splice(), 
                 "const new" has a value = the removed item*/
@@ -214,6 +237,7 @@ export default class App extends React.Component {
                     borrowCart: [...cart] //Keep state immutable with spread syntax!
                 })
             }
+            /**Cancelling a borrow request makes book available to "Borrow" again*/
             document.getElementById("borrow."+id).innerHTML = "Borrow";       
         }
     }
