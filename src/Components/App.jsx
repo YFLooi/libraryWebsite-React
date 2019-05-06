@@ -49,9 +49,11 @@ export default class App extends React.Component {
         this.checkbasicInput = this.checkbasicInput.bind(this);
         this.checkadvInput = this.checkadvInput.bind(this);
         this.checkSearchResults = this.checkSearchResults.bind(this);
-        this.borrowRequest = this.borrowRequest.bind(this);
         this.checkborrowCart = this.checkborrowCart.bind(this);
 
+        this.borrowRequest = this.borrowRequest.bind(this);
+        this.cartDisplay = this.cartDisplay.bind(this);
+        this.handleCartCheckout = this.handleCartCheckout.bind(this);
     }
 	componentDidMount(){
         let that = this; //Prevents 'this' from being undefined
@@ -177,69 +179,149 @@ export default class App extends React.Component {
         }))
 
         const renderTarget = document.getElementById("searchResults");
-        const resultContent = document.createElement("div");
-        const resultList = document.createElement("ul");
-        const renderLength = this.state.searchResults.length;
-
-        for(let i=0; i<renderLength; i++){
-            const resultCard = document.createElement("li");
-
-            const resultSpan = document.createElement("span");
-            resultSpan.appendChild(document.createTextNode(this.state.searchResults[i].title+" "));
-
-            let borrowButton = document.createElement("button");            
-            borrowButton.id = "borrow."+that.state.searchResults[i].id;
-            borrowButton.onclick = function(event){that.borrowRequest(that.state.searchResults[i].id);};
-            borrowButton.innerHTML = "Borrow";
-
-            resultSpan.appendChild(borrowButton);
-
-            resultCard.appendChild(resultSpan);
-            resultList.appendChild(resultCard);
-
-            /** Net output:
-            <li> (resultCard)
-                <span>
-                    The Elder Scrolls: Do you even?
-                    <button id="borrow.1" onClick={(event) => {this.borrowRequest("1")}}>Borrow</button>
-                </span>
-            </li> 
-            */
+        /**Clears "searchResults" div on each new submit to prevent stacking with prior results*/
+        //renderTarget.innerHTML = ""; 
+        while(renderTarget.firstChild){
+            renderTarget.removeChild(renderTarget.firstChild);
         }
 
-        resultContent.appendChild(resultList);
-        renderTarget.appendChild(resultContent);
+        const resultContent = document.createElement("div");
+        const resultList = document.createElement("ul");
+        const renderLength = that.state.searchResults.length;
+
+        if (this.state.searchResults.length === 0) {
+            alert("No results found. Try again");
+        } else {
+            for(let i=0; i<renderLength; i++){
+                const resultCard = document.createElement("li");
+
+                const resultSpan = document.createElement("span");
+
+
+                let cardImg = document.createElement("img");
+                cardImg.id = "cardImg."+that.state.searchResults[i].id;
+                cardImg.src = that.state.searchResults[i].coverimg;
+                cardImg.alt = that.state.searchResults[i].title;
+                resultSpan.appendChild(cardImg);
+
+                resultSpan.appendChild(document.createTextNode(that.state.searchResults[i].title+" "));
+
+                let borrowButton = document.createElement("button");            
+                borrowButton.id = "borrow."+that.state.searchResults[i].id;
+                borrowButton.onclick = function(event){that.borrowRequest(that.state.searchResults[i].id);};
+                borrowButton.innerHTML = "Borrow";
+                resultSpan.appendChild(borrowButton);
+
+                resultCard.appendChild(resultSpan);
+                resultList.appendChild(resultCard);
+
+                /** Net output:
+                <li> (resultCard)
+                    <span>
+                        The Elder Scrolls: Do you even?
+                        <button id="borrow.1" onClick={(event) => {this.borrowRequest("1")}}>Borrow</button>
+                    </span>
+                </li> 
+                */
+            }
+
+            resultContent.appendChild(resultList);
+            renderTarget.appendChild(resultContent);
+        }
     }
-    borrowRequest(id){
-        //'id' here is the book id
-        let buttonText = document.getElementById("borrow."+id).innerHTML;
-        let cart = this.state.borrowCart;
-        console.log(buttonText);
+    borrowRequest(idx){
+        /*'id' here is the book id. It allows access to other data related to 
+        the book */
+        const buttonText = document.getElementById("borrow."+idx).innerHTML;
+        const cart = this.state.borrowCart;
+        const searchResults = this.state.searchResults;
 
         if(buttonText === "Borrow"){
-            /*This method adds each new book id to the end of the existing array immutably*/
+            /**Retrieves index position in searchResults of object having input book id*/
+            const targetIndex = searchResults.findIndex(x => x.id === idx)
+
+            /**Obtains the object at the target index position in searchResults */
+            const bookData  = this.state.searchResults[targetIndex];
+
+            /*This method adds new book object data to the end of the 
+            existing array immutably*/
             this.setState({
-                borrowCart: [...cart, id]
+                borrowCart: [...cart, bookData]
             })
+
             /*Changes button to say "Cancel" after being clicked*/
-            document.getElementById("borrow."+id).innerHTML = "Cancel";
+            document.getElementById("borrow."+idx).innerHTML = "Cancel";
         }else if(buttonText === "Cancel"){
-            //Remove added book id from borrowCart
-            let targetPosition = cart.indexOf(id);
-            console.log("Target of removal position: "+targetPosition);
+            //Find index containing target book id from borrowCart
+            const targetIndex = cart.findIndex(x => x.id === idx)
+            console.log("Target of removal position: "+targetIndex);
 
             //Condition prevents .splice if id to remove not in cart 
-            if(targetPosition !== -1){
+            if(targetIndex !== -1){
                 /*Removes item at targetPosition. If we set const new = cart.splice(), 
                 "const new" has a value = the removed item*/
-                cart.splice(targetPosition,1);                 
+                cart.splice(targetIndex,1);                 
                 this.setState({
                     borrowCart: [...cart] //Keep state immutable with spread syntax!
                 })
             }
             /**Cancelling a borrow request makes book available to "Borrow" again*/
-            document.getElementById("borrow."+id).innerHTML = "Borrow";       
+            document.getElementById("borrow."+idx).innerHTML = "Borrow";       
         }
+    }
+    cartDisplay(){
+        let cartButton = document.getElementById("cartButton")
+        let cartButtonHref = cartButton.getAttribute("href");
+        
+        const cartDisplay = document.getElementById("cart");
+        /*Clears <li> in cartDisplay for another re-rendering*/
+        while(cartDisplay.firstChild){
+            cartDisplay.removeChild(cartDisplay.firstChild);
+        }
+
+        const checkoutButton = document.getElementById("checkoutButton");
+        const borrowCart = this.state.borrowCart;
+        
+        if (cartButtonHref==="OpenCart"){
+            if (borrowCart.length === 0){
+                let resultSpan = document.createElement("p");
+                resultSpan.appendChild(document.createTextNode("Cart empty"));
+                
+                cartDisplay.appendChild(resultSpan);
+            } else {
+                for(let i=0; i<borrowCart.length; i++){
+                    let resultCard = document.createElement("li");
+
+                    let resultSpan = document.createElement("span");
+                    let cardImg = document.createElement("img");
+                    cardImg.id = "cardImg."+borrowCart[i].id;
+                    cardImg.src = borrowCart[i].coverimg;
+                    cardImg.alt = borrowCart[i].title;
+                    resultSpan.appendChild(cardImg);
+
+                    resultSpan.appendChild(document.createTextNode(borrowCart[i].title+" "));
+
+                    let cancelButton = document.createElement("button");            
+                    cancelButton.id = "borrow."+i;
+                    //cancelButton.onclick = function(event){that.borrowRequest(that.state.searchResults[i].id);};
+                    cancelButton.innerHTML = "X";
+                    resultSpan.appendChild(cancelButton);
+
+                    resultCard.appendChild(resultSpan);
+                    cartDisplay.appendChild(resultCard);
+                }
+            } 
+            cartButton.setAttribute("href","CloseCart") 
+            cartDisplay.style = "block";
+            checkoutButton.style = "block";
+        } else if (cartButtonHref==="CloseCart"){
+            cartDisplay.style = "none";
+            checkoutButton.style = "none";    
+            cartButton.setAttribute("href","OpenCart") 
+        }
+    }
+    handleCartCheckout(){
+
     }
     checkbasicInput(){
         console.log("Basic input query stored: "+this.state.basicInput);
@@ -259,9 +341,13 @@ export default class App extends React.Component {
     }
     checkSearchResults(){
         console.log(this.state.searchResults);
+        //console.log(document.getElementById("searchResults").innerHTML);
     }
     checkborrowCart(){
-        console.log("Book ids in cart: "+this.state.borrowCart);
+        console.log("Books in cart: ");
+        /**Adding text before this console log causes the console output to be 
+         [object Object] instead of showing individual objects and their content*/
+        console.log(this.state.borrowCart);
     }
 
 	render() {	
@@ -386,49 +472,28 @@ export default class App extends React.Component {
                         <button className="searchbutton" type="submit"></button>
                         
                     </form>          
-                    
+        
                     <p></p>
 
-                    <div><u>Mock search results</u>
-                        <div >
-                            <span>
-                                The Elder Scrolls: Do you even?
-                                <button id="borrow.1" onClick={(event) => {this.borrowRequest("1")}}>Borrow</button>
-                            </span>
-                        </div>
-                        <div >
-                            <span>
-                                The Lusty Argonian Maid: Scaly Hentai
-                                <button id="borrow.2" onClick={(event) => {this.borrowRequest("2")}}>Borrow</button>
-                            </span>
-                        </div>
-                        <div >
-                            <span>
-                                Big book of poison
-                                <button id="borrow.3" onClick={(event) => {this.borrowRequest("3")}}>Borrow</button>
-                            </span>
-                        </div>
-                        <div >
-                            <span>
-                                Sorenova: Him, her, it?
-                                <button id="borrow.4" onClick={(event) => {this.borrowRequest("4")}}>Borrow</button>
-                            </span>
-                        </div>
-                    </div>
-                    
-                    <p>
+                    <div>
                         <button onClick={this.checkbasicInput}>Check basic search query stored in state</button>
                         <button onClick={this.checkadvInput}>Check adv search query stored in state</button>
                         <button onClick={this.handleAdvSearchSubmit}>test search query send</button>
                         <button onClick={this.checkSearchResults}>Chk search results in state</button>
                         <button onClick={this.checkborrowCart}>Check book id-s in cart</button>
-                    </p>
+                    </div>
 
                     {/*Need to prevent last set of search results from stacking together. how to clear?*/}
                     <div>Generated search results</div>
                     <div id="searchResults"></div>
+                    
+                    <p></p>
 
-
+                    <div>
+                        <button href="OpenCart" id="cartButton" onClick={this.cartDisplay}>Cart</button> 
+                        <div id="cart" style={{display: "none"}}>Cart contents</div>
+                        <button id="checkoutButton" style={{display: "none"}}>Checkout</button>
+                    </div>
 			    </div>
             )
         } else {
