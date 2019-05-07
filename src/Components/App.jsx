@@ -53,6 +53,7 @@ export default class App extends React.Component {
 
         this.borrowRequest = this.borrowRequest.bind(this);
         this.cartDisplay = this.cartDisplay.bind(this);
+        this.handleCartCancel = this.handleCartCancel.bind(this);
         this.handleCartCheckout = this.handleCartCheckout.bind(this);
     }
 	componentDidMount(){
@@ -171,12 +172,15 @@ export default class App extends React.Component {
         }
     }
     rendersearchResults(data){
-        let that = this;
+        const that = this
 
         this.setState(prevState => ({
             /*Works similar to array.concat() method*/
             searchResults: [...prevState.searchResults, ...data]
         }))
+
+        /**Cut out like entries by combining indexOf() and splice() and running then in a 
+        for loop */
 
         const renderTarget = document.getElementById("searchResults");
         /**Clears "searchResults" div on each new submit to prevent stacking with prior results*/
@@ -187,8 +191,10 @@ export default class App extends React.Component {
 
         const resultContent = document.createElement("div");
         const resultList = document.createElement("ul");
-        const renderLength = that.state.searchResults.length;
-
+        const renderLength = this.state.searchResults.length;
+        const searchResults = this.state.searchResults;
+        const borrowCart = this.state.borrowCart;
+        
         if (this.state.searchResults.length === 0) {
             alert("No results found. Try again");
         } else {
@@ -199,22 +205,35 @@ export default class App extends React.Component {
 
 
                 let cardImg = document.createElement("img");
-                cardImg.id = "cardImg."+that.state.searchResults[i].id;
-                cardImg.src = that.state.searchResults[i].coverimg;
-                cardImg.alt = that.state.searchResults[i].title;
+                cardImg.id = "cardImg."+searchResults[i].id;
+                cardImg.src = searchResults[i].coverimg;
+                cardImg.alt = searchResults[i].title;
+                cardImg.style = "width:80px; height:100px;"
                 resultSpan.appendChild(cardImg);
 
-                resultSpan.appendChild(document.createTextNode(that.state.searchResults[i].title+" "));
+                resultSpan.appendChild(document.createTextNode(searchResults[i].title+" "));
 
-                let borrowButton = document.createElement("button");            
-                borrowButton.id = "borrow."+that.state.searchResults[i].id;
-                borrowButton.onclick = function(event){that.borrowRequest(that.state.searchResults[i].id);};
-                borrowButton.innerHTML = "Borrow";
-                resultSpan.appendChild(borrowButton);
+                /*To change innerHTML of 'borrow' button to "Cancel" if book has been borrowed*/
+                /**findIndex() here checks for match between searchResult and cart contents
+                 If there is a match (!= -1)), 'borrow' button inner HTML is set to "Cancel" */
+                let cartCheck = borrowCart.findIndex(cart => cart.id === searchResults[i].id);
+                 
+                if (cartCheck === -1){
+                    let borrowButton = document.createElement("button");            
+                    borrowButton.id = "borrow."+searchResults[i].id;
+                    borrowButton.onclick = function(event){that.borrowRequest(searchResults[i].id);};
+                    borrowButton.innerHTML = "Borrow";
+                    resultSpan.appendChild(borrowButton);
+                } else {
+                    let borrowButton = document.createElement("button");            
+                    borrowButton.id = "borrow."+searchResults[i].id;
+                    borrowButton.onclick = function(event){that.borrowRequest(searchResults[i].id);};
+                    borrowButton.innerHTML = "Cancel";
+                    resultSpan.appendChild(borrowButton);
+                }
 
                 resultCard.appendChild(resultSpan);
                 resultList.appendChild(resultCard);
-
                 /** Net output:
                 <li> (resultCard)
                     <span>
@@ -238,7 +257,7 @@ export default class App extends React.Component {
 
         if(buttonText === "Borrow"){
             /**Retrieves index position in searchResults of object having input book id*/
-            const targetIndex = searchResults.findIndex(x => x.id === idx)
+            const targetIndex = searchResults.findIndex(searchResult => searchResult.id === idx)
 
             /**Obtains the object at the target index position in searchResults */
             const bookData  = this.state.searchResults[targetIndex];
@@ -270,6 +289,8 @@ export default class App extends React.Component {
         }
     }
     cartDisplay(){
+        const that = this;
+
         let cartButton = document.getElementById("cartButton")
         let cartButtonHref = cartButton.getAttribute("href");
         
@@ -280,35 +301,44 @@ export default class App extends React.Component {
         }
 
         const checkoutButton = document.getElementById("checkoutButton");
-        const borrowCart = this.state.borrowCart;
+        const borrowCart = that.state.borrowCart;
         
         if (cartButtonHref==="OpenCart"){
+            /**Check for empty cart*/
             if (borrowCart.length === 0){
-                let resultSpan = document.createElement("p");
+                const resultSpan = document.createElement("p");
                 resultSpan.appendChild(document.createTextNode("Cart empty"));
                 
                 cartDisplay.appendChild(resultSpan);
             } else {
+                const resultsList = document.createElement("ul");
+                resultsList.id = "cartResultsList";
+
                 for(let i=0; i<borrowCart.length; i++){
                     let resultCard = document.createElement("li");
+                    resultCard.id = "cartCard."+i;
+                    resultCard.setAttribute("href",borrowCart[i].id)
 
                     let resultSpan = document.createElement("span");
                     let cardImg = document.createElement("img");
-                    cardImg.id = "cardImg."+borrowCart[i].id;
+                    cardImg.id = "cartCardImg."+borrowCart[i].id;
                     cardImg.src = borrowCart[i].coverimg;
                     cardImg.alt = borrowCart[i].title;
+                    cardImg.style = "width:80px; height:100px;"
                     resultSpan.appendChild(cardImg);
 
                     resultSpan.appendChild(document.createTextNode(borrowCart[i].title+" "));
 
                     let cancelButton = document.createElement("button");            
-                    cancelButton.id = "borrow."+i;
-                    //cancelButton.onclick = function(event){that.borrowRequest(that.state.searchResults[i].id);};
+                    cancelButton.id = "cancel."+borrowCart[i].id;
+                    cancelButton.onclick = function(event){that.handleCartCancel(i);};
+                    //cancelButton.addEventListener("click", that.handleCartCancel[i])
                     cancelButton.innerHTML = "X";
                     resultSpan.appendChild(cancelButton);
 
                     resultCard.appendChild(resultSpan);
-                    cartDisplay.appendChild(resultCard);
+                    resultsList.appendChild(resultCard);
+                    cartDisplay.appendChild(resultsList);
                 }
             } 
             cartButton.setAttribute("href","CloseCart") 
@@ -318,6 +348,36 @@ export default class App extends React.Component {
             cartDisplay.style = "none";
             checkoutButton.style = "none";    
             cartButton.setAttribute("href","OpenCart") 
+        }
+    }
+    handleCartCancel(idx){
+        /**This setup of getting bookId from the card href is necessary because appending
+        this.state.borrowCart[i].id as property "idx" of handleCartCancel() has resulted in
+        the "id" going null as books are cleared from the cart
+        */
+        const cardIndex = document.getElementById("cartCard."+idx)
+        const bookId = cardIndex.getAttribute("href");
+        
+        /**Remove book <li> on click*/
+        if (cardIndex.parentNode) {
+            cardIndex.parentNode.removeChild(cardIndex);
+        }
+
+        /**Updates this.state.borrowCart to reflect book removed */
+        const newCart = this.state.borrowCart;
+        const targetIndex = newCart.findIndex(cart => cart.id === bookId);
+        console.log("Removal target index: "+targetIndex);
+        /**No need for this.setState(), splice() updates state*/
+        newCart.splice(targetIndex,1)
+
+        /**If user removes all items from cart, the message "Cart empty" 
+        appears*/
+        if (newCart.length === 0){
+            const resultSpan = document.createElement("p");
+            resultSpan.appendChild(document.createTextNode("Cart empty"));
+            
+            const cartDisplay = document.getElementById("cart");
+            cartDisplay.appendChild(resultSpan);
         }
     }
     handleCartCheckout(){
