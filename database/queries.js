@@ -33,6 +33,9 @@ const getBasicSearch = (request, response) => {
 
 /*Adv search*/
 const getAdvSearch = (request, response) => {
+    /*Corresponds to: 
+    AdvSearch/:advTitle/:condTitAuth/:advAuthor/:condAuthYr/:advYearStart/:advYearEnd/:condYrPub
+    /:advPublisher/:condPubSynp/:advSynopsis */
     let advTitle = request.params.advTitle;
     let condTitAuth = request.params.condTitAuth;
     let advAuthor = request.params.advAuthor;
@@ -64,6 +67,20 @@ const getAdvSearch = (request, response) => {
         
     })
     
+}
+
+const createBorrowings = (request, response) => {
+    console.log("POST request made to insert borrowing record");
+    /** 
+    const { name, email } = request.body
+
+    pool.query('INSERT INTO users (name, email) VALUES ($1, $2)', [name, email], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(201).send(`User added with ID: ${result.insertId}`)
+    })
+    */
 }
 
 /* 
@@ -123,6 +140,7 @@ module.exports = {
     getNewArrivals,
     getBasicSearch,
     getAdvSearch,
+    createBorrowings,
     /*Trailing comma ok*/
 }
 

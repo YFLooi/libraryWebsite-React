@@ -339,14 +339,16 @@ export default class App extends React.Component {
                     resultCard.appendChild(resultSpan);
                     resultsList.appendChild(resultCard);
                     cartDisplay.appendChild(resultsList);
+
+                    /**checkoutButton should render only if cart has items */
+                    checkoutButton.style.display = "block";
                 }
             } 
             cartButton.setAttribute("href","CloseCart") 
             cartDisplay.style = "block";
-            checkoutButton.style = "block";
         } else if (cartButtonHref==="CloseCart"){
-            cartDisplay.style = "none";
-            checkoutButton.style = "none";    
+            checkoutButton.style.display = "none"; //Leaves space for "Cart empty" message    
+            cartDisplay.style.display = "none";
             cartButton.setAttribute("href","OpenCart") 
         }
     }
@@ -381,7 +383,26 @@ export default class App extends React.Component {
         }
     }
     handleCartCheckout(){
+        const borrowCart = this.state.borrowCart;
 
+        /**"new Date()" retrieves current time, getTime() converts into ms from epoch (1 Jan 1970)*/
+        const borrowTime = new Date().getTime()
+        /*Calculation converts 14 days to equivalent in miliseconds. Result placed into new Date()
+        to convert raw ms into a date (still in ms)*/
+        const returnDate = new Date (borrowTime + 14*(24*60*60*1000)) 
+        /**toString() Turns the ms date into human-readable date (month-day-year)*/
+        console.log("Book return date: "+returnDate.toString());
+        
+        var xhttp = new XMLHttpRequest();
+        /**Params: (httpRequestType, URL, async?)*/
+        xhttp.onreadystatechange = function() {
+            if (this.readyState === 4 && this.status === 200) {
+              console.log(this.responseText);
+            }
+          };
+        xhttp.open("POST", "http://localhost:3005/Borrowings", true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+        xhttp.send("lol");
     }
     checkbasicInput(){
         console.log("Basic input query stored: "+this.state.basicInput);
@@ -536,13 +557,14 @@ export default class App extends React.Component {
                     <p></p>
 
                     <div>
+                        <button onClick={this.handleCartCheckout}>Test cart Checkout</button>
                         <button onClick={this.checkbasicInput}>Check basic search query stored in state</button>
                         <button onClick={this.checkadvInput}>Check adv search query stored in state</button>
                         <button onClick={this.handleAdvSearchSubmit}>test search query send</button>
                         <button onClick={this.checkSearchResults}>Chk search results in state</button>
                         <button onClick={this.checkborrowCart}>Check book id-s in cart</button>
                     </div>
-
+                    
                     {/*Need to prevent last set of search results from stacking together. how to clear?*/}
                     <div>Generated search results</div>
                     <div id="searchResults"></div>
@@ -552,7 +574,7 @@ export default class App extends React.Component {
                     <div>
                         <button href="OpenCart" id="cartButton" onClick={this.cartDisplay}>Cart</button> 
                         <div id="cart" style={{display: "none"}}>Cart contents</div>
-                        <button id="checkoutButton" style={{display: "none"}}>Checkout</button>
+                        <button id="checkoutButton" style={{display: "none"}} onClick={this.handleCartCheckout}>Checkout</button>
                     </div>
 			    </div>
             )
