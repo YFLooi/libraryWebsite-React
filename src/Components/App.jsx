@@ -45,7 +45,7 @@ export default class App extends React.Component {
         this.handleAdvSearchSubmit = this.handleAdvSearchSubmit.bind(this);
 
         this.rendersearchResults = this.rendersearchResults.bind(this);
-
+        
         this.checkbasicInput = this.checkbasicInput.bind(this);
         this.checkadvInput = this.checkadvInput.bind(this);
         this.checkSearchResults = this.checkSearchResults.bind(this);
@@ -55,6 +55,7 @@ export default class App extends React.Component {
         this.cartDisplay = this.cartDisplay.bind(this);
         this.handleCartCancel = this.handleCartCancel.bind(this);
         this.handleCartCheckout = this.handleCartCheckout.bind(this);
+        this.checkBorrowings = this.checkBorrowings.bind(this);
     }
 	componentDidMount(){
         let that = this; //Prevents 'this' from being undefined
@@ -95,7 +96,7 @@ export default class App extends React.Component {
         const basicInput = this.state.basicInput;
 
         if(basicInput !== ""){
-            fetch("http://localhost:3005/BasicSearch/"+basicInput, {mode:'cors'})
+            fetch("http://localhost:3005/BasicSearch/"+basicInput, {method: "GET",mode:"cors"})
                 //Here we chain 2 promise functions: The first fetches data (response), the second examines text in response (data)
                 .then(function(response){
                     return response.json()
@@ -128,10 +129,9 @@ export default class App extends React.Component {
 
         /*Clears this.state.searchResults on each new search to prevent arrays 
         of each search's results within arrays!*/
-        this.setState({
-			searchResults: []
-        });
-
+        let searchResults = this.state.searchResults;
+        searchResults.splice(0,searchResults.length)
+        
         /*JSON.parse cannot accept blank strings, "". The if-else here inserts string "null"
         if it detects the submitted state is ""*/
         const advTitle = this.state.advTitle === "" ? "null" : this.state.advTitle;
@@ -155,7 +155,7 @@ export default class App extends React.Component {
         } else {
             fetch("http://localhost:3005/AdvSearch/"+advTitle+"/"+condTitAuth+"/"+advAuthor+"/"+condAuthYr+
             "/"+advYearStart+"/"+advYearEnd+"/"+condYrPub+"/"+advPublisher+"/"+condPubSynp+"/"+advSynopsis
-            ,{mode:'cors'})
+            ,{method:"GET",mode:"cors"})
                 //Here we chain 2 promise functions: The first fetches data (response), the second examines text in response (data)
                 .then(function(response){
                     return response.json()
@@ -234,6 +234,7 @@ export default class App extends React.Component {
 
                 resultCard.appendChild(resultSpan);
                 resultList.appendChild(resultCard);
+
                 /** Net output:
                 <li> (resultCard)
                     <span>
@@ -291,8 +292,8 @@ export default class App extends React.Component {
     cartDisplay(){
         const that = this;
 
-        let cartButton = document.getElementById("cartButton")
-        let cartButtonHref = cartButton.getAttribute("href");
+        const cartButton = document.getElementById("cartButton")
+        const cartButtonHref = cartButton.getAttribute("href");
         
         const cartDisplay = document.getElementById("cart");
         /*Clears <li> in cartDisplay for another re-rendering*/
@@ -385,24 +386,142 @@ export default class App extends React.Component {
     handleCartCheckout(){
         const borrowCart = this.state.borrowCart;
 
-        /**"new Date()" retrieves current time, getTime() converts into ms from epoch (1 Jan 1970)*/
-        const borrowTime = new Date().getTime()
-        /*Calculation converts 14 days to equivalent in miliseconds. Result placed into new Date()
-        to convert raw ms into a date (still in ms)*/
-        const returnDate = new Date (borrowTime + 14*(24*60*60*1000)) 
-        /**toString() Turns the ms date into human-readable date (month-day-year)*/
-        console.log("Book return date: "+returnDate.toString());
-        
-        var xhttp = new XMLHttpRequest();
-        /**Params: (httpRequestType, URL, async?)*/
-        xhttp.onreadystatechange = function() {
-            if (this.readyState === 4 && this.status === 200) {
-              console.log(this.responseText);
+        /**Prevents function handleCartCheckout() from running on an empty cart*/
+        if (borrowCart === []){
+            alert("You have not selected any books");
+        } else {
+            /**"new Date()" retrieves current time, getTime() converts into ms from epoch (1 Jan 1970)*/
+            const borrowDate = new Date()
+            const borrowDateRaw = borrowDate.getTime();
+            /*Calculation converts 14 days to equivalent in miliseconds. Result placed into new Date()
+            to convert raw ms into a date (still in ms)*/
+            const returnDue = new Date (borrowDateRaw + 14*(24*60*60*1000)) 
+            
+            console.log("Book borrow date: "+borrowDate);
+            /**toString() Turns the ms date into human-readable date (month-day-year)*/
+            console.log("Book due date: "+returnDue.toString());
+            
+            const bookDetails = []
+            function insertDetails(){
+                let details = bookDetails
+
+                for(let i =0; i<borrowCart.length; i++){
+                    let detailsContainer = {}
+                    detailsContainer["id"] = borrowCart[i].id
+                    detailsContainer["title"] = borrowCart[i].title
+                    detailsContainer["year"] = borrowCart[i].year
+                    detailsContainer["author"] = borrowCart[i].author
+                    detailsContainer["publisher"] = borrowCart[i].publisher
+                    
+                    /**Inserts details extracted into detailsContainer{} into bookDetails[]*/
+                    details[i]=detailsContainer
+                }
+
+                return details;
             }
-          };
-        xhttp.open("POST", "http://localhost:3005/Borrowings", true);
-        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-        xhttp.send("lol");
+            insertDetails();
+            
+            let borrowerId = "" /**Initialise as "" */
+            borrowerId = prompt("Type your library id:")
+
+            /**If borrowerId === null, the whole site will bug out*/
+            if (borrowerId !== "" && borrowerId !== null && typeof borrowerId !== undefined){    
+                /**Immutably clears this.state.borrowCart after borrow request is submitted */
+                borrowCart.splice(0,borrowCart.length)
+
+                /**Don't prompt().toLowerCase(), prompt() will become null!*/
+                let borrowerIdLowerCase = borrowerId.toLowerCase()
+
+                let borrowingData = {
+                    borrowerid: borrowerIdLowerCase,
+                    borrowdate: borrowDate,
+                    returndue: returnDue,
+                    books: bookDetails
+                }
+                const POSTReqInit = {
+                    method:"POST",
+                    mode:"cors",   
+                    cache:"no-cache",
+                    credentials:"same-origin",
+                    headers:{
+                        "Content-Type": "application/json",
+                    },
+                    redirect: "error",
+                    body: JSON.stringify(borrowingData) //Contains data to send
+                }
+                /**Both parameters are initialised with blanks */
+                fetch("http://localhost:3005/Borrowings", POSTReqInit)
+                    .then(function(response){
+                        //return response.json()
+                        console.log(response);
+                    })  
+                    .catch(function(error){
+                        console.log('Request failed', error)
+                    })
+            }else{
+                alert("Please insert your library ID")
+            }
+        }
+    }
+    checkBorrowings(){
+        const borrowingsButton = document.getElementById("borrowingsButton")
+        const borrowingsButtonHref = borrowingsButton.getAttribute("href");
+        
+        const borrowingsDisplay = document.getElementById("borrowings");
+        /*Clears <li> in cartDisplay for another re-rendering*/
+        while(borrowingsDisplay.firstChild){
+            borrowingsDisplay.removeChild(borrowingsDisplay.firstChild);
+        }
+
+        /**Need to pull from database. PUT req? */
+        const borrowingsRecord = ""
+        
+        if (borrowingsButtonHref==="OpenBorrowings"){
+            /**Check for empty cart*/
+            if (borrowingsRecord.length === 0){
+                const resultSpan = document.createElement("p");
+                resultSpan.appendChild(document.createTextNode("No record"));
+                
+                borrowingsDisplay.appendChild(resultSpan);
+            } else {
+                const resultsList = document.createElement("ul");
+                resultsList.id = "borrowingsList";
+
+                for(let i=0; i<borrowingsRecord.length; i++){
+                    let resultCard = document.createElement("li");
+                    resultCard.id = "borrowingsCard."+i;
+                    resultCard.setAttribute("href",borrowingsRecord[i].id)
+
+                    let resultSpan = document.createElement("span");
+                    let cardImg = document.createElement("img");
+                    cardImg.id = "borrowingsCardImg."+borrowingsRecord[i].id;
+                    cardImg.src = borrowingsRecord[i].coverimg;
+                    cardImg.alt = borrowingsRecord[i].title;
+                    cardImg.style = "width:80px; height:100px;"
+                    resultSpan.appendChild(cardImg);
+
+                    resultSpan.appendChild(document.createTextNode(borrowingsRecord[i].title+" "));
+
+                    let cancelButton = document.createElement("button");            
+                    cancelButton.id = "cancel."+borrowingsRecord[i].id;
+                    //This should remove a record in the database
+                    //cancelButton.onclick = function(event){that.handleCartCancel(i);};
+                    //cancelButton.addEventListener("click", that.handleCartCancel[i])
+                    cancelButton.innerHTML = "X";
+                    resultSpan.appendChild(cancelButton);
+
+                    resultCard.appendChild(resultSpan);
+                    resultsList.appendChild(resultCard);
+                    borrowingsDisplay.appendChild(resultsList);
+                }
+            } 
+            borrowingsButton.setAttribute("href","CloseBorrowings") 
+            borrowingsDisplay.style = "block";
+        } else if (borrowingsButtonHref==="CloseCart"){
+            borrowingsButton.style.display = "none"; //Leaves space for "Cart empty" message    
+            borrowingsDisplay.style.display = "none";
+            borrowingsButton.setAttribute("href","OpenBorrowings") 
+        }
     }
     checkbasicInput(){
         console.log("Basic input query stored: "+this.state.basicInput);
@@ -576,6 +695,12 @@ export default class App extends React.Component {
                         <div id="cart" style={{display: "none"}}>Cart contents</div>
                         <button id="checkoutButton" style={{display: "none"}} onClick={this.handleCartCheckout}>Checkout</button>
                     </div>
+
+                    <div>Borrowings
+                        <button href="OpenBorrowings" id="borrowingsButton" onClick={this.checkBorrowings}>Cart</button>
+                        <div id="borrowings"></div>
+                    </div>
+                    
 			    </div>
             )
         } else {

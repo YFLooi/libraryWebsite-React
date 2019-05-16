@@ -71,6 +71,21 @@ const getAdvSearch = (request, response) => {
 
 const createBorrowings = (request, response) => {
     console.log("POST request made to insert borrowing record");
+
+    const {borrowerid, borrowdate, returndue, books} = request.body
+    console.log("Request made: ");
+    console.log(request.body);
+    console.log(request.body.borrowerid);
+    console.log(request.body.borrowdate);
+
+    pool.query('INSERT INTO borrowings (borrowerid, borrowdate, returndue, books) VALUES ($1, $2, $3, $4)', 
+    [borrowerid, borrowdate, returndue, books], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(201).send(`Borrowings added for borrower: ${results.borrowid}`)
+    })
+
     /** 
     const { name, email } = request.body
 
