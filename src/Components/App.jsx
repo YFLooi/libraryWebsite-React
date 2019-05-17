@@ -56,12 +56,13 @@ export default class App extends React.Component {
         this.handleCartCancel = this.handleCartCancel.bind(this);
         this.handleCartCheckout = this.handleCartCheckout.bind(this);
         this.checkBorrowings = this.checkBorrowings.bind(this);
+        this.generateBorrowings = this.generateBorrowings.bind(this);
     }
 	componentDidMount(){
         let that = this; //Prevents 'this' from being undefined
 
         /*Fetches the data on page load for the New Arrivals slideshow*/
-        fetch('http://localhost:3005/NewArrivals', {mode:'cors'})
+        fetch('http://localhost:3005/NewArrivals', {method:"GET", mode:"cors"})
             //Here we chain 2 promise functions: The first fetches data (response), the second examines text in response (data)
             .then(function(response){
                 return response.json()
@@ -402,6 +403,16 @@ export default class App extends React.Component {
             console.log("Book due date: "+returnDue.toString());
             
             const bookDetails = []
+            /**
+            const bookDetails = [
+                "Pinnochio",
+                "Tale of 2 cities",
+                {user:"Brintha"},
+                {id:"111",book:"Swallow"}
+            ]
+            console.log(JSON.stringify(bookDetails));
+            */
+            
             function insertDetails(){
                 let details = bookDetails
 
@@ -413,7 +424,7 @@ export default class App extends React.Component {
                     detailsContainer["author"] = borrowCart[i].author
                     detailsContainer["publisher"] = borrowCart[i].publisher
                     
-                    /**Inserts details extracted into detailsContainer{} into bookDetails[]*/
+                    //Inserts details extracted into detailsContainer{} into bookDetails[]
                     details[i]=detailsContainer
                 }
 
@@ -438,6 +449,7 @@ export default class App extends React.Component {
                     returndue: returnDue,
                     books: bookDetails
                 }
+
                 const POSTReqInit = {
                     method:"POST",
                     mode:"cors",   
@@ -447,13 +459,18 @@ export default class App extends React.Component {
                         "Content-Type": "application/json",
                     },
                     redirect: "error",
-                    body: JSON.stringify(borrowingData) //Contains data to send
+                    //Contains data to send. Need to JSON.stringify, pg's auto-convert bugged 
+                    //and pg only accepts arrays as JSON, since PSQL does the same
+                    body: JSON.stringify(borrowingData) 
                 }
                 /**Both parameters are initialised with blanks */
                 fetch("http://localhost:3005/Borrowings", POSTReqInit)
                     .then(function(response){
-                        //return response.json()
-                        console.log(response);
+                        return response.json()
+                        .then(function(data){
+                            /**Returns confirmation that entry added for borrowerid = x*/                
+                            console.log(data)
+                        })
                     })  
                     .catch(function(error){
                         console.log('Request failed', error)
@@ -464,20 +481,49 @@ export default class App extends React.Component {
         }
     }
     checkBorrowings(){
+        const that = this;
+        const GETReqInit = {
+            method:"GET",
+            mode:"cors",   
+            cache:"no-cache",
+            credentials:"same-origin",
+            redirect: "error",
+        }
+        /**Both parameters are initialised with blanks */
+        fetch("http://localhost:3005/Borrowings-Check", GETReqInit)
+            .then(function(response){
+                //pg automatically calls JSON.parse()
+                return response.json()
+                .then(function(data){
+                    const borrowingsData = data.map(function(prop){
+                        let borrowerId = prop.borrowerid
+                        let borrowDate = prop.borrowdate
+                        let returnDue = prop.returndue
+                        let booksArray = JSON.parse(prop.books)
+
+                        return {borrowerId, borrowDate, returnDue, booksArray}
+                    })
+                    console.log(borrowingsData)
+                    that.generateBorrowings(data)
+                })
+            })  
+            .catch(function(error){
+                console.log('Request failed', error)
+            })
+    }
+    generateBorrowings(data){
         const borrowingsButton = document.getElementById("borrowingsButton")
         const borrowingsButtonHref = borrowingsButton.getAttribute("href");
-        
+
         const borrowingsDisplay = document.getElementById("borrowings");
-        /*Clears <li> in cartDisplay for another re-rendering*/
+        /*Clears <li> in borrowingsDisplay for another re-rendering*/
         while(borrowingsDisplay.firstChild){
             borrowingsDisplay.removeChild(borrowingsDisplay.firstChild);
         }
 
-        /**Need to pull from database. PUT req? */
-        const borrowingsRecord = ""
-        
+        const borrowingsRecord = data;
         if (borrowingsButtonHref==="OpenBorrowings"){
-            /**Check for empty cart*/
+            //Check for empty cart
             if (borrowingsRecord.length === 0){
                 const resultSpan = document.createElement("p");
                 resultSpan.appendChild(document.createTextNode("No record"));
@@ -517,8 +563,7 @@ export default class App extends React.Component {
             } 
             borrowingsButton.setAttribute("href","CloseBorrowings") 
             borrowingsDisplay.style = "block";
-        } else if (borrowingsButtonHref==="CloseCart"){
-            borrowingsButton.style.display = "none"; //Leaves space for "Cart empty" message    
+        } else if (borrowingsButtonHref==="CloseBorrowings"){
             borrowingsDisplay.style.display = "none";
             borrowingsButton.setAttribute("href","OpenBorrowings") 
         }
@@ -695,9 +740,9 @@ export default class App extends React.Component {
                         <div id="cart" style={{display: "none"}}>Cart contents</div>
                         <button id="checkoutButton" style={{display: "none"}} onClick={this.handleCartCheckout}>Checkout</button>
                     </div>
-
-                    <div>Borrowings
-                        <button href="OpenBorrowings" id="borrowingsButton" onClick={this.checkBorrowings}>Cart</button>
+                    <p></p>
+                    <div>
+                        <button href="OpenBorrowings" id="borrowingsButton" onClick={this.checkBorrowings}>Borrowings</button>
                         <div id="borrowings"></div>
                     </div>
                     

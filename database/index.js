@@ -44,6 +44,8 @@ app.get("/AdvSearch/:advTitle/:condTitAuth/:advAuthor/:condAuthYr/:advYearStart/
 
 app.post("/Borrowings", db.createBorrowings)
 
+app.get("/Borrowings-Check", db.checkBorrowings)
+
 /*This sets up the HTTP request method, the endpoint URL path, and the relevant function 
 to access each function 
 that modifies the db specified in queries.js

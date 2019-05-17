@@ -72,30 +72,33 @@ const getAdvSearch = (request, response) => {
 const createBorrowings = (request, response) => {
     console.log("POST request made to insert borrowing record");
 
-    const {borrowerid, borrowdate, returndue, books} = request.body
+    const borrowerid = request.body.borrowerid
+    const borrowdate = request.body.borrowdate
+    const returndue = request.body.returndue
+    const books = JSON.stringify(request.body.books)
+
     console.log("Request made: ");
     console.log(request.body);
-    console.log(request.body.borrowerid);
-    console.log(request.body.borrowdate);
+    console.log("for: "+request.body.borrowerid);
+    console.log("containing books of: ");
+    console.log(books)
 
     pool.query('INSERT INTO borrowings (borrowerid, borrowdate, returndue, books) VALUES ($1, $2, $3, $4)', 
     [borrowerid, borrowdate, returndue, books], (error, results) => {
         if (error) {
             throw error
         }
-        response.status(201).send(`Borrowings added for borrower: ${results.borrowid}`)
+        response.status(200).json(`SERVER RESP: Borrowings added for borrower ${request.body.borrowerid}`)
     })
+}
 
-    /** 
-    const { name, email } = request.body
-
-    pool.query('INSERT INTO users (name, email) VALUES ($1, $2)', [name, email], (error, results) => {
+const checkBorrowings = (request, response) => {
+    pool.query('SELECT * FROM borrowings', (error, results) => {
         if (error) {
             throw error
         }
-        response.status(201).send(`User added with ID: ${result.insertId}`)
+        response.status(200).json(results.rows)
     })
-    */
 }
 
 /* 
@@ -156,6 +159,7 @@ module.exports = {
     getBasicSearch,
     getAdvSearch,
     createBorrowings,
+    checkBorrowings,
     /*Trailing comma ok*/
 }
 
