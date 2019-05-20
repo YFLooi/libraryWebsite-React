@@ -35,7 +35,8 @@ export default class App extends React.Component {
 
             /*For displaying results*/
             searchResults: [],
-            borrowCart: []
+            borrowCart: [],
+            borrowingsRecord: []
         }
         
         this.handleBasicSearchChange = this.handleBasicSearchChange.bind(this);
@@ -57,6 +58,7 @@ export default class App extends React.Component {
         this.handleCartCheckout = this.handleCartCheckout.bind(this);
         this.checkBorrowings = this.checkBorrowings.bind(this);
         this.generateBorrowings = this.generateBorrowings.bind(this);
+        this.handleBorrowingsCancel = this.handleBorrowingsCancel.bind(this);
     }
 	componentDidMount(){
         let that = this; //Prevents 'this' from being undefined
@@ -391,27 +393,19 @@ export default class App extends React.Component {
         if (borrowCart === []){
             alert("You have not selected any books");
         } else {
+            /*Store all time data in ms from epoch. This allows conversion at will into date-time using new Date(x)
+            where x = Time from epoch in ms*/
             /**"new Date()" retrieves current time, getTime() converts into ms from epoch (1 Jan 1970)*/
-            const borrowDate = new Date()
-            const borrowDateRaw = borrowDate.getTime();
+            const borrowDate = new Date().getTime();
             /*Calculation converts 14 days to equivalent in miliseconds. Result placed into new Date()
             to convert raw ms into a date (still in ms)*/
-            const returnDue = new Date (borrowDateRaw + 14*(24*60*60*1000)) 
+            const returnDue = borrowDate + 14*(24*60*60*1000) 
             
-            console.log("Book borrow date: "+borrowDate);
+            console.log("Book borrow date: "+borrowDate.toString());
             /**toString() Turns the ms date into human-readable date (month-day-year)*/
             console.log("Book due date: "+returnDue.toString());
             
-            const bookDetails = []
-            /**
-            const bookDetails = [
-                "Pinnochio",
-                "Tale of 2 cities",
-                {user:"Brintha"},
-                {id:"111",book:"Swallow"}
-            ]
-            console.log(JSON.stringify(bookDetails));
-            */
+            const bookDetails = [];
             
             function insertDetails(){
                 let details = bookDetails
@@ -423,6 +417,7 @@ export default class App extends React.Component {
                     detailsContainer["year"] = borrowCart[i].year
                     detailsContainer["author"] = borrowCart[i].author
                     detailsContainer["publisher"] = borrowCart[i].publisher
+                    detailsContainer["coverimg"] = borrowCart[i].coverimg
                     
                     //Inserts details extracted into detailsContainer{} into bookDetails[]
                     details[i]=detailsContainer
@@ -440,8 +435,7 @@ export default class App extends React.Component {
                 /**Immutably clears this.state.borrowCart after borrow request is submitted */
                 borrowCart.splice(0,borrowCart.length)
 
-                /**Don't prompt().toLowerCase(), prompt() will become null!*/
-                let borrowerIdLowerCase = borrowerId.toLowerCase()
+                let borrowerIdLowerCase = borrowerId.toLowerCase();
 
                 let borrowingData = {
                     borrowerid: borrowerIdLowerCase,
@@ -482,36 +476,55 @@ export default class App extends React.Component {
     }
     checkBorrowings(){
         const that = this;
-        const GETReqInit = {
-            method:"GET",
-            mode:"cors",   
-            cache:"no-cache",
-            credentials:"same-origin",
-            redirect: "error",
-        }
-        /**Both parameters are initialised with blanks */
-        fetch("http://localhost:3005/Borrowings-Check", GETReqInit)
-            .then(function(response){
-                //pg automatically calls JSON.parse()
-                return response.json()
-                .then(function(data){
-                    const borrowingsData = data.map(function(prop){
-                        let borrowerId = prop.borrowerid
-                        let borrowDate = prop.borrowdate
-                        let returnDue = prop.returndue
-                        let booksArray = JSON.parse(prop.books)
+        const borrowingsButtonHref = document.getElementById("borrowingsButton").getAttribute("href");
+        let borrowingsLock = "" /**Initialise as "" */
 
-                        return {borrowerId, borrowDate, returnDue, booksArray}
+        //Password check
+        if (borrowingsButtonHref ==="OpenBorrowings"){
+            /**Simple password to lock access to librarians only */
+            borrowingsLock = prompt("Enter password (Hint: p******d):")
+        }
+
+        //Actio now depends on the button's href to open/close the list of borrowers 
+        if (borrowingsButtonHref==="OpenBorrowings" && borrowingsLock !== "password"){
+            alert("Wrong Password");
+        } else if(borrowingsButtonHref==="OpenBorrowings" && borrowingsLock === "password"){
+            const GETReqInit = {
+                method:"GET",
+                mode:"cors",   
+                cache:"no-cache",
+                credentials:"same-origin",
+                redirect: "error",
+            }
+            /**Both parameters are initialised with blanks */
+            fetch("http://localhost:3005/Borrowings-Check", GETReqInit)
+                .then(function(response){
+                    //pg automatically calls JSON.parse()
+                    return response.json()
+                    .then(function(data){
+                        const borrowingsData = data.map(function(prop){
+                            //Headers in psql always in lower case. Convert back to camelCase here
+                            let borrowerId = prop.borrowerid
+                            let borrowDate = prop.borrowdate
+                            let returnDue = prop.returndue
+                            //PSQL stores arrays as JSON. Need to parse back into JS
+                            let books = JSON.parse(prop.books)
+
+                            return {borrowerId, borrowDate, returnDue, books}
+                        })
+                        that.generateBorrowings(borrowingsData)
                     })
-                    console.log(borrowingsData)
-                    that.generateBorrowings(data)
+                })  
+                .catch(function(error){
+                    console.log('Request failed', error)
                 })
-            })  
-            .catch(function(error){
-                console.log('Request failed', error)
-            })
+        } else if (borrowingsButtonHref==="CloseBorrowings"){
+            //Just want to trigger the function to close the borrowings view
+            that.generateBorrowings(null)
+        }
     }
     generateBorrowings(data){
+        const that = this;
         const borrowingsButton = document.getElementById("borrowingsButton")
         const borrowingsButtonHref = borrowingsButton.getAttribute("href");
 
@@ -521,44 +534,95 @@ export default class App extends React.Component {
             borrowingsDisplay.removeChild(borrowingsDisplay.firstChild);
         }
 
-        const borrowingsRecord = data;
+        that.setState({
+            borrowingsRecord: data
+        })
+
+        const borrowingsRecord = that.state.borrowingsRecord;
         if (borrowingsButtonHref==="OpenBorrowings"){
             //Check for empty cart
             if (borrowingsRecord.length === 0){
-                const resultSpan = document.createElement("p");
-                resultSpan.appendChild(document.createTextNode("No record"));
+                const recordSpan = document.createElement("p");
+                recordSpan.appendChild(document.createTextNode("No record"));
                 
-                borrowingsDisplay.appendChild(resultSpan);
+                borrowingsDisplay.appendChild(recordSpan);
             } else {
-                const resultsList = document.createElement("ul");
-                resultsList.id = "borrowingsList";
+                const recordsList = document.createElement("ol");
+                recordsList.id = "borrowingsList";
 
                 for(let i=0; i<borrowingsRecord.length; i++){
-                    let resultCard = document.createElement("li");
-                    resultCard.id = "borrowingsCard."+i;
-                    resultCard.setAttribute("href",borrowingsRecord[i].id)
+                    let recordCard = document.createElement("li");
+                    recordCard.id = "borrowingsCard."+i;
+                    recordCard.setAttribute("href",borrowingsRecord[i].borrowerId)
 
-                    let resultSpan = document.createElement("span");
-                    let cardImg = document.createElement("img");
-                    cardImg.id = "borrowingsCardImg."+borrowingsRecord[i].id;
-                    cardImg.src = borrowingsRecord[i].coverimg;
-                    cardImg.alt = borrowingsRecord[i].title;
-                    cardImg.style = "width:80px; height:100px;"
-                    resultSpan.appendChild(cardImg);
+                    //toDateString() turns new Date() into "day-of-week month-day-year"
+                    let borrowDate = borrowingsRecord[i].borrowDate;
+                    let returnDue = borrowingsRecord[i].returnDue;
+                    let currentDate = new Date().getTime();
+                    
+                    //Months start from zero in JS
+                    let testCurrentDate = new Date(2019, 5, 29, 7, 30, 0, 0).getTime();
+                    /* toFixed(1) fixes the equation's output to 1 decimal place by turning 
+                     * it into a string, so do the math before invoking this method!*/
+                    let daysLate = ((testCurrentDate - returnDue)/(1000*60*60*24)).toFixed(1);
+                    //Adds a check that ensure currentDaysLate = 0 if daysLate > 0 (not late)
+                    let currentDaysLate = "0.00";
+                    let lateFine = "0.00"
+                    //Use parseFloat to convert the strings of number-decimals (floats) back into numbers
+                    if(parseFloat(daysLate) >0){
+                        currentDaysLate = daysLate;
+                        //Fine rate of 50 sen per day
+                        lateFine = (parseFloat(currentDaysLate)*0.5).toFixed(2);
+                    } else {
+                        currentDaysLate = "0.00";
+                        lateFine = "0.00";
+                    }
 
-                    resultSpan.appendChild(document.createTextNode(borrowingsRecord[i].title+" "));
+                    let borrowDateString = new Date(parseInt(borrowDate)).toDateString();
+                    let returnDueString = new Date(parseInt(returnDue)).toDateString();
+                    
+                    let recordSpan = document.createElement("span");
+                    recordSpan.appendChild(document.createTextNode("Borrower id: "+borrowingsRecord[i].borrowerId+" | "));
+                    recordSpan.appendChild(document.createTextNode("Borrow date: "+borrowDateString+" | "));
+                    recordSpan.appendChild(document.createTextNode("Return due: "+returnDueString+" | "));
+                    recordSpan.appendChild(document.createTextNode("Days late: "+currentDaysLate+" | "));
+                    recordSpan.appendChild(document.createTextNode("Late fine: RM "+lateFine+" "));
 
                     let cancelButton = document.createElement("button");            
-                    cancelButton.id = "cancel."+borrowingsRecord[i].id;
-                    //This should remove a record in the database
-                    //cancelButton.onclick = function(event){that.handleCartCancel(i);};
+                    cancelButton.id = "cancel."+i;
+                    //This button should remove a record in the database and delete the borrower's entry
+                    cancelButton.onclick = function(event){that.handleBorrowingsCancel(i);};
                     //cancelButton.addEventListener("click", that.handleCartCancel[i])
                     cancelButton.innerHTML = "X";
-                    resultSpan.appendChild(cancelButton);
+                    recordSpan.appendChild(cancelButton);
 
-                    resultCard.appendChild(resultSpan);
-                    resultsList.appendChild(resultCard);
-                    borrowingsDisplay.appendChild(resultsList);
+                    
+                    let booksDiv = document.createElement("div");
+                    let borrowersBooks = borrowingsRecord[i].books;
+                    for(let j=0; j<borrowersBooks.length; j++){
+                        let bookCard = document.createElement("div");
+
+                        let bookSpan = document.createElement("span");
+                        let bookImg = document.createElement("img");
+                        bookImg.id = "cartCardImg."+borrowersBooks[j].id;
+                        bookImg.src = borrowersBooks[j].coverimg;
+                        bookImg.alt = borrowersBooks[j].title;
+                        bookImg.style = "width:80px; height:100px;"
+                        bookSpan.appendChild(bookImg);
+                        
+                        bookSpan.appendChild(document.createTextNode(borrowersBooks[j].id+","))
+                        bookSpan.appendChild(document.createTextNode(borrowersBooks[j].title+","))
+                        bookSpan.appendChild(document.createTextNode(borrowersBooks[j].year+","))
+                        bookSpan.appendChild(document.createTextNode(borrowersBooks[j].publisher))
+                        
+                        bookCard.appendChild(bookSpan);
+                        booksDiv.appendChild(bookCard)
+                    } 
+
+                    recordCard.appendChild(recordSpan);
+                    recordCard.appendChild(booksDiv);
+                    recordsList.appendChild(recordCard);
+                    borrowingsDisplay.appendChild(recordsList);
                 }
             } 
             borrowingsButton.setAttribute("href","CloseBorrowings") 
@@ -566,6 +630,41 @@ export default class App extends React.Component {
         } else if (borrowingsButtonHref==="CloseBorrowings"){
             borrowingsDisplay.style.display = "none";
             borrowingsButton.setAttribute("href","OpenBorrowings") 
+        }
+    }
+    handleBorrowingsCancel(idx){
+        /**This setup of getting bookId from the card href is necessary because appending
+        this.state.borrowCart[i].id as property "idx" of handleCartCancel() has resulted in
+        the "id" going null as books are cleared from the cart
+        */
+        const cardIndex = document.getElementById("borrowingsCard."+idx)
+        const borrowerId = cardIndex.getAttribute("href");
+        
+        /**Remove borrowing <li> on click*/
+        if (cardIndex.parentNode) {
+            cardIndex.parentNode.removeChild(cardIndex);
+        }
+
+        /**Updates borrowingsRecord state and 'borrowings' db table reflect borrowing entry 
+         * removed. Updating state prevents need to query table each time an entry is removed
+         * to see if no records remain
+        */
+        /**Updates this.state.borrowCart to reflect book removed */
+        const newRecord = this.state.borrowingsRecord;
+        const targetIndex = newRecord.findIndex(record => record.id === borrowerId);
+        console.log("Removal target index: "+targetIndex);
+        /**No need for this.setState(), splice() updates state*/
+        newRecord.splice(targetIndex,1)
+
+        /**If user removes all borrowing entries which is indicated by 
+         * this.state.borrowingRecord.length === 0, the message "No record" 
+        appears*/
+        if (this.state.borrowingsRecord.length === 0){
+            const resultSpan = document.createElement("p");
+            resultSpan.appendChild(document.createTextNode("No record"));
+            
+            const cartDisplay = document.getElementById("borrowings");
+            cartDisplay.appendChild(resultSpan);
         }
     }
     checkbasicInput(){
@@ -755,3 +854,4 @@ export default class App extends React.Component {
         }
 	}
 }
+
