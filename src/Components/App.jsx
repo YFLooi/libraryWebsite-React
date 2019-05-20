@@ -458,7 +458,7 @@ export default class App extends React.Component {
                     body: JSON.stringify(borrowingData) 
                 }
                 /**Both parameters are initialised with blanks */
-                fetch("http://localhost:3005/Borrowings", POSTReqInit)
+                fetch("http://localhost:3005/Create-Borrowings", POSTReqInit)
                     .then(function(response){
                         return response.json()
                         .then(function(data){
@@ -497,7 +497,7 @@ export default class App extends React.Component {
                 redirect: "error",
             }
             /**Both parameters are initialised with blanks */
-            fetch("http://localhost:3005/Borrowings-Check", GETReqInit)
+            fetch("http://localhost:3005/Check-Borrowings", GETReqInit)
                 .then(function(response){
                     //pg automatically calls JSON.parse()
                     return response.json()
@@ -591,7 +591,7 @@ export default class App extends React.Component {
                     let cancelButton = document.createElement("button");            
                     cancelButton.id = "cancel."+i;
                     //This button should remove a record in the database and delete the borrower's entry
-                    cancelButton.onclick = function(event){that.handleBorrowingsCancel(i);};
+                    cancelButton.onclick = function(event){that.handleBorrowingsCancel(i,borrowDate);};
                     //cancelButton.addEventListener("click", that.handleCartCancel[i])
                     cancelButton.innerHTML = "X";
                     recordSpan.appendChild(cancelButton);
@@ -632,13 +632,14 @@ export default class App extends React.Component {
             borrowingsButton.setAttribute("href","OpenBorrowings") 
         }
     }
-    handleBorrowingsCancel(idx){
+    handleBorrowingsCancel(idx,borrowDate){
         /**This setup of getting bookId from the card href is necessary because appending
         this.state.borrowCart[i].id as property "idx" of handleCartCancel() has resulted in
         the "id" going null as books are cleared from the cart
         */
         const cardIndex = document.getElementById("borrowingsCard."+idx)
         const borrowerId = cardIndex.getAttribute("href");
+        console.log(`Data sent for borrower ${borrowerId} who borrowerd on ${borrowDate}`)
         
         /**Remove borrowing <li> on click*/
         if (cardIndex.parentNode) {
@@ -651,11 +652,42 @@ export default class App extends React.Component {
         */
         /**Updates this.state.borrowCart to reflect book removed */
         const newRecord = this.state.borrowingsRecord;
-        const targetIndex = newRecord.findIndex(record => record.id === borrowerId);
+        const targetIndex = newRecord.findIndex(record => record.borrowerId === borrowerId);
         console.log("Removal target index: "+targetIndex);
         /**No need for this.setState(), splice() updates state*/
         newRecord.splice(targetIndex,1)
 
+        let deleteTarget = {
+            targetBorrowerId: borrowerId,
+            targetBorrowDate: borrowDate
+        }
+
+        const DELETEReqInit = {
+            method:"DELETE",
+            mode:"cors",   
+            cache:"no-cache",
+            credentials:"same-origin",
+            headers:{
+                "Content-Type": "application/json",
+            },
+            redirect: "error",
+            //Contains data to send. Need to JSON.stringify, pg's auto-convert bugged 
+            //and pg only accepts arrays as JSON, since PSQL does the same
+            body: JSON.stringify(deleteTarget) 
+        }
+        /**Both parameters are initialised with blanks */
+        fetch("http://localhost:3005/Delete-Borrowings", DELETEReqInit)
+            .then(function(response){
+                return response.json()
+                .then(function(data){
+                    //Returns confirmation that record deleted for borrowerid = x                
+                    console.log(data)
+                })
+            })  
+            .catch(function(error){
+                console.log('Request failed', error)
+            })
+            
         /**If user removes all borrowing entries which is indicated by 
          * this.state.borrowingRecord.length === 0, the message "No record" 
         appears*/

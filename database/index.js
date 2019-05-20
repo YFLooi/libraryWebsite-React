@@ -42,9 +42,9 @@ app.get("/BasicSearch/:input", db.getBasicSearch)
 app.get("/AdvSearch/:advTitle/:condTitAuth/:advAuthor/:condAuthYr/:advYearStart/:advYearEnd/:condYrPub/:advPublisher/:condPubSynp/:advSynopsis"
 , db.getAdvSearch)
 
-app.post("/Borrowings", db.createBorrowings)
-
-app.get("/Borrowings-Check", db.checkBorrowings)
+app.post("/Create-Borrowings", db.createBorrowings)
+app.get("/Check-Borrowings", db.checkBorrowings)
+app.delete("/Delete-Borrowings", db.deleteBorrowings)
 
 /*This sets up the HTTP request method, the endpoint URL path, and the relevant function 
 to access each function 

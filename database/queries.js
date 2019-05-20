@@ -72,9 +72,17 @@ const getAdvSearch = (request, response) => {
 const createBorrowings = (request, response) => {
     console.log("POST request made to insert borrowing record");
 
+    //pg automatically runs JSON.parse() on the JSON sent in
     const borrowerid = request.body.borrowerid
     const borrowdate = request.body.borrowdate
     const returndue = request.body.returndue
+
+    /**Necessary to re-stringify because when pg is given the JSON.parse()-ed: 
+     * [ { id: '1', title: 'Fables' }, { id: '2', title: 'FablesXXX' }]
+     * During the pool.query() step, pg interprets and stores it as:
+     * {"{ \"id\": \"1\", \"title\": \"Fables\" }"", "{ \"id\": \"2\", \"title\": \"FablesXXX\" }"}
+     * Which is a form that cannot be interpreted by JSON.parse() later on the client side!!!
+    */
     const books = JSON.stringify(request.body.books)
 
     console.log("Request made: ");
@@ -98,6 +106,19 @@ const checkBorrowings = (request, response) => {
             throw error
         }
         response.status(200).json(results.rows)
+    })
+}
+
+const deleteBorrowings = (request, response) => {
+    const borrowerid = request.body.targetBorrowerId
+    const borrowdate = parseInt(request.body.targetBorrowDate)
+    console.log(`Request made for borrower with id of ${borrowerid} and borrow date of ${borrowdate}`)
+
+    pool.query('DELETE FROM borrowings WHERE borrowerid = $1 AND borrowdate = $2', [borrowerid, borrowdate], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(`SERVER RESP: Borrow record on ${new Date(borrowdate)} deleted for userID: ${borrowerid}`)
     })
 }
 
@@ -160,6 +181,7 @@ module.exports = {
     getAdvSearch,
     createBorrowings,
     checkBorrowings,
+    deleteBorrowings,
     /*Trailing comma ok*/
 }
 
