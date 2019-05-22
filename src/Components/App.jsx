@@ -1,11 +1,9 @@
 import React from 'react';
-
 //Controls positioning of individual columns and applies general styling
 import './App.css';
 
 //imports React components to render()
-import Header from "./Header/Header.jsx";
-import NewArrivals from "./NewArrivals/NewArrivals.jsx";
+import HandleSearch from './HandleSearch/HandleSearch';
 
 // App.js value={this.state.input}
 export default class App extends React.Component {
@@ -13,44 +11,13 @@ export default class App extends React.Component {
         super(props);	
         
         /*Conditionals need to be pre-initialised, otherwise will be blank if user does not change*/
-        this.state = {
-            /*For new arrivals top 20*/
-            newarrivals: [],
-            isLoaded: false,
-            
-            /*For basic search*/
-            basicInput: "",
-
-            /*For advanced search*/
-            advTitle: "",
-            condTitAuth:'OR',
-            advAuthor: "",
-            condAuthYr:'OR',
-            advYearStart: "",
-            advYearEnd: "",
-            condYrPub: "OR",
-            advPublisher: "",
-            condPubSynp:'OR',
-            advSynopsis: "",
-
+        this.state = { 
             /*For displaying results*/
-            searchResults: [],
             borrowCart: [],
             borrowingsRecord: []
         }
         
-        this.handleBasicSearchChange = this.handleBasicSearchChange.bind(this);
-        this.handleBasicSearchSubmit = this.handleBasicSearchSubmit.bind(this);
-        
-        this.handleAdvSearchChange = this.handleAdvSearchChange.bind(this);
-        this.handleAdvSearchSubmit = this.handleAdvSearchSubmit.bind(this);
-
-        this.rendersearchResults = this.rendersearchResults.bind(this);
-        
-        this.checkbasicInput = this.checkbasicInput.bind(this);
-        this.checkadvInput = this.checkadvInput.bind(this);
-        this.checkSearchResults = this.checkSearchResults.bind(this);
-        this.checkborrowCart = this.checkborrowCart.bind(this);
+        //this.rendersearchResults = this.rendersearchResults.bind(this);
 
         this.borrowRequest = this.borrowRequest.bind(this);
         this.cartDisplay = this.cartDisplay.bind(this);
@@ -60,198 +27,7 @@ export default class App extends React.Component {
         this.generateBorrowings = this.generateBorrowings.bind(this);
         this.handleBorrowingsCancel = this.handleBorrowingsCancel.bind(this);
     }
-	componentDidMount(){
-        let that = this; //Prevents 'this' from being undefined
-
-        /*Fetches the data on page load for the New Arrivals slideshow*/
-        fetch('http://localhost:3005/NewArrivals', {method:"GET", mode:"cors"})
-            //Here we chain 2 promise functions: The first fetches data (response), the second examines text in response (data)
-            .then(function(response){
-                return response.json()
-                //Examines data in response
-                .then(function(data){
-                    that.setState({
-                        newarrivals: data,
-                        isNewArrivalsLoaded: true
-                    })
-                })
-            })  
-            .catch(function(error){
-                console.log('Request failed', error)
-            })
-    }
-    handleBasicSearchChange(event){
-        event.preventDefault();
-        this.setState({
-			basicInput: event.target.value
-        });
-    }
-    handleBasicSearchSubmit(event) { 
-        event.preventDefault();
-        let that = this;
-
-        /*Clears this.state.searchResults to prevent stacking of each new set of 
-        search results*/
-        this.setState({
-			searchResults: []
-        });
-
-        const basicInput = this.state.basicInput;
-
-        if(basicInput !== ""){
-            fetch("http://localhost:3005/BasicSearch/"+basicInput, {method: "GET",mode:"cors"})
-                //Here we chain 2 promise functions: The first fetches data (response), the second examines text in response (data)
-                .then(function(response){
-                    return response.json()
-                    .then(function(data){
-                        console.log(data);
-                         
-                        /**let that=this to prevent 'this is undefined error' */
-                        that.rendersearchResults(data);
-                    })
-                })  
-                .catch(function(error){
-                    console.log('Request failed', error)
-                })
-        } else {
-            console.log("Blank query made. No query submitted");
-        }
-    }
-    handleAdvSearchChange(event){ 
-        /*When called, it looks for the state with the same name 
-        as the <input> box and updates it as =event.target.value 
-        (value or content of input box)*/
-        /*Only works if <input> has same name as state!*/
-        this.setState({ 
-            [event.target.name]: event.target.value 
-        })   
-    }
-    handleAdvSearchSubmit(event){
-        let that = this;
-        event.preventDefault();
-
-        /*Clears this.state.searchResults on each new search to prevent arrays 
-        of each search's results within arrays!*/
-        let searchResults = this.state.searchResults;
-        searchResults.splice(0,searchResults.length)
-        
-        /*JSON.parse cannot accept blank strings, "". The if-else here inserts string "null"
-        if it detects the submitted state is ""*/
-        const advTitle = this.state.advTitle === "" ? "null" : this.state.advTitle;
-        const condTitAuth = this.state.condTitAuth 
-        const advAuthor = this.state.advAuthor === "" ? "null" : this.state.advAuthor;
-        const condAuthYr = this.state.condAuthYr;
-        const advYearStart = this.state.advYearStart === "" ? "null" : this.state.advYearStart;
-        const advYearEnd = this.state.advYearEnd === "" ? "null" : this.state.advYearEnd;
-        const condYrPub = this.state.condYrPub;
-        const advPublisher = this.state.advPublisher === "" ? "null" : this.state.advPublisher;
-        const condPubSynp = this.state.condPubSynp;
-        const advSynopsis = this.state.advSynopsis === "" ? "null" : this.state.advSynopsis;
-
-        console.log(advTitle+condTitAuth+advAuthor+condAuthYr+advYearStart+" to "+advYearEnd+condYrPub+advPublisher+condPubSynp+advSynopsis)
-
-        /*Search occurs as long as one advSearch parameter is not a "null" string*/
-        if(advTitle === "null" &&  advAuthor === "null" && advPublisher === "null" && 
-        advYearStart === "null" && advYearEnd === "null" && advPublisher === "null" 
-        && advSynopsis === "null"){
-            console.log("Blank query made. No query submitted");
-        } else {
-            fetch("http://localhost:3005/AdvSearch/"+advTitle+"/"+condTitAuth+"/"+advAuthor+"/"+condAuthYr+
-            "/"+advYearStart+"/"+advYearEnd+"/"+condYrPub+"/"+advPublisher+"/"+condPubSynp+"/"+advSynopsis
-            ,{method:"GET",mode:"cors"})
-                //Here we chain 2 promise functions: The first fetches data (response), the second examines text in response (data)
-                .then(function(response){
-                    return response.json()
-                    .then(function(data){
-                        console.log(data);
-
-                        /**let that=this to prevent 'this is undefined error' */
-                        that.rendersearchResults(data);
-                    })
-                })  
-                .catch(function(error){
-                    console.log('Request failed', error)
-                })
-        }
-    }
-    rendersearchResults(data){
-        const that = this
-
-        this.setState(prevState => ({
-            /*Works similar to array.concat() method*/
-            searchResults: [...prevState.searchResults, ...data]
-        }))
-
-        /**Cut out like entries by combining indexOf() and splice() and running then in a 
-        for loop */
-
-        const renderTarget = document.getElementById("searchResults");
-        /**Clears "searchResults" div on each new submit to prevent stacking with prior results*/
-        //renderTarget.innerHTML = ""; 
-        while(renderTarget.firstChild){
-            renderTarget.removeChild(renderTarget.firstChild);
-        }
-
-        const resultContent = document.createElement("div");
-        const resultList = document.createElement("ul");
-        const renderLength = this.state.searchResults.length;
-        const searchResults = this.state.searchResults;
-        const borrowCart = this.state.borrowCart;
-        
-        if (this.state.searchResults.length === 0) {
-            alert("No results found. Try again");
-        } else {
-            for(let i=0; i<renderLength; i++){
-                const resultCard = document.createElement("li");
-
-                const resultSpan = document.createElement("span");
-
-
-                let cardImg = document.createElement("img");
-                cardImg.id = "cardImg."+searchResults[i].id;
-                cardImg.src = searchResults[i].coverimg;
-                cardImg.alt = searchResults[i].title;
-                cardImg.style = "width:80px; height:100px;"
-                resultSpan.appendChild(cardImg);
-
-                resultSpan.appendChild(document.createTextNode(searchResults[i].title+" "));
-
-                /*To change innerHTML of 'borrow' button to "Cancel" if book has been borrowed*/
-                /**findIndex() here checks for match between searchResult and cart contents
-                 If there is a match (!= -1)), 'borrow' button inner HTML is set to "Cancel" */
-                let cartCheck = borrowCart.findIndex(cart => cart.id === searchResults[i].id);
-                 
-                if (cartCheck === -1){
-                    let borrowButton = document.createElement("button");            
-                    borrowButton.id = "borrow."+searchResults[i].id;
-                    borrowButton.onclick = function(event){that.borrowRequest(searchResults[i].id);};
-                    borrowButton.innerHTML = "Borrow";
-                    resultSpan.appendChild(borrowButton);
-                } else {
-                    let borrowButton = document.createElement("button");            
-                    borrowButton.id = "borrow."+searchResults[i].id;
-                    borrowButton.onclick = function(event){that.borrowRequest(searchResults[i].id);};
-                    borrowButton.innerHTML = "Cancel";
-                    resultSpan.appendChild(borrowButton);
-                }
-
-                resultCard.appendChild(resultSpan);
-                resultList.appendChild(resultCard);
-
-                /** Net output:
-                <li> (resultCard)
-                    <span>
-                        The Elder Scrolls: Do you even?
-                        <button id="borrow.1" onClick={(event) => {this.borrowRequest("1")}}>Borrow</button>
-                    </span>
-                </li> 
-                */
-            }
-
-            resultContent.appendChild(resultList);
-            renderTarget.appendChild(resultContent);
-        }
-    }
+	
     borrowRequest(idx){
         /*'id' here is the book id. It allows access to other data related to 
         the book */
@@ -561,10 +337,11 @@ export default class App extends React.Component {
                     let currentDate = new Date().getTime();
                     
                     //Months start from zero in JS
-                    let testCurrentDate = new Date(2019, 5, 29, 7, 30, 0, 0).getTime();
+                    //let testCurrentDate = new Date(2019, 5, 29, 7, 30, 0, 0).getTime();
+                    
                     /* toFixed(1) fixes the equation's output to 1 decimal place by turning 
                      * it into a string, so do the math before invoking this method!*/
-                    let daysLate = ((testCurrentDate - returnDue)/(1000*60*60*24)).toFixed(1);
+                    let daysLate = ((currentDate - returnDue)/(1000*60*60*24)).toFixed(1);
                     //Adds a check that ensure currentDaysLate = 0 if daysLate > 0 (not late)
                     let currentDaysLate = "0.00";
                     let lateFine = "0.00"
@@ -699,191 +476,22 @@ export default class App extends React.Component {
             cartDisplay.appendChild(resultSpan);
         }
     }
-    checkbasicInput(){
-        console.log("Basic input query stored: "+this.state.basicInput);
-    }
-    checkadvInput(){
-        console.log("Advanced input query stored: ");
-        console.log("Title: "+this.state.advTitle);
-        console.log("Title-Author conditional: "+this.state.condTitAuth);
-        console.log("Auth: "+this.state.advAuthor);
-        console.log("Author-Yr conditional: "+this.state.condAuthYr);
-        console.log("Yr start: "+this.state.advYearStart);
-        console.log("Yr end: "+this.state.advYearEnd);
-        console.log("Yr-Publisher conditional: "+this.state.condYrPub);
-        console.log("Publ: "+this.state.advPublisher);
-        console.log("Publisher-synopsis conditional: "+this.state.condPubSynp);
-        console.log("Synp short: "+this.state.advSynopsis);
-    }
-    checkSearchResults(){
-        console.log(this.state.searchResults);
-        //console.log(document.getElementById("searchResults").innerHTML);
-    }
-    checkborrowCart(){
-        console.log("Books in cart: ");
-        /**Adding text before this console log causes the console output to be 
-         [object Object] instead of showing individual objects and their content*/
-        console.log(this.state.borrowCart);
-    }
-
-	render() {	
-        if (this.state.isNewArrivalsLoaded === true){
-            return (
+	render() {	    
+        return (
+            <div>
+                <HandleSearch/>            
                 <div>
-                    <Header 
-                        basicInput={this.state.basicInput} 
-                        handleBasicSearchChange={this.handleBasicSearchChange} 
-                        handleBasicSearchSubmit = {this.handleBasicSearchSubmit}
-                    />
-                
-                    <NewArrivals newarrivals={this.state.newarrivals}/>
-
-                    <h1>Advanced search</h1>
-                    <form name="advsearch" onSubmit={this.handleAdvSearchSubmit}>
-                        Search books matching the following criteria...
-                        <p>
-                            Title:&nbsp;
-                            <input
-                                type="text"
-                                name="advTitle"
-                                className="title"
-                                value={this.state.advTitle}
-                                onChange = {this.handleAdvSearchChange}
-                                onSubmit = {this.handleAdvSearchSubmit}
-                                placeholder="'Robin' or 'Robin Hood'"
-                                autoComplete="on"
-                                style={{borderColor:"none"}}
-                            />
-                            
-                        </p>
-                        <div onChange={this.handleAdvSearchChange}>
-                            <input type="radio" name="condTitAuth" value="AND" id="ANDcondTitAuth"/><label htmlFor="ANDcondTitAuth">AND</label>
-                            <input type="radio" name="condTitAuth" value="OR" id="ORcondTitAuth" defaultChecked/><label htmlFor="ORcondTitAuth">OR</label>
-                        </div>
-                        <p>
-                            Author:&nbsp;
-                            <input
-                            type="text"
-                            name="advAuthor"
-                            className="author"
-                            value={this.state.advAuthor}
-                            onChange = {this.handleAdvSearchChange}
-                            onSubmit = {this.handleAdvSearchSubmit}
-                            placeholder="'Jane' or 'Jane Austen'"
-                            autoComplete="on"
-                            style={{borderColor:"none"}}
-                        />
-                        </p>
-                        <div onChange={this.handleAdvSearchChange}>
-                            <input type="radio" name="condAuthYr" value="AND" id="ANDcondAuthYr"/><label htmlFor="ANDcondAuthYr">AND</label>
-                            <input type="radio" name="condAuthYr" value="OR" id="ORcondAuthYr" defaultChecked/><label htmlFor="ORcondAuthYr">OR</label>
-                        </div>
-                        <p>
-                            Year range:&nbsp;
-                            <input
-                                type="text"
-                                name="advYearStart"
-                                className="yearstart"
-                                value={this.state.advYearStart}
-                                onChange = {this.handleAdvSearchChange}
-                                onSubmit = {this.handleAdvSearchSubmit}
-                                placeholder="From..."
-                                autoComplete="on"
-                                style={{borderColor:"none"}}
-                            />
-                            &nbsp;-&nbsp; 
-                            <input
-                                type="text"
-                                name="advYearEnd"
-                                className="yearend"
-                                value={this.state.advYearEnd}
-                                onChange = {this.handleAdvSearchChange}
-                                onSubmit = {this.handleAdvSearchSubmit}
-                                placeholder="To..."
-                                autoComplete="on"
-                                style={{borderColor:"none"}}
-                            />
-                        </p>
-                        <div onChange={this.handleAdvSearchChange}>
-                            <input type="radio" name="condYrPub" value="AND" id="ANDcondYrPub"/><label htmlFor="ANDcondYrPub">AND</label>
-                            <input type="radio" name="condYrPub" value="OR" id="ORcondYrPub" defaultChecked/><label htmlFor="ORcondYrPub">OR</label>
-                        </div>
-                        <p>
-                            Publisher:&nbsp;
-                            <input
-                                type="text"
-                                name="advPublisher"
-                                className="publisher"
-                                value={this.state.advPublisher}
-                                onChange = {this.handleAdvSearchChange}
-                                onSubmit = {this.handleAdvSearchSubmit}
-                                placeholder="'Penguin Books'"
-                                autoComplete="on"
-                                style={{borderColor:"none"}}
-                            />
-                        </p>
-                        <div onChange={this.handleAdvSearchChange}>
-                            <input type="radio" name="condPubSynp" value="AND" id="ANDcondPubSynp"/><label htmlFor="ANDcondPubSynp">AND</label>
-                            <input type="radio" name="condPubSynp" value="OR" id="ORcondPubSynp" defaultChecked/><label htmlFor="ORcondPubSynp">OR</label>
-                        </div>
-                        <p>
-                            Synopsis key words:&nbsp;
-                            <input
-                                type="text"
-                                name="advSynopsis"
-                                className="synopsis"
-                                value={this.state.advSynopsis}
-                                onChange = {this.handleAdvSearchChange}
-                                onSubmit = {this.handleAdvSearchSubmit}
-                                placeholder="Retrieves partial matches"
-                                autoComplete="on"
-                                style={{borderColor:"none"}}
-                            /> 
-                        </p>
-                       
-
-                        {/* 
-                        <input type="checkbox" id="safe" name="safe" value="on" defaultChecked="true"/><label htmlFor="safe">SafeSearch</label>
-                        */}    
-                        <button className="searchbutton" type="submit"></button>
-                        
-                    </form>          
-        
-                    <p></p>
-
-                    <div>
-                        <button onClick={this.handleCartCheckout}>Test cart Checkout</button>
-                        <button onClick={this.checkbasicInput}>Check basic search query stored in state</button>
-                        <button onClick={this.checkadvInput}>Check adv search query stored in state</button>
-                        <button onClick={this.handleAdvSearchSubmit}>test search query send</button>
-                        <button onClick={this.checkSearchResults}>Chk search results in state</button>
-                        <button onClick={this.checkborrowCart}>Check book id-s in cart</button>
-                    </div>
-                    
-                    {/*Need to prevent last set of search results from stacking together. how to clear?*/}
-                    <div>Generated search results</div>
-                    <div id="searchResults"></div>
-                    
-                    <p></p>
-
-                    <div>
-                        <button href="OpenCart" id="cartButton" onClick={this.cartDisplay}>Cart</button> 
-                        <div id="cart" style={{display: "none"}}>Cart contents</div>
-                        <button id="checkoutButton" style={{display: "none"}} onClick={this.handleCartCheckout}>Checkout</button>
-                    </div>
-                    <p></p>
-                    <div>
-                        <button href="OpenBorrowings" id="borrowingsButton" onClick={this.checkBorrowings}>Borrowings</button>
-                        <div id="borrowings"></div>
-                    </div>
-                    
-			    </div>
-            )
-        } else {
-            return (
-                <div>Retriving database data...</div>
-            );
-        }
+                    <button href="OpenCart" id="cartButton" onClick={this.cartDisplay}>Cart</button> 
+                    <div id="cart" style={{display: "none"}}>Cart contents</div>
+                    <button id="checkoutButton" style={{display: "none"}} onClick={this.handleCartCheckout}>Checkout</button>
+                </div>
+                <p></p>
+                <div>
+                    <button href="OpenBorrowings" id="borrowingsButton" onClick={this.checkBorrowings}>Borrowings</button>
+                    <div id="borrowings"></div>
+                </div>
+            </div>
+        ); 
 	}
 }
 

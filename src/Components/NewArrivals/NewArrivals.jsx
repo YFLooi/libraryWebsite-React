@@ -5,18 +5,40 @@ export default class NewArrivals extends React.Component {
     constructor(props) {
         super(props);		
         
+        this.state = {
+             /*For new arrivals top 20*/
+             newarrivals: [],
+             isNewArrivalsLoaded: false,
+        }
+
         this.generateArrivals = this.generateArrivals.bind(this);
         this.clearArrivals = this.clearArrivals.bind(this);
         this.storeCheck = this.storeCheck.bind(this)
     }
 
     componentDidMount(){
-       console.log("All 20 new arrivals mounted");
-        
         try {
-            this.generateArrivals()
+            let that = this; //Prevents 'this' from being undefined
+
+            /*Fetches the data on page load for the New Arrivals slideshow*/
+            fetch('http://localhost:3005/NewArrivals', {method:"GET", mode:"cors"})
+                //Here we chain 2 promise functions: The first fetches data (response), the second examines text in response (data)
+                .then(function(response){
+                    return response.json()
+                    //Examines data in response
+                    .then(function(data){
+                        that.setState({
+                            newarrivals: data,
+                            isNewArrivalsLoaded: true
+                        })
+                        that.generateArrivals()
+                    })
+                })  
+                .catch(function(error){
+                    console.log('Request failed', error)
+                })
         } catch (e) {
-            if (this.props.newarrivals === []) {
+            if (this.state.newarrivals === []) {
                 console.log("Error loading top 20 books");
             }        
         }
@@ -24,10 +46,9 @@ export default class NewArrivals extends React.Component {
     componentWillUnmount(){
         this.clearArrivals(); /*Prevents the 'New Arrivals' from stacking on page refresh*/
     }
-
     generateArrivals(){
-        const dataCount = this.props.newarrivals.length;
-        const newarrivals = this.props.newarrivals;
+        const dataCount = this.state.newarrivals.length;
+        const newarrivals = this.state.newarrivals;
         const targetAttr = document.getElementById('newarrivals');
         const wrap = document.createElement('section');
         wrap.setAttribute('id', 'card');
@@ -69,13 +90,12 @@ export default class NewArrivals extends React.Component {
         } 
     }
     storeCheck(){
-        let newarrivals = this.props.newarrivals;
+        let newarrivals = this.state.newarrivals;
         console.log(newarrivals);
         console.log(newarrivals[1].title);
     }
 
     render() {
-        //let newarrivals = this.props.newarrivals;
 		return (
             <div className="results">
                 <p></p>
