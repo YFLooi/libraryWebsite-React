@@ -13,7 +13,6 @@ export default class NewArrivals extends React.Component {
 
         this.generateArrivals = this.generateArrivals.bind(this);
         this.clearArrivals = this.clearArrivals.bind(this);
-        this.storeCheck = this.storeCheck.bind(this)
     }
 
     componentDidMount(){
@@ -89,22 +88,12 @@ export default class NewArrivals extends React.Component {
             targetChild.parentNode.removeChild(targetChild)
         } 
     }
-    storeCheck(){
-        let newarrivals = this.state.newarrivals;
-        console.log(newarrivals);
-        console.log(newarrivals[1].title);
-    }
-
     render() {
 		return (
             <div className="results">
                 <p></p>
                     <section id="newarrivals"></section>
                 <p></p>
-                <button onClick={this.storeCheck}>Check new arrivals</button>
-                <button onClick={this.generateArrivals}>Generate arrivals</button>
-                <button onClick={this.clearArrivals}>Clear arrivals</button>
-
             </div>
 		);
 	}
