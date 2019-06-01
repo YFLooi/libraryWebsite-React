@@ -1,43 +1,3 @@
-function borrowRequest (idx) {
-    /*'id' here is the book id. It allows access to other data related to 
-    the book */
-    const buttonText = document.getElementById("borrow."+idx).innerHTML;
-    const cart = this.state.borrowCart;
-    const searchResults = this.state.searchResults;
-
-    if(buttonText === "Borrow"){
-        /**Retrieves index position in searchResults of object having input book id*/
-        const targetIndex = searchResults.findIndex(searchResult => searchResult.id === idx)
-
-        /**Obtains the object at the target index position in searchResults */
-        const bookData  = searchResults[targetIndex];
-
-        /*This method adds new book object data to the end of the 
-        existing array immutably*/
-        this.setState({
-            borrowCart: [...cart, bookData]
-        })
-
-        /*Changes button to say "Cancel" after being clicked*/
-        document.getElementById("borrow."+idx).innerHTML = "Cancel";
-    }else if(buttonText === "Cancel"){
-        //Find index containing target book id from borrowCart
-        const targetIndex = cart.findIndex(x => x.id === idx)
-        console.log("Target of removal position: "+targetIndex);
-
-        //Condition prevents .splice if id to remove not in cart 
-        if(targetIndex !== -1){
-            /*Removes item at targetPosition. If we set const new = cart.splice(), 
-            "const new" has a value = the removed item*/
-            cart.splice(targetIndex,1);                 
-            this.setState({
-                borrowCart: [...cart] //Keep state immutable with spread syntax!
-            })
-        }
-        /**Cancelling a borrow request makes book available to "Borrow" again*/
-        document.getElementById("borrow."+idx).innerHTML = "Borrow";       
-    }
-}
 function cartDisplay () {
     const that = this;
 
@@ -224,7 +184,6 @@ function handleCartCheckout () {
 }
 
 export{
-    borrowRequest,
     cartDisplay,
     handleCartCancel,
     handleCartCheckout,

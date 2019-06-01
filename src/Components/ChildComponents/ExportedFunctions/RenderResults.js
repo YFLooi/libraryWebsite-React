@@ -3,13 +3,17 @@ export default function renderResults (data, brrwCart) {
 
     //Need to store searchResults state to determine whether to render book borrow buttons innerHTML 
     //as "borrow" or "cancel" later
-    //Immutably clears this.state.searchResults to prevent stacking of  
-    //each new set of search results
-    that.state.searchResults.splice(0,that.state.searchResults.length);
-    //Assigns new search results to this.state.searchResults
-    that.state.searchResults = [...that.state.searchResults, ...data]
+    const srchResults = that.props.searchResults
+
+    //Immutably clears this.props.searchResults to prevent stacking of each new set of search results
+    srchResults.splice(0,srchResults.length);
     
-    const searchResults = that.state.searchResults
+    //Assign new search results to this.state.searchResults
+    let updatedSrchResults = [...srchResults, ...data]
+    that.props.stateUpdater("searchResults",updatedSrchResults)
+
+    //Pulls the newly updated this.state.seachResults through props
+    const searchResults = that.props.searchResults
     const renderTarget = document.getElementById("searchResults");
     /**Clears "searchResults" div on each new submit to prevent stacking with prior results*/
     while(renderTarget.firstChild){
@@ -42,18 +46,15 @@ export default function renderResults (data, brrwCart) {
             /**findIndex() here checks for match between searchResult and cart contents
                 If there is a match (!= -1)), 'borrow' button inner HTML is set to "Cancel" */
             let cartCheck = borrowCart.findIndex(cart => cart.id === searchResults[i].id);
-                
+            
+            let borrowButton = document.createElement("button");            
+            borrowButton.id = "borrow."+searchResults[i].id;
+            //Must specify "this" to be equal to "const that" to be defined
+            borrowButton.onclick = function(event){that.borrowRequest(searchResults[i].id);};
             if (cartCheck === -1){
-                let borrowButton = document.createElement("button");            
-                borrowButton.id = "borrow."+searchResults[i].id;
-                //Must specify "this" to be equal to "const that" to be defined
-                borrowButton.onclick = function(event){that.borrowRequest(searchResults[i].id);};
                 borrowButton.innerHTML = "Borrow";
                 resultSpan.appendChild(borrowButton);
             } else {
-                let borrowButton = document.createElement("button");            
-                borrowButton.id = "borrow."+searchResults[i].id;
-                borrowButton.onclick = function(event){that.borrowRequest(searchResults[i].id);};
                 borrowButton.innerHTML = "Cancel";
                 resultSpan.appendChild(borrowButton);
             }

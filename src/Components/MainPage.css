@@ -1,7 +1,8 @@
-.results{
-    background-color:green
+body{
+    background-color: aquamarine;
 }
 
+/*For the title header and its buttons*/
 header{
     width:100%;
     height: 40%;
@@ -27,7 +28,6 @@ header{
 .logo{
     width:80%;
 }
-
 #cartButton, #borrowingsButton{
     vertical-align: middle;
     width: 45px;
@@ -50,5 +50,28 @@ header{
 #borrowingsButton{
     margin-left: 1%;
     background-image: url(./icons/borrowings.svg); /*Must be in same folder as component*/
+}
+
+/*For the navbar*/
+/*When you click on a link, React Router automatically assigns a class value of "active"
+This CSS causes the clicked link to have a background of blue*/
+.active {
+    background-color: #0099FF;
+}
+ul.navbar li {
+    display: inline;
+    list-style-type: none;
+    margin: 0;
+}
+ul.navbar {
+    background-color: #111;
+    padding: 0;
+}
+ul.navbar li a {
+    color: #FFF;
+    font-weight: bold;
+    text-decoration: none;
+    padding: 20px;
+    display: inline-block;
 }
 
