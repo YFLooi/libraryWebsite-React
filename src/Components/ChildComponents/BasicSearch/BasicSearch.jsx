@@ -48,6 +48,7 @@ export default class BasicSearch extends React.Component {
                 <input
                     type="text"
                     name="searchbar"
+                    id="searchbar"
                     className="searchbar"
                     value={this.props.basicInput}
                     onChange = {this.handleBasicSearchChange}
@@ -56,10 +57,7 @@ export default class BasicSearch extends React.Component {
                     autoComplete="off"
                     style={{borderColor:"none"}}
                 /> 
-                <button className="searchbutton" type="submit"></button>
-                <span id="advanced-button">
-                    <button className="advancedbutton"></button>
-                </span>
+                <button id="searchbutton" type="submit"></button>
             </form> 	
 		)
 	}

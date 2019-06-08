@@ -8,12 +8,35 @@ export default class NewArrivals extends React.Component {
         this.generateArrivals = this.generateArrivals.bind(this);
         this.clearArrivals = this.clearArrivals.bind(this);
     }
+    componentDidMount(){
+        let that = this; //Prevents 'this' from being undefined
+        /*Fetches the data on page load for the New Arrivals slideshow*/
+        fetch('http://localhost:3005/newArrivals', {method:"GET", mode:"cors"})
+            //Here we chain 2 promise functions: The first fetches data (response), the second examines text in response (data)
+            .then(function(response){
+                return response.json()
+                //Examines data in response
+                .then(function(data){
+                    console.log(data)
+
+                    if(data.length > 0){
+                        //Send data directly to rendering function. This skips use of state for storage
+                        that.generateArrivals(data)
+                        //Sets state to determine whether to render website. 
+                    }else{
+                        console.log("Render failed: newarrivals.db is empty")
+                    }
+                })
+            }).catch(function(error){
+                console.log('Request failed', error)
+            })  
+    }
     componentWillUnmount(){
         this.clearArrivals(); /*Prevents the 'New Arrivals' from stacking on page refresh*/
     }
-    generateArrivals(){
-        const dataCount = this.props.newArrivals.length;
-        const newArrivals = this.props.newArrivals;
+    generateArrivals(data){
+        const dataCount = data.length;
+        const newArrivals = data;
         const targetAttr = document.getElementById('newArrivals');
         const wrap = document.createElement('section');
         wrap.setAttribute('id', 'card');
@@ -45,6 +68,8 @@ export default class NewArrivals extends React.Component {
                 wrap.appendChild(card);
             } 
             targetAttr.appendChild(wrap);
+        } else{
+            console.log("No data received on new arrivals")
         }
     }
     clearArrivals(){

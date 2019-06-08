@@ -1,17 +1,20 @@
-.searchbar{
+#searchbar{
     width: 60%;
     height: 45px;
     border-radius: 0 2px 0 2px;
     vertical-align: middle;
+    float:left;
 }
-.searchbar:focus{ /*Causes searchbar border colour to change onclick and back when click made elsewhere*/
+#searchbar:focus{ /*Causes searchbar border colour to change onclick and back when click made elsewhere*/
     border-color: green;
 }
-.searchbutton, .advancedbutton{
+#searchbutton{
     vertical-align: middle;
-    width: 45px;
-    height: 45px;
-    margin-left: 0.5%;
+    float:left;
+    margin-left: 1%;
+
+    width: 46.5px;
+    height: 46.5px;
     border-radius: 0 2px 0 2px;
     outline: none;
     box-shadow: none;
@@ -23,12 +26,8 @@
     background-repeat: no-repeat;
     background-attachment: scroll;
     background-size: 22px;
-}
-.searchbutton{
+
     background-image: url(./icons/searchicon.svg); /*Must be in same folder as component*/
-}
-.advancedbutton{
-    background-image: url(./icons/settings.svg); /*Must be in same folder as component*/
 }
 /*
 .searchbutton:hover{

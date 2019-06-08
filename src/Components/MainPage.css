@@ -11,24 +11,26 @@ header{
     background-color:wheat;
     overflow-x:visible;
 }
-.header-logo, .header-search, .headerbuttons{
+#header-logo, #header-search, #header-buttons{
     display: inline-block; 
     vertical-align: middle;
 }
-.header-logo{
+#header-logo{
+    height: 55px;
     width: 25%;
 }
-.header-search{
-    height: auto;
+#header-search{
+    height: 55px;
     width: 50%;
 }
-.headerbuttons{
+#header-buttons{
+    height: 55px;
     width: 25%;
 }
-.logo{
-    width:80%;
+#logo{
+    width:90%;
 }
-#cartButton, #borrowingsButton{
+#advancedButton,#cartButton,#borrowingsButton{
     vertical-align: middle;
     width: 45px;
     height: 45px;
@@ -37,27 +39,47 @@ header{
     box-shadow: none;
     cursor: pointer;
 
-    background-color: none;
+    box-shadow: 2px 2px gray;
+
+    background-color: whitesmoke;
     background-position-x: 50%;
     background-position-y: center;
     background-repeat: no-repeat;
     background-attachment: scroll;
     background-size: 22px;
 }
+#advancedButton{
+    float: left;
+    margin-left: 0.5%;
+    background-image: url(./icons/settings.svg); /*Must be in same folder as component*/
+}
+#advancedButton:active{
+    box-shadow: -1.5px -1.5px gray;
+}
 #cartButton{
+    float:left;
+    margin-left: 50%;
     background-image: url(./icons/cart.svg); /*Must be in same folder as component*/
 }
+#cartButton:active{
+    box-shadow: -1.5px -1.5px gray;
+}
 #borrowingsButton{
-    margin-left: 1%;
+    float:left;
+    margin-left: 2%; /*Puts a space between the cart and borrowings buttons*/
     background-image: url(./icons/borrowings.svg); /*Must be in same folder as component*/
+}
+#borrowingsButton:active{
+    box-shadow: -2px -2px gray;
 }
 
 /*For the navbar*/
 /*When you click on a link, React Router automatically assigns a class value of "active"
 This CSS causes the clicked link to have a background of blue*/
+/*
 .active {
     background-color: #0099FF;
-}
+}*/
 ul.navbar li {
     display: inline;
     list-style-type: none;
