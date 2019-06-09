@@ -2,7 +2,7 @@ import React from 'react';
 import {
     Route,
     NavLink,
-    HashRouter
+    HashRouter,
   } from "react-router-dom";
 import "./MainPage.css";
 
@@ -34,8 +34,12 @@ export default class MainPage extends React.Component {
             condPubSynp:'OR',
             advSynopsis: "",
 
-            searchResults:[],
-            borrowCart: [],
+            //For rendering search results
+            searchResults: [],
+            isResultsLoaded: false,
+
+            //For rendering cart contents
+            borrowCart: []
         }
         this.stateUpdater = this.stateUpdater.bind(this);
         this.stateChecker = this.stateChecker.bind(this);
@@ -51,7 +55,7 @@ export default class MainPage extends React.Component {
         })
     }
     stateChecker(){
-        console.log("this.state.newArrivals value: "+this.state.isNewArrivalsLoaded)
+        console.log("this.state.isResultsLoaded value: "+this.state.isResultsLoaded)
     }
     render() {
         return(
@@ -109,15 +113,21 @@ export default class MainPage extends React.Component {
                             condPubSynp={this.state.condPubSynp}
                             advSynopsis={this.state.advSynopsis} 
                             
-                            borrowCart={this.state.borrowCart}
+                            isResultsLoaded={this.state.isResultsLoaded}
                             searchResults={this.state.searchResults}
+                            borrowCart={this.state.borrowCart}
         
                             stateUpdater={this.stateUpdater}
                         />}
                     />
                     <Route 
                         path="/Search-Results"
-                        component={SearchResults}
+                        render={(props) => <SearchResults {...props}
+                            searchResults={this.state.searchResults}
+                            borrowCart={this.state.borrowCart}
+
+                            stateUpdater={this.stateUpdater}
+                        />}
                     />
                     <Route 
                         path="/Cart" 
@@ -132,8 +142,10 @@ export default class MainPage extends React.Component {
                     />
 
                 </div>
-
-                <button onClick={this.stateChecker}>State check</button>
+                
+                <p>
+                    <button onClick={this.stateChecker}>State check</button>
+                </p>
             </HashRouter>    
         );   
     }

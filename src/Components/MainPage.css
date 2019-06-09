@@ -5,33 +5,37 @@ body{
 /*For the title header and its buttons*/
 header{
     width:100%;
-    height: 40%;
+    height: 60px;
     padding: 1% 1.5% 0.5% 0.5%;
     margin: -1% 0% 0% -1%;
     background-color:wheat;
     overflow-x:visible;
 }
 #header-logo, #header-search, #header-buttons{
-    display: inline-block; 
     vertical-align: middle;
+    display: inline-block;
 }
+/*All header components have height less than <header/> height to leave margin 
+at top and bottom*/
 #header-logo{
-    height: 55px;
+    height: 85%;
     width: 25%;
 }
 #header-search{
-    height: 55px;
+    height: 85%;
     width: 50%;
 }
 #header-buttons{
-    height: 55px;
+    height: 85%;
     width: 25%;
 }
-#logo{
-    width:90%;
+img#logo{
+    height: 100%;
+    width:auto;
 }
 #advancedButton,#cartButton,#borrowingsButton{
     vertical-align: middle;
+    float: left;
     width: 45px;
     height: 45px;
     border-radius: 0 2px 0 2px;
@@ -49,7 +53,6 @@ header{
     background-size: 22px;
 }
 #advancedButton{
-    float: left;
     margin-left: 0.5%;
     background-image: url(./icons/settings.svg); /*Must be in same folder as component*/
 }
@@ -57,16 +60,15 @@ header{
     box-shadow: -1.5px -1.5px gray;
 }
 #cartButton{
-    float:left;
-    margin-left: 50%;
+    margin-left: 25%;
     background-image: url(./icons/cart.svg); /*Must be in same folder as component*/
 }
 #cartButton:active{
     box-shadow: -1.5px -1.5px gray;
 }
 #borrowingsButton{
-    float:left;
-    margin-left: 2%; /*Puts a space between the cart and borrowings buttons*/
+    margin-left: 2%;
+    /*margin-left: 2%; Puts a space between the cart and borrowings buttons*/
     background-image: url(./icons/borrowings.svg); /*Must be in same folder as component*/
 }
 #borrowingsButton:active{
