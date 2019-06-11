@@ -7,6 +7,7 @@ import {
 import "./MainPage.css";
 
 import NewArrivals from "./ChildComponents/NewArrivals/NewArrivals.jsx";
+import LoadingScreen from "./ChildComponents/LoadingScreen/LoadingScreen.jsx";
 import BasicSearch from "./ChildComponents//BasicSearch/BasicSearch.jsx";
 import AdvSearch from "./ChildComponents/AdvSearch/AdvSearch.jsx";
 import SearchResults from "./ChildComponents/SearchResults/SearchResults.jsx";
@@ -111,6 +112,10 @@ export default class MainPage extends React.Component {
                     <Route 
                         exact path="/" 
                         component={NewArrivals}
+                    />
+                    <Route 
+                        path="/LoadingScreen" 
+                        component={LoadingScreen}
                     />
                     <Route 
                         path="/AdvancedSearch" 
