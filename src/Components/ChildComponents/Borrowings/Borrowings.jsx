@@ -1,36 +1,44 @@
 import React from 'react';
+import {
+    //Allows us to connect to <Hashrouter/> from a child component
+    withRouter
+  } from "react-router-dom"; 
 import "./Borrowings.css";
 
-// App.js value={this.state.input}
-export default class Borrowings extends React.Component {
+class Borrowings extends React.Component {
     constructor(props) {
         super(props);	
         
-        /*Conditionals need to be pre-initialised, otherwise will be blank if user does not change*/
-        this.state = { 
-            /*For displaying results*/
-            borrowingsRecord: []
-        }
-        
-        
+        this.handlePasswordInputChange = this.handlePasswordInputChange.bind(this);
         this.checkBorrowings = this.checkBorrowings.bind(this);
         this.generateBorrowings = this.generateBorrowings.bind(this);
         this.handleBorrowingsCancel = this.handleBorrowingsCancel.bind(this);
     }
-    componentDidMount(){
-        //Component mounts each time Router directs to /Borrowings URL
-        this.checkBorrowings()
+    componentWillUnmount(){
+        //Prevents stacking of db search results if /Borrowings is loaded again
+        const currentBorrowingsRecord = this.props.borrowingsRecord;
+        currentBorrowingsRecord.splice(0,currentBorrowingsRecord.length)
+        this.props.stateUpdater("borrowingsRecord",[...currentBorrowingsRecord])
+
+        //Locks back /Borrowings on route change/exit
+        this.props.stateUpdater("isBorrowingsPasswordCorrect",false)
     }
-    checkBorrowings(){
+    handlePasswordInputChange(event){
+        this.props.stateUpdater("passwordInput",event.target.value)
+    }
+    checkBorrowings(event){
+        //So that I do not open a new window each time I check /Borrowings
+        event.preventDefault();
+
         const that = this;
-        let borrowingsLock = "" /**Initialise as "" */
-       
-        /**Simple password to lock access to librarians only */
-        borrowingsLock = prompt("Enter password (Hint: p******d):")
+        const borrowingsLock = this.props.passwordInput; /**Initialise as "" */
+        console.log(borrowingsLock)
 
         if (borrowingsLock !== "password"){
             alert("Wrong Password");
         } else if(borrowingsLock === "password"){
+            this.props.stateUpdater("isBorrowingsPasswordCorrect",true)
+
             const GETReqInit = {
                 method:"GET",
                 mode:"cors",   
@@ -72,11 +80,8 @@ export default class Borrowings extends React.Component {
             borrowingsDisplay.removeChild(borrowingsDisplay.firstChild);
         }
 
-        that.setState({
-            borrowingsRecord: data
-        })
-
-        const borrowingsRecord = that.state.borrowingsRecord;
+        this.props.stateUpdater("borrowingsRecord",[...this.props.borrowingsRecord, ...data])
+        const borrowingsRecord = this.props.borrowingsRecord;
         //Check for empty cart
         if (borrowingsRecord.length === 0){
             const recordSpan = document.createElement("p");
@@ -163,12 +168,11 @@ export default class Borrowings extends React.Component {
                 borrowingsDisplay.appendChild(recordsList);
             }
         } 
+
+        //Removes password stored in this.state.passwordInput
+        this.props.stateUpdater("passwordInput","")
     }
     handleBorrowingsCancel(idx,borrowDate){
-        /**This setup of getting bookId from the card href is necessary because appending
-        this.state.borrowCart[i].id as property "idx" of handleCartCancel() has resulted in
-        the "id" going null as books are cleared from the cart
-        */
         const cardIndex = document.getElementById("borrowingsCard."+idx)
         const borrowerId = cardIndex.getAttribute("href");
         console.log(`Data sent for borrower ${borrowerId} who borrowerd on ${borrowDate}`)
@@ -182,7 +186,7 @@ export default class Borrowings extends React.Component {
          * removed. Updating state prevents need to query table each time an entry is removed
          * to see if no records remain
         */
-        const newRecord = this.state.borrowingsRecord;
+        const newRecord = this.props.borrowingsRecord;
         const targetIndex = newRecord.findIndex(record => record.borrowerId === borrowerId);
         console.log("Removal target index: "+targetIndex);
         /**No need for this.setState(), splice() updates state*/
@@ -222,7 +226,7 @@ export default class Borrowings extends React.Component {
         /**If user removes all borrowing entries which is indicated by 
          * this.state.borrowingRecord.length === 0, the message "No record" 
         appears*/
-        if (this.state.borrowingsRecord.length === 0){
+        if (this.props.borrowingsRecord.length === 0){
             const resultSpan = document.createElement("p");
             resultSpan.appendChild(document.createTextNode("No record"));
             
@@ -231,13 +235,40 @@ export default class Borrowings extends React.Component {
         }
     }   
     render() { 
-		return (
-            <div id="borrowings-page">
-                <div><h1>Borrowings record</h1></div>
-                <div>Late return fine set to RM 0.50 per day late</div>
-                <div id="borrowings"></div>
-            </div>
-		);
+        //If wrong/no password, prompts for password
+        if(this.props.isBorrowingsPasswordCorrect === false){
+            return(
+                <div id="borrowings-page">
+                    <div><h1>Borrowings record</h1></div>
+                    <div>Librarians only. Please provide a valid password</div>
+                    <div>
+                        <form onSubmit = {this.checkBorrowings}>
+                            <input
+                                type="text"
+                                name="passwordInput"
+                                id="passwordInput"
+                                value={this.props.passwordInput}
+                                onChange = {this.handlePasswordInputChange}
+                                onSubmit = {this.checkBorrowings}
+                                placeholder="Hint: 'p***w**d'"
+                                autoComplete="off"
+                                style={{borderColor:"none"}}
+                            />
+                            <span><button type="submit">Submit</button></span>
+                        </form>
+                    </div>
+                </div> 
+            )
+        }else if(this.props.isBorrowingsPasswordCorrect === true){
+            return (
+                <div id="borrowings-page">
+                    <div><h1>Borrowings record</h1></div>
+                    <div>Late return fine set to RM 0.50 per day late</div>
+                    <div id="borrowings"></div>
+                </div>
+            );
+        }
 	}
 }
 
+export default withRouter(Borrowings);

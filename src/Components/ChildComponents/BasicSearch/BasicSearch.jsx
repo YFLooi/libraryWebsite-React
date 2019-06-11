@@ -36,9 +36,9 @@ class BasicSearch extends React.Component {
                             currentResults.splice(0, currentResults.length);
                             let newResults = [...currentResults, ...data];
 
-                            that.props.stateUpdater("searchResults",newResults)
-                            that.props.stateUpdater("isNewResultsLoaded",true)
-                            
+                            that.props.stateUpdater("searchResults",newResults);
+                            that.props.stateUpdater("isNewResultsLoaded",true);
+                                        
                             //Only allows redirect to /Search-Results to render if this.state.searchResults is updated
                             //For some reason, "return <Redirect to='/Search-Results'/>" does not work here
                             if(that.props.isNewResultsLoaded === true){

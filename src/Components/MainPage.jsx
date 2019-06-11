@@ -41,7 +41,12 @@ export default class MainPage extends React.Component {
             isNewResultsLoaded: false, 
 
             //For rendering cart contents
-            borrowCart: []
+            borrowCart: [],
+            
+            //For rendering list of borrowers and their details
+            borrowingsRecord: [],
+            passwordInput: "",
+            isBorrowingsPasswordCorrect: false
         }
         this.stateUpdater = this.stateUpdater.bind(this);
         this.stateChecker = this.stateChecker.bind(this);
@@ -58,6 +63,9 @@ export default class MainPage extends React.Component {
     }
     stateChecker(){
         console.log("this.state.isNewResultsLoaded value: "+this.state.isNewResultsLoaded);
+        //console.log("this.state.borrowingsRecord value: "+this.state.borrowingsRecord);
+        //console.log(this.state.borrowingsRecord);
+        //console.log("this.state.passwordInput value: "+this.state.passwordInput);
     }
     render() {
         return(
@@ -73,6 +81,7 @@ export default class MainPage extends React.Component {
                             
                             borrowCart={this.state.borrowCart}
                             searchResults={this.state.searchResults}
+                            isNewResultsLoaded={this.state.isNewResultsLoaded}
 
                             stateUpdater={this.stateUpdater}
                         />
@@ -88,7 +97,7 @@ export default class MainPage extends React.Component {
                     <li><NavLink to="/">Home</NavLink></li>
                     <li><NavLink to="/AdvancedSearch">Advanced Search</NavLink></li>
                     <li><NavLink to="/Cart">Cart</NavLink></li>
-                    <li><NavLink to="/Borrowings">Librarian access</NavLink></li>
+                    <li id="borrowingsTab"><NavLink to="/Borrowings">Librarian access</NavLink></li>
                     {/**Secret page! Should not be visible if this.state.searchResults === []
                     <li><NavLink to="/SearchResults">Search Results</NavLink></li>
                     */}
@@ -143,7 +152,12 @@ export default class MainPage extends React.Component {
                     />
                     <Route 
                         path="/Borrowings" 
-                        component={Borrowings}
+                        render={(props) => <Borrowings {...props}
+                            borrowingsRecord={this.state.borrowingsRecord}
+                            passwordInput={this.state.passwordInput}
+                            isBorrowingsPasswordCorrect={this.state.isBorrowingsPasswordCorrect}
+                            stateUpdater={this.stateUpdater}
+                        />}
                     />
 
                 </div>
