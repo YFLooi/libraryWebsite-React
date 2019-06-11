@@ -1,7 +1,6 @@
 import React from 'react';
 import {
     withRouter,
-    Redirect
   } from "react-router-dom";
 import "./BasicSearch.css";
 
@@ -38,10 +37,15 @@ class BasicSearch extends React.Component {
                             let newResults = [...currentResults, ...data];
 
                             that.props.stateUpdater("searchResults",newResults)
-                            that.props.stateUpdater("isResultsLoaded",true)
-
+                            that.props.stateUpdater("isNewResultsLoaded",true)
+                            
+                            //Only allows redirect to /Search-Results to render if this.state.searchResults is updated
                             //For some reason, "return <Redirect to='/Search-Results'/>" does not work here
-                            that.props.history.push('/Search-Results');
+                            if(that.props.isNewResultsLoaded === true){
+                                that.props.history.push('/SearchResults');
+                            } else {
+                                console.log("Error updating this.state.searchResults")
+                            }
                         }
                     })
                 })  

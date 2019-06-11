@@ -1,15 +1,24 @@
 import React from 'react';
+import {
+    //Allows us to connect to <Hashrouter/> from a child component
+    withRouter
+  } from "react-router-dom"; 
 import "./SearchResults.css"
 
-export default class SearchResults extends React.Component {
+class SearchResults extends React.Component {
     constructor(props){
         super(props);
 
         this.renderResults = this.renderResults.bind(this)
     }
     componentDidMount(){
-        console.log("Search results to render:")
-        this.renderResults(this.props.searchResults, this.props.borrowCart);
+        if(this.props.searchResults.length === 0){
+            //Ensures when page refreshes or if this.state.searchResults is empty, 
+            //there is no way to land on a blank results page
+            this.props.history.push('/');
+        } else {
+            this.renderResults(this.props.searchResults, this.props.borrowCart);
+        }
     }
     renderResults (data, brrwCart) {
         let that = this;
@@ -65,15 +74,18 @@ export default class SearchResults extends React.Component {
         renderTarget.appendChild(resultContent);
         document.getElementById("searchResults-page").style.display = "block";
 
-        //Ensures next search attempt does not allow an empty "Results" page to appear
-        this.props.stateUpdater("isResultsLoaded",false)
+        //Ensures page does not redirect to /Search-Results if user goes to another page
+        this.props.stateUpdater("isNewResultsLoaded",false)
     }    
     render() {
-		return (
-            <div id="searchResults-page" style={{display: "none"}}>
-                <h1>Generated search results</h1>
-                <div id="searchResults"></div>           
-            </div>    
-		);
+            return (
+                <div id="searchResults-page" style={{display: "none"}}>
+                    <h1>Generated search results</h1>
+                    <div id="searchResults"></div>           
+                </div>    
+            );
+        
 	}
 }
+
+export default withRouter(SearchResults);

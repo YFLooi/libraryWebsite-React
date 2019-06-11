@@ -36,7 +36,9 @@ export default class MainPage extends React.Component {
 
             //For rendering search results
             searchResults: [],
-            isResultsLoaded: false,
+            //Checks if new results retrived by Basic and AdvSearch on submit.
+            //"false" on page refresh and on 1st render at /Search-Results
+            isNewResultsLoaded: false, 
 
             //For rendering cart contents
             borrowCart: []
@@ -55,14 +57,14 @@ export default class MainPage extends React.Component {
         })
     }
     stateChecker(){
-        console.log("this.state.isResultsLoaded value: "+this.state.isResultsLoaded)
+        console.log("this.state.isNewResultsLoaded value: "+this.state.isNewResultsLoaded);
     }
     render() {
         return(
             <HashRouter>
                 <header>
                     <div id="header-logo">
-                        <NavLink to="/Home"><img id="logo" src="./assets/logo.png" alt="home button"/></NavLink>
+                        <NavLink to="/"><img id="logo" src="./assets/logo.png" alt="home button"/></NavLink>
                     </div>
 
                     <div id="header-search">
@@ -74,7 +76,7 @@ export default class MainPage extends React.Component {
 
                             stateUpdater={this.stateUpdater}
                         />
-                        <NavLink to="/Advanced-Search"><span id="advancedButton"></span></NavLink>
+                        <NavLink to="/AdvancedSearch"><span id="advancedButton"></span></NavLink>
                     </div>
                     <div id="header-buttons"> 
                         <NavLink to="/Cart"><span id="cartButton"></span></NavLink>
@@ -82,25 +84,27 @@ export default class MainPage extends React.Component {
                     </div>
                 </header>	
 
-                <ul className="navbar">
-                    {/**'to' is an identifier prop to ensure the right content is loaded */}
-                    <li><NavLink to="/Home">Home</NavLink></li>
-                    <li><NavLink to="/Advanced-Search">Advanced Search</NavLink></li>
+                <ul className="navbar">                    
+                    <li><NavLink to="/">Home</NavLink></li>
+                    <li><NavLink to="/AdvancedSearch">Advanced Search</NavLink></li>
                     <li><NavLink to="/Cart">Cart</NavLink></li>
-                    <li><NavLink to="/Search-Results">Search Results</NavLink></li>
-                    <li></li>
+                    <li><NavLink to="/Borrowings">Librarian access</NavLink></li>
+                    {/**Secret page! Should not be visible if this.state.searchResults === []
+                    <li><NavLink to="/SearchResults">Search Results</NavLink></li>
+                    */}
                 </ul>
+                
 
                 <div className="content">
                     {/**Matches URL defined in "to" prop to correct content (components)
                     When the NavLink for "/" is clicked, the contents of the render() method
                     in component "Home" are rendered here in the "content" <div>*/}
                     <Route 
-                        path="/Home" 
+                        exact path="/" 
                         component={NewArrivals}
                     />
                     <Route 
-                        path="/Advanced-Search" 
+                        path="/AdvancedSearch" 
                         render={(props) => <AdvSearch {...props}
                             advTitle={this.state.advTitle}
                             condTitAuth={this.state.condTitAuth}
@@ -113,7 +117,7 @@ export default class MainPage extends React.Component {
                             condPubSynp={this.state.condPubSynp}
                             advSynopsis={this.state.advSynopsis} 
                             
-                            isResultsLoaded={this.state.isResultsLoaded}
+                            isNewResultsLoaded={this.state.isNewResultsLoaded}
                             searchResults={this.state.searchResults}
                             borrowCart={this.state.borrowCart}
         
@@ -121,8 +125,9 @@ export default class MainPage extends React.Component {
                         />}
                     />
                     <Route 
-                        path="/Search-Results"
+                        path="/SearchResults"
                         render={(props) => <SearchResults {...props}
+                            isNewResultsLoaded={this.state.isNewResultsLoaded}
                             searchResults={this.state.searchResults}
                             borrowCart={this.state.borrowCart}
 
