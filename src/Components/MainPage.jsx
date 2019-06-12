@@ -15,7 +15,7 @@ import SearchResults from "./ChildComponents/SearchResults/SearchResults.jsx";
 import CartDisplay from "./ChildComponents/CartDisplay/CartDisplay.jsx";
 import Borrowings from "./ChildComponents/Borrowings/Borrowings.jsx";
 
-class MainPage extends React.Component {
+export default class MainPage extends React.Component {
     constructor(props){
         super(props);
         
@@ -179,5 +179,5 @@ class MainPage extends React.Component {
     }
 }
 
-export default MainPage;
+
 
