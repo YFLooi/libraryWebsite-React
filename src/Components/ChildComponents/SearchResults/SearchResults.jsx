@@ -1,19 +1,25 @@
 import React from 'react';
+import {
+    //Allows us to connect to <Hashrouter/> from a child component
+    withRouter
+  } from "react-router-dom"; 
 import "./SearchResults.css"
 
-window.onload = function(){
-    console.log("Screen refresh detected. Redirecting?")
-    return <Redirect to='/Home' />
-}
-export default class SearchResults extends React.Component {
+class SearchResults extends React.Component {
     constructor(props){
         super(props);
 
-        this.renderResults = this.renderResults.bind(this)
+        this.renderResults = this.renderResults.bind(this);
+        this.borrowRequest = this.borrowRequest.bind(this);
     }
     componentDidMount(){
-        console.log("Search results to render:")
-        this.renderResults(this.props.searchResults, this.props.borrowCart);
+        if(this.props.searchResults.length === 0){
+            //Ensures when page refreshes or if this.state.searchResults is empty, 
+            //there is no way to land on a blank results page
+            this.props.history.push('/');
+        } else {
+            this.renderResults(this.props.searchResults, this.props.borrowCart);
+        }
     }
     renderResults (data, brrwCart) {
         let that = this;
@@ -69,15 +75,56 @@ export default class SearchResults extends React.Component {
         renderTarget.appendChild(resultContent);
         document.getElementById("searchResults-page").style.display = "block";
 
-        //Ensures next search attempt does not allow an empty "Results" page to appear
-        this.props.stateUpdater("isResultsLoaded",false)
+        //Ensures page does not redirect to /Search-Results if user goes to another page
+        this.props.stateUpdater("isNewResultsLoaded",false)
     }    
+    borrowRequest (idx) {
+        /*'id' here is the book id. It allows access to other data related to 
+        the book */
+        const buttonText = document.getElementById("borrow."+idx).innerHTML;
+        const cart = this.props.borrowCart;
+        const searchResults = this.props.searchResults;
+    
+        if(buttonText === "Borrow"){
+            /**Retrieves index position in searchResults of object having input book id*/
+            const targetIndex = searchResults.findIndex(searchResult => searchResult.id === idx)
+    
+            /**Obtains the object at the target index position in searchResults */
+            const bookData  = searchResults[targetIndex];
+    
+            /*This method adds new book object data to the end of the 
+            existing array immutably*/
+            let updatedBorrowCart = [...cart, bookData]
+            this.props.stateUpdater("borrowCart",updatedBorrowCart)
+    
+            /*Changes button to say "Cancel" after being clicked*/
+            document.getElementById("borrow."+idx).innerHTML = "Cancel";
+        }else if(buttonText === "Cancel"){
+            //Find index containing target book id from borrowCart
+            const targetIndex = cart.findIndex(x => x.id === idx)
+            console.log("Target of removal position: "+targetIndex);
+    
+            //Condition prevents .splice if id to remove not in cart 
+            if(targetIndex !== -1){
+                /*Removes item at targetPosition. If we set const new = cart.splice(), 
+                "const new" has a value = the removed item*/
+                cart.splice(targetIndex,1);  
+                let updatedBorrowCart = [...cart] //Keep state immutable with spread syntax!               
+                this.props.stateUpdater("borrowCart",updatedBorrowCart) 
+            }
+            /**Cancelling a borrow request makes book available to "Borrow" again*/
+            document.getElementById("borrow."+idx).innerHTML = "Borrow";       
+        }
+    }
     render() {
-		return (
-            <div id="searchResults-page" style={{display: "none"}}>
-                <h1>Generated search results</h1>
-                <div id="searchResults"></div>           
-            </div>    
-		);
+            return (
+                <div id="searchResults-page" style={{display: "none"}}>
+                    <h1>Generated search results</h1>
+                    <div id="searchResults"></div>           
+                </div>    
+            );
+        
 	}
 }
+
+export default withRouter(SearchResults);

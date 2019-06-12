@@ -7,6 +7,8 @@ import {
 import "./MainPage.css";
 
 import NewArrivals from "./ChildComponents/NewArrivals/NewArrivals.jsx";
+import LoadingScreen from "./ChildComponents/LoadingScreen/LoadingScreen.jsx";
+import Dropdown from "./ChildComponents/Dropdown/Dropdown.jsx";
 import BasicSearch from "./ChildComponents//BasicSearch/BasicSearch.jsx";
 import AdvSearch from "./ChildComponents/AdvSearch/AdvSearch.jsx";
 import SearchResults from "./ChildComponents/SearchResults/SearchResults.jsx";
@@ -36,10 +38,17 @@ class MainPage extends React.Component {
 
             //For rendering search results
             searchResults: [],
-            isResultsLoaded: false,
+            //Checks if new results retrived by Basic and AdvSearch on submit.
+            //"false" on page refresh and on 1st render at /Search-Results
+            isNewResultsLoaded: false, 
 
             //For rendering cart contents
-            borrowCart: []
+            borrowCart: [],
+            
+            //For rendering list of borrowers and their details
+            borrowingsRecord: [],
+            passwordInput: "",
+            isBorrowingsPasswordCorrect: false
         }
         this.stateUpdater = this.stateUpdater.bind(this);
         this.stateChecker = this.stateChecker.bind(this);
@@ -55,14 +64,17 @@ class MainPage extends React.Component {
         })
     }
     stateChecker(){
-        console.log("this.state.isResultsLoaded value: "+this.state.isResultsLoaded)
+        console.log("this.state.isNewResultsLoaded value: "+this.state.isNewResultsLoaded);
+        //console.log("this.state.borrowingsRecord value: "+this.state.borrowingsRecord);
+        //console.log(this.state.borrowingsRecord);
+        //console.log("this.state.passwordInput value: "+this.state.passwordInput);
     }
     render() {
         return(
             <HashRouter>
                 <header>
                     <div id="header-logo">
-                        <NavLink to="/Home"><img id="logo" src="./assets/logo.png" alt="home button"/></NavLink>
+                        <NavLink to="/"><img id="logo" src="./assets/logo.png" alt="home button"/></NavLink>
                     </div>
 
                     <div id="header-search">
@@ -71,10 +83,11 @@ class MainPage extends React.Component {
                             
                             borrowCart={this.state.borrowCart}
                             searchResults={this.state.searchResults}
+                            isNewResultsLoaded={this.state.isNewResultsLoaded}
 
                             stateUpdater={this.stateUpdater}
                         />
-                        <NavLink to="/Advanced-Search"><span id="advancedButton"></span></NavLink>
+                        <NavLink to="/AdvancedSearch"><span id="advancedButton"></span></NavLink>
                     </div>
                     <div id="header-buttons"> 
                         <NavLink to="/Cart"><span id="cartButton"></span></NavLink>
@@ -82,25 +95,31 @@ class MainPage extends React.Component {
                     </div>
                 </header>	
 
-                <ul className="navbar">
-                    {/**'to' is an identifier prop to ensure the right content is loaded */}
-                    <li><NavLink to="/Home">Home</NavLink></li>
-                    <li><NavLink to="/Advanced-Search">Advanced Search</NavLink></li>
+                <ul className="navbar">                    
+                    <li><NavLink to="/">Home</NavLink></li>
+                    <li><NavLink to="/AdvancedSearch">Advanced Search</NavLink></li>
                     <li><NavLink to="/Cart">Cart</NavLink></li>
-                    <li><NavLink to="/Search-Results">Search Results</NavLink></li>
-                    <li></li>
+                    <li id="borrowingsTab"><NavLink to="/Borrowings">Librarian access</NavLink></li>
+                    {/**Secret page! Should not be visible if this.state.searchResults === []
+                    <li><NavLink to="/SearchResults">Search Results</NavLink></li>
+                    */}
                 </ul>
+                
 
                 <div className="content">
                     {/**Matches URL defined in "to" prop to correct content (components)
                     When the NavLink for "/" is clicked, the contents of the render() method
                     in component "Home" are rendered here in the "content" <div>*/}
                     <Route 
-                        path="/Home" 
+                        exact path="/" 
                         component={NewArrivals}
                     />
                     <Route 
-                        path="/Advanced-Search" 
+                        path="/LoadingScreen" 
+                        component={LoadingScreen}
+                    />
+                    <Route 
+                        path="/AdvancedSearch" 
                         render={(props) => <AdvSearch {...props}
                             advTitle={this.state.advTitle}
                             condTitAuth={this.state.condTitAuth}
@@ -113,7 +132,7 @@ class MainPage extends React.Component {
                             condPubSynp={this.state.condPubSynp}
                             advSynopsis={this.state.advSynopsis} 
                             
-                            isResultsLoaded={this.state.isResultsLoaded}
+                            isNewResultsLoaded={this.state.isNewResultsLoaded}
                             searchResults={this.state.searchResults}
                             borrowCart={this.state.borrowCart}
         
@@ -121,8 +140,9 @@ class MainPage extends React.Component {
                         />}
                     />
                     <Route 
-                        path="/Search-Results"
+                        path="/SearchResults"
                         render={(props) => <SearchResults {...props}
+                            isNewResultsLoaded={this.state.isNewResultsLoaded}
                             searchResults={this.state.searchResults}
                             borrowCart={this.state.borrowCart}
 
@@ -138,13 +158,21 @@ class MainPage extends React.Component {
                     />
                     <Route 
                         path="/Borrowings" 
-                        component={Borrowings}
+                        render={(props) => <Borrowings {...props}
+                            borrowingsRecord={this.state.borrowingsRecord}
+                            passwordInput={this.state.passwordInput}
+                            isBorrowingsPasswordCorrect={this.state.isBorrowingsPasswordCorrect}
+                            stateUpdater={this.stateUpdater}
+                        />}
                     />
 
                 </div>
                 
                 <p>
                     <button onClick={this.stateChecker}>State check</button>
+                </p>
+                <p>
+                    <Dropdown/>
                 </p>
             </HashRouter>    
         );   
