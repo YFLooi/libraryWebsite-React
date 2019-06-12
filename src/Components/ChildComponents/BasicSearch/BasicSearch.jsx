@@ -1,7 +1,6 @@
 import React from 'react';
 import {
     withRouter,
-    Redirect
   } from "react-router-dom";
 import "./BasicSearch.css";
 
@@ -37,11 +36,19 @@ class BasicSearch extends React.Component {
                             currentResults.splice(0, currentResults.length);
                             let newResults = [...currentResults, ...data];
 
-                            that.props.stateUpdater("searchResults",newResults)
-                            that.props.stateUpdater("isResultsLoaded",true)
-
+                            that.props.stateUpdater("searchResults",newResults);
+                            that.props.stateUpdater("isNewResultsLoaded",true);
+                                        
+                            //Only allows redirect to /Search-Results to render if this.state.searchResults is updated
                             //For some reason, "return <Redirect to='/Search-Results'/>" does not work here
-                            that.props.history.push('/Search-Results');
+                            if(that.props.isNewResultsLoaded === true){
+                                //A little cheat: Since I can't push to /SearchResults twice to trigger
+                                //componentDidMount() there to render the search results, I jump pages first
+                                that.props.history.push('/LoadingScreen');
+                                that.props.history.push('/SearchResults');
+                            } else {
+                                console.log("Error updating this.state.searchResults")
+                            }
                         }
                     })
                 })  

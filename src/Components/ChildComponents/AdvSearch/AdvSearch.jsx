@@ -1,8 +1,7 @@
 import React from 'react';
 import {
     //Allows us to connect to <Hashrouter/> from a child component
-    withRouter,
-    Redirect
+    withRouter
   } from "react-router-dom"; 
 
 //Controls positioning of individual columns and applies general styling
@@ -66,7 +65,14 @@ class AdvSearch extends React.Component {
                             let newResults = [...currentResults, ...data];
 
                             that.props.stateUpdater("searchResults",newResults)
-                            that.props.stateUpdater("isResultsLoaded",true)
+                            that.props.stateUpdater("isNewResultsLoaded",true)
+
+                            //Only allows redirect to /Search-Results to render if this.state.searchResults is updated
+                            if(that.props.isNewResultsLoaded === true){
+                                that.props.history.push('/SearchResults');
+                            } else {
+                                console.log("Error updating this.state.searchResults")
+                            }
                         }
                     })
                 })  
@@ -76,121 +82,115 @@ class AdvSearch extends React.Component {
         }
     }
     render(){
-        //Catch to prevent rendering of AdvSearch if search result obtained
-        if (this.props.isResultsLoaded === true){
-            return <Redirect to='/Search-Results' />
-        } else {
-            return(
-                <div>
-                    <h1>Advanced search</h1>
-                    <form name="advsearch" onSubmit={this.handleAdvSearchSubmit}>
-                        Search books matching the following criteria...
-                        <p>
-                            Title:&nbsp;
-                            <input
-                                type="text"
-                                name="advTitle"
-                                className="title"
-                                value={this.props.advTitle}
-                                onChange = {this.handleAdvSearchChange}
-                                onSubmit = {this.handleAdvSearchSubmit}
-                                placeholder="'Robin' or 'Robin Hood'"
-                                autoComplete="on"
-                                style={{borderColor:"none"}}
-                            />
-                            
-                        </p>
-                        <div onChange={this.handleAdvSearchChange}>
-                            <input type="radio" name="condTitAuth" value="AND" id="ANDcondTitAuth"/><label htmlFor="ANDcondTitAuth">AND</label>
-                            <input type="radio" name="condTitAuth" value="OR" id="ORcondTitAuth" defaultChecked/><label htmlFor="ORcondTitAuth">OR</label>
-                        </div>
-                        <p>
-                            Author:&nbsp;
-                            <input
+        return(
+            <div>
+                <h1>Advanced search</h1>
+                <form name="advsearch" onSubmit={this.handleAdvSearchSubmit}>
+                    Search books matching the following criteria...
+                    <p>
+                        Title:&nbsp;
+                        <input
                             type="text"
-                            name="advAuthor"
-                            className="author"
-                            value={this.props.advAuthor}
+                            name="advTitle"
+                            className="title"
+                            value={this.props.advTitle}
                             onChange = {this.handleAdvSearchChange}
                             onSubmit = {this.handleAdvSearchSubmit}
-                            placeholder="'Jane' or 'Jane Austen'"
+                            placeholder="'Robin' or 'Robin Hood'"
                             autoComplete="on"
                             style={{borderColor:"none"}}
                         />
-                        </p>
-                        <div onChange={this.handleAdvSearchChange}>
-                            <input type="radio" name="condAuthYr" value="AND" id="ANDcondAuthYr"/><label htmlFor="ANDcondAuthYr">AND</label>
-                            <input type="radio" name="condAuthYr" value="OR" id="ORcondAuthYr" defaultChecked/><label htmlFor="ORcondAuthYr">OR</label>
-                        </div>
-                        <p>
-                            Year range:&nbsp;
-                            <input
-                                type="text"
-                                name="advYearStart"
-                                className="yearstart"
-                                value={this.props.advYearStart}
-                                onChange = {this.handleAdvSearchChange}
-                                onSubmit = {this.handleAdvSearchSubmit}
-                                placeholder="From..."
-                                autoComplete="on"
-                                style={{borderColor:"none"}}
-                            />
-                            &nbsp;-&nbsp; 
-                            <input
-                                type="text"
-                                name="advYearEnd"
-                                className="yearend"
-                                value={this.props.advYearEnd}
-                                onChange = {this.handleAdvSearchChange}
-                                onSubmit = {this.handleAdvSearchSubmit}
-                                placeholder="To..."
-                                autoComplete="on"
-                                style={{borderColor:"none"}}
-                            />
-                        </p>
-                        <div onChange={this.handleAdvSearchChange}>
-                            <input type="radio" name="condYrPub" value="AND" id="ANDcondYrPub"/><label htmlFor="ANDcondYrPub">AND</label>
-                            <input type="radio" name="condYrPub" value="OR" id="ORcondYrPub" defaultChecked/><label htmlFor="ORcondYrPub">OR</label>
-                        </div>
-                        <p>
-                            Publisher:&nbsp;
-                            <input
-                                type="text"
-                                name="advPublisher"
-                                className="publisher"
-                                value={this.props.advPublisher}
-                                onChange = {this.handleAdvSearchChange}
-                                onSubmit = {this.handleAdvSearchSubmit}
-                                placeholder="'Penguin Books'"
-                                autoComplete="on"
-                                style={{borderColor:"none"}}
-                            />
-                        </p>
-                        <div onChange={this.handleAdvSearchChange}>
-                            <input type="radio" name="condPubSynp" value="AND" id="ANDcondPubSynp"/><label htmlFor="ANDcondPubSynp">AND</label>
-                            <input type="radio" name="condPubSynp" value="OR" id="ORcondPubSynp" defaultChecked/><label htmlFor="ORcondPubSynp">OR</label>
-                        </div>
-                        <p>
-                            Synopsis key words:&nbsp;
-                            <input
-                                type="text"
-                                name="advSynopsis"
-                                className="synopsis"
-                                value={this.props.advSynopsis}
-                                onChange = {this.handleAdvSearchChange}
-                                onSubmit = {this.handleAdvSearchSubmit}
-                                placeholder="Retrieves partial matches"
-                                autoComplete="on"
-                                style={{borderColor:"none"}}
-                            /> 
-                        </p>
-                        <button className="searchbutton" type="submit">Search</button>
-                    </form>
-                </div> 
-            )   
-        }      
+                        
+                    </p>
+                    <div onChange={this.handleAdvSearchChange}>
+                        <input type="radio" name="condTitAuth" value="AND" id="ANDcondTitAuth"/><label htmlFor="ANDcondTitAuth">AND</label>
+                        <input type="radio" name="condTitAuth" value="OR" id="ORcondTitAuth" defaultChecked/><label htmlFor="ORcondTitAuth">OR</label>
+                    </div>
+                    <p>
+                        Author:&nbsp;
+                        <input
+                        type="text"
+                        name="advAuthor"
+                        className="author"
+                        value={this.props.advAuthor}
+                        onChange = {this.handleAdvSearchChange}
+                        onSubmit = {this.handleAdvSearchSubmit}
+                        placeholder="'Jane' or 'Jane Austen'"
+                        autoComplete="on"
+                        style={{borderColor:"none"}}
+                    />
+                    </p>
+                    <div onChange={this.handleAdvSearchChange}>
+                        <input type="radio" name="condAuthYr" value="AND" id="ANDcondAuthYr"/><label htmlFor="ANDcondAuthYr">AND</label>
+                        <input type="radio" name="condAuthYr" value="OR" id="ORcondAuthYr" defaultChecked/><label htmlFor="ORcondAuthYr">OR</label>
+                    </div>
+                    <p>
+                        Year range:&nbsp;
+                        <input
+                            type="text"
+                            name="advYearStart"
+                            className="yearstart"
+                            value={this.props.advYearStart}
+                            onChange = {this.handleAdvSearchChange}
+                            onSubmit = {this.handleAdvSearchSubmit}
+                            placeholder="From..."
+                            autoComplete="on"
+                            style={{borderColor:"none"}}
+                        />
+                        &nbsp;-&nbsp; 
+                        <input
+                            type="text"
+                            name="advYearEnd"
+                            className="yearend"
+                            value={this.props.advYearEnd}
+                            onChange = {this.handleAdvSearchChange}
+                            onSubmit = {this.handleAdvSearchSubmit}
+                            placeholder="To..."
+                            autoComplete="on"
+                            style={{borderColor:"none"}}
+                        />
+                    </p>
+                    <div onChange={this.handleAdvSearchChange}>
+                        <input type="radio" name="condYrPub" value="AND" id="ANDcondYrPub"/><label htmlFor="ANDcondYrPub">AND</label>
+                        <input type="radio" name="condYrPub" value="OR" id="ORcondYrPub" defaultChecked/><label htmlFor="ORcondYrPub">OR</label>
+                    </div>
+                    <p>
+                        Publisher:&nbsp;
+                        <input
+                            type="text"
+                            name="advPublisher"
+                            className="publisher"
+                            value={this.props.advPublisher}
+                            onChange = {this.handleAdvSearchChange}
+                            onSubmit = {this.handleAdvSearchSubmit}
+                            placeholder="'Penguin Books'"
+                            autoComplete="on"
+                            style={{borderColor:"none"}}
+                        />
+                    </p>
+                    <div onChange={this.handleAdvSearchChange}>
+                        <input type="radio" name="condPubSynp" value="AND" id="ANDcondPubSynp"/><label htmlFor="ANDcondPubSynp">AND</label>
+                        <input type="radio" name="condPubSynp" value="OR" id="ORcondPubSynp" defaultChecked/><label htmlFor="ORcondPubSynp">OR</label>
+                    </div>
+                    <p>
+                        Synopsis key words:&nbsp;
+                        <input
+                            type="text"
+                            name="advSynopsis"
+                            className="synopsis"
+                            value={this.props.advSynopsis}
+                            onChange = {this.handleAdvSearchChange}
+                            onSubmit = {this.handleAdvSearchSubmit}
+                            placeholder="Retrieves partial matches"
+                            autoComplete="on"
+                            style={{borderColor:"none"}}
+                        /> 
+                    </p>
+                    <button className="searchbutton" type="submit">Search</button>
+                </form>
+            </div> 
+        )   
     }
-    
 }
 
 //Allows this child class to interface with <Hashrouter/> in parent class MainPage()
