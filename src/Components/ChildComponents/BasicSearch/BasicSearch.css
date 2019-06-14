@@ -8,6 +8,15 @@
 #searchbar:focus{ /*Causes searchbar border colour to change onclick and back when click made elsewhere*/
     border-color: green;
 }
+/*For the search bar*/
+.styled-component__StyledInput-sc-1dsackt-0{
+    width: 200px;
+    box-shadow: -1.5px -1.5px gray;
+}
+.styled-component__StyledInput-sc-1dsackt-0:focus{
+    border-color: green;
+    border-width: 2px;
+}
 #searchbutton{
     vertical-align: middle;
     float:left;

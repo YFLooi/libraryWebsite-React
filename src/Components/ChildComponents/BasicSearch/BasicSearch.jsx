@@ -2,11 +2,22 @@ import React from 'react';
 import {
     withRouter,
   } from "react-router-dom";
+import ReactSearchBox from "react-search-box";
 import "./BasicSearch.css";
 
 class BasicSearch extends React.Component {   
     constructor(props){
         super(props);
+
+        this.state = {
+            data: [ 
+                {key: "john",value: "John Doe"},    
+                {key: "jane",value: "Jane Doe"},    
+                {key: "mary",value: "Mary Phillips"},    
+                {key: "robert",value: "Robert"},    
+                {key: "karius",value: "Karius"}  
+            ] 
+        }
 
         this.handleBasicSearchChange = this.handleBasicSearchChange.bind(this);
         this.handleBasicSearchSubmit = this.handleBasicSearchSubmit.bind(this);
@@ -42,8 +53,9 @@ class BasicSearch extends React.Component {
                             //Only allows redirect to /Search-Results to render if this.state.searchResults is updated
                             //For some reason, "return <Redirect to='/Search-Results'/>" does not work here
                             if(that.props.isNewResultsLoaded === true){
-                                //A little cheat: Since I can't push to /SearchResults twice to trigger
-                                //componentDidMount() there to render the search results, I jump pages first
+                                //A little cheat: Since I can't push to /SearchResults to trigger
+                                //componentDidMount() when at /SearchResults to render the search results, 
+                                //I jump pages first
                                 that.props.history.push('/LoadingScreen');
                                 that.props.history.push('/SearchResults');
                             } else {
@@ -78,6 +90,12 @@ class BasicSearch extends React.Component {
                     autoComplete="off"
                     style={{borderColor:"none"}}
                 /> 
+
+                <ReactSearchBox          
+                    placeholder="Search books..."          
+                    value=""          
+                    data={this.state.data}        
+                />    
                 <button id="searchbutton" type="submit"></button>
             </form> 	
         )
