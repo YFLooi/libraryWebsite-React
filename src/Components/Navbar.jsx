@@ -1,4 +1,7 @@
 import React from 'react';
+import {
+    withRouter,
+} from "react-router-dom";
 
 //Contains replicas of classic HTML structures, e.g. div, nav, title
 import TypoGraphy from '@material-ui/core/Typography'
@@ -147,19 +150,18 @@ function Navbar(props) {
                 <ListItem>
                     <ListItemText primary='Menu' />
                 </ListItem>
-                <ListItem button key='home'>
+                <ListItem button key='home' onClick={() => {props.history.push('/')}}>
                     <ListItemIcon><Home/></ListItemIcon>
                     <ListItemText primary='Home' />
                 </ListItem>
-                <ListItem button key='advancedSearch'>
+                <ListItem button key='advancedSearch' onClick={() => {props.history.push('/AdvancedSearch')}}>
                     <ListItemIcon><Settings/></ListItemIcon>
-                    <ListItemText primary='Advanced Search' />
+                    <ListItemText primary='Advanced Search'/>
                 </ListItem>
-                <ListItem button key='librarianAccess'>
+                <ListItem button key='librarianAccess' onClick={() => {props.history.push('/Borrowings')}}>
                     <ListItemIcon><AccountBox/></ListItemIcon>
                     <ListItemText primary='Librarian access' />
-                </ListItem>
-                
+                </ListItem>                
             </List>
         </div>
     );
@@ -189,4 +191,4 @@ function Navbar(props) {
 }
 
 
-export default Navbar;
+export default withRouter(Navbar);
