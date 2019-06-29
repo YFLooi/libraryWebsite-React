@@ -244,7 +244,7 @@ class Borrowings extends React.Component {
                     <div>
                         <form onSubmit = {this.checkBorrowings}>
                             <input
-                                type="text"
+                                type="password"
                                 name="passwordInput"
                                 id="passwordInput"
                                 value={this.props.passwordInput}

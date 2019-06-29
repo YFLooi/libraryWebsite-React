@@ -77,13 +77,26 @@ export default class CartDisplay extends React.Component {
         if (cardIndex.parentNode) {
             cardIndex.parentNode.removeChild(cardIndex);
         }
-    
+        
+        console.log("Current books in cart:"+this.props.borrowCart);
+        console.log(this.props.borrowCart);
+
         /**Updates this.state.borrowCart to reflect book removed */
+        const newCart = this.props.borrowCart
         const targetIndex = this.props.borrowCart.findIndex(cart => cart.id === bookId);
         console.log("Removal target index: "+targetIndex);
-        const newCart = this.props.borrowCart.splice(targetIndex,1)
+        //This returns the array minus the data removed at the target index
+        //If we want the data removed, set this equal to a variable, aka const x = newCart.splice(x,x)
+        //const x will be = data removed
+        newCart.splice(targetIndex,1) 
         /**Passes update made to copy of state back to state*/
         this.props.stateUpdater("borrowCart",newCart)
+
+        console.log("New books in cart:");
+        console.log(this.props.borrowCart);
+        //Updates #cartCounter to show number of books in this.props.borrowcart
+        //Use newCart instead of this.props.borrowCart because it updates first
+        document.getElementById("cartCounter").innerHTML = parseInt(newCart.length,10);
     
         /**If user removes all items from cart, the message "Cart empty" 
         appears*/

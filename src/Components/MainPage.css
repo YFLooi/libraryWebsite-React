@@ -1,43 +1,8 @@
 body{
-    background-color: aquamarine;
+    background-color: whitesmoke
 }
-
-/*For the title header and its buttons*/
-header{
-    width:100%;
-    height: 60px;
-    padding: 1% 1.5% 0.5% 0.5%;
-    margin: -1% 0% 0% -1%;
-    background-color:wheat;
-    overflow-x:visible;
-}
-#header-logo, #header-search, #header-buttons{
-    vertical-align: middle;
-    display: inline-block;
-}
-/*All header components have height less than <header/> height to leave margin 
-at top and bottom*/
-#header-logo{
-    height: 85%;
-    width: 25%;
-}
-#header-search{
-    height: 85%;
-    width: 50%;
-}
-#header-buttons{
-    height: 85%;
-    width: 25%;
-}
-img#logo{
-    height: 100%;
-    width:auto;
-}
-#advancedButton,#cartButton,#borrowingsButton{
-    vertical-align: middle;
+#advancedButton,#borrowingsButton{
     float: left;
-    width: 45px;
-    height: 45px;
     border-radius: 0 2px 0 2px;
     outline: none;
     box-shadow: none;
@@ -51,19 +16,15 @@ img#logo{
     background-repeat: no-repeat;
     background-attachment: scroll;
     background-size: 22px;
+
+    width: 45px;
+    height: 45px;
 }
 #advancedButton{
     margin-left: 0.5%;
     background-image: url(./icons/settings.svg); /*Must be in same folder as component*/
 }
 #advancedButton:active{
-    box-shadow: -1.5px -1.5px gray;
-}
-#cartButton{
-    margin-left: 25%;
-    background-image: url(./icons/cart.svg); /*Must be in same folder as component*/
-}
-#cartButton:active{
     box-shadow: -1.5px -1.5px gray;
 }
 #borrowingsButton{
@@ -89,6 +50,7 @@ ul.navbar li {
 }
 ul.navbar {
     background-color: #111;
+    width: 1085px;
     padding: 0;
 }
 ul.navbar li a {

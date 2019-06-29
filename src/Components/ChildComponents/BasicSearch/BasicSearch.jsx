@@ -2,35 +2,33 @@ import React from 'react';
 import {
     withRouter,
   } from "react-router-dom";
-import ReactSearchBox from "react-search-box";
 import "./BasicSearch.css";
+import IntegrationAutosuggest from "./MaterialAutosuggest.jsx"
 
 class BasicSearch extends React.Component {   
     constructor(props){
         super(props);
-
-        this.state = {
-            data: [ 
-                {key: "john",value: "John Doe"},    
-                {key: "jane",value: "Jane Doe"},    
-                {key: "mary",value: "Mary Phillips"},    
-                {key: "robert",value: "Robert"},    
-                {key: "karius",value: "Karius"}  
-            ] 
-        }
-
-        this.handleBasicSearchChange = this.handleBasicSearchChange.bind(this);
         this.handleBasicSearchSubmit = this.handleBasicSearchSubmit.bind(this);
     }
-    handleBasicSearchChange(event){
-        this.props.stateUpdater("basicInput",event.target.value)
-    }
-    handleBasicSearchSubmit(event){ 
+    handleBasicSearchSubmit(input){ 
         const that = this;
-        event.preventDefault();
-        const basicInput = this.props.basicInput;
-    
-        if(basicInput !== ""){
+
+        //Adds record of Basic search term in state for Redux later
+        that.props.stateUpdater("basicInput",input)    
+        
+        //String passed to PSQL must be free of special characters, otherwise it'll bug (parentheses not balanced)
+        const removeSpecialChars = (string) => {
+            return string.replace(/(?!\w|\s)./g, '')
+              .replace(/\s+/g, ' ')
+              .replace(/\s/g, '') // removes whitespace
+              .replace(/^(\s*)([\W\w]*)(\b\s*$)/g, '$2');
+          }
+        let basicInput = '^'+removeSpecialChars(input);
+        console.log("String submitted for basic search: "+basicInput);
+        
+        //Use value stored in state instead. <Autocomplete/> returns all kinds of jibberish which
+        //enables a search even on an empty string. 
+        if(that.props.basicInput !== ""){
             fetch("http://localhost:3005/BasicSearch/"+basicInput, {method: "GET",mode:"cors"})
                 //Here we chain 2 promise functions: The first fetches data (response), the second examines text in response (data)
                 .then(function(response){
@@ -75,29 +73,13 @@ class BasicSearch extends React.Component {
         //Does not work to declare a history.push() here. Maybe because BasicSearch is displayed
         //no matter which other component is on display?
         return (
-            <form onSubmit={this.handleBasicSearchSubmit}>
-                {/*This default search is set to search partial, case-insensitive 
-                matches of title, author, and publisher*/}
-                <input
-                    type="text"
-                    name="searchbar"
-                    id="searchbar"
-                    className="searchbar"
-                    value={this.props.basicInput}
-                    onChange = {this.handleBasicSearchChange}
-                    onSubmit = {this.handleBasicSearchSubmit}
-                    placeholder="Search books..."
-                    autoComplete="off"
-                    style={{borderColor:"none"}}
-                /> 
-
-                <ReactSearchBox          
-                    placeholder="Search books..."          
-                    value=""          
-                    data={this.state.data}        
-                />    
-                <button id="searchbutton" type="submit"></button>
-            </form> 	
+            <React.Fragment>
+                <IntegrationAutosuggest
+                    handleBasicSearchSubmit = {this.handleBasicSearchSubmit}
+                    stateUpdater = {this.props.stateUpdater}
+                    searchResults = {this.props.searchResults}
+                />         
+            </React.Fragment>
         )
     }
 }

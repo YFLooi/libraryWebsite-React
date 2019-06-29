@@ -8,6 +8,7 @@
     overflow-y: hidden;
     display: flex;
     flex-direction: row;
+    z-index: 0;
 }
 .cardContent {
     background-image: url("/icons/card.jpg");

@@ -18,12 +18,25 @@ const getNewArrivals = (request, response) => {
     })
 }
 
+/*Selects all items in the "catalog" table where title partially matches [basicInput]*/
+const getSuggestions = (request, response) => {
+    let basicInput = request.params.basicInput;
+    console.log(basicInput);
+
+    pool.query('SELECT title FROM catalog WHERE title ~* $1 ORDER BY id ASC', [basicInput], (error, results) => {
+        if (error) {
+            throw error
+        }
+        response.status(200).json(results.rows)
+    })
+}
+
 /*Basic search*/
 const getBasicSearch = (request, response) => {
-    let input = request.params.input;
-    console.log(input);
+    let basicInput = request.params.basicInput;
+    console.log(basicInput);
     
-    pool.query('SELECT * FROM catalog WHERE title ~* $1 OR author ~*$1', [input], (error, results) => {
+    pool.query('SELECT * FROM catalog WHERE title ~* $1 OR author ~* $1', [basicInput], (error, results) => {
         if (error) {
             throw error
         }
@@ -177,6 +190,7 @@ const deleteUser = (request, response) => {
  With ES6 syntax, its getUsers instead of getUsers:getUsers*/
 module.exports = {
     getNewArrivals,
+    getSuggestions,
     getBasicSearch,
     getAdvSearch,
     createBorrowings,

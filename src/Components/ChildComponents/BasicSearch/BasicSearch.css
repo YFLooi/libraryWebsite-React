@@ -2,43 +2,33 @@
     width: 60%;
     height: 45px;
     border-radius: 0 2px 0 2px;
-    vertical-align: middle;
     float:left;
 }
 #searchbar:focus{ /*Causes searchbar border colour to change onclick and back when click made elsewhere*/
     border-color: green;
 }
-/*For the search bar*/
-.styled-component__StyledInput-sc-1dsackt-0{
-    width: 200px;
-    box-shadow: -1.5px -1.5px gray;
-}
-.styled-component__StyledInput-sc-1dsackt-0:focus{
-    border-color: green;
-    border-width: 2px;
-}
-#searchbutton{
-    vertical-align: middle;
-    float:left;
-    margin-left: 1%;
 
-    width: 46.5px;
-    height: 46.5px;
+.searchButton, .advancedButton{
+    margin-left: 2px;
+    float: left;
     border-radius: 0 2px 0 2px;
-    outline: none;
-    box-shadow: none;
+    cursor: pointer;
+    width: 45px;
+    height: 45px;
     cursor: pointer;
 
+    /* Want it to be transparent, so that background colour takes over
+    box-shadow: 2px 2px gray;
     background-color: whitesmoke;
-    background-position-x: 50%;
-    background-position-y: center;
+    background-position: center;
     background-repeat: no-repeat;
     background-attachment: scroll;
     background-size: 22px;
-
-    background-image: url(./icons/searchicon.svg); /*Must be in same folder as component*/
+    */
 }
-/*
-.searchbutton:hover{
-    border-color:green;
-}*/
+.searchButton:active{
+    box-shadow: -1.5px -1.5px gray;
+}
+.advancedButton:active{
+    box-shadow: -1.5px -1.5px gray;
+}

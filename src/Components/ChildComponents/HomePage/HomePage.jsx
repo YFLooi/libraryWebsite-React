@@ -1,7 +1,8 @@
 import React from 'react';
-import "./NewArrivals.css";
+import "./HomePage.css";
+import BasicSearch from '../BasicSearch/BasicSearch.jsx';
 
-export default class NewArrivals extends React.Component {
+export default class HomePage extends React.Component {
     constructor(props) {
         super(props);		
         
@@ -81,10 +82,21 @@ export default class NewArrivals extends React.Component {
     }
     render() {
 		return (
-            <div className="results">
-                <p></p>
+            <div className="homepage">
+                
+                <BasicSearch
+                    basicInput={this.props.basicInput}
+                    
+                    borrowCart={this.props.borrowCart}
+                    searchResults={this.props.searchResults}
+                    isNewResultsLoaded={this.props.isNewResultsLoaded}
+
+                    stateUpdater={this.props.stateUpdater}
+                />
+                <h2>New arrivals</h2>
+                <div className="results">
                     <section id="newArrivals"></section>
-                <p></p>
+                </div>
             </div>
 		);
 	}

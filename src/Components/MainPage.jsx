@@ -6,14 +6,18 @@ import {
   } from "react-router-dom";
 import "./MainPage.css";
 
-import NewArrivals from "./ChildComponents/NewArrivals/NewArrivals.jsx";
+import HomePage from "./ChildComponents/HomePage/HomePage.jsx";
 import LoadingScreen from "./ChildComponents/LoadingScreen/LoadingScreen.jsx";
-import Dropdown from "./ChildComponents/Dropdown/Dropdown.jsx";
-import BasicSearch from "./ChildComponents//BasicSearch/BasicSearch.jsx";
 import AdvSearch from "./ChildComponents/AdvSearch/AdvSearch.jsx";
 import SearchResults from "./ChildComponents/SearchResults/SearchResults.jsx";
 import CartDisplay from "./ChildComponents/CartDisplay/CartDisplay.jsx";
 import Borrowings from "./ChildComponents/Borrowings/Borrowings.jsx";
+
+//For material UI navbar
+import Navbar from './Navbar.jsx'
+import AppBar from '@material-ui/core/AppBar';
+import Toolbar from '@material-ui/core/Toolbar'
+import TypoGraphy from '@material-ui/core/Typography'
 
 export default class MainPage extends React.Component {
     constructor(props){
@@ -51,8 +55,6 @@ export default class MainPage extends React.Component {
             isBorrowingsPasswordCorrect: false
         }
         this.stateUpdater = this.stateUpdater.bind(this);
-        this.stateChecker = this.stateChecker.bind(this);
-
     } 
     /*Universal state manipulator! It allows all child component functions to be outsourced 
     as props by providing them a means to manipulate state!!*/
@@ -63,37 +65,32 @@ export default class MainPage extends React.Component {
             [name]: data
         })
     }
-    stateChecker(){
-        console.log("this.state.isNewResultsLoaded value: "+this.state.isNewResultsLoaded);
-        //console.log("this.state.borrowingsRecord value: "+this.state.borrowingsRecord);
-        //console.log(this.state.borrowingsRecord);
-        //console.log("this.state.passwordInput value: "+this.state.passwordInput);
-    }
     render() {
         return(
             <HashRouter>
+                {/** 
                 <header>
                     <div id="header-logo">
                         <NavLink to="/"><img id="logo" src="./assets/logo.png" alt="home button"/></NavLink>
                     </div>
 
                     <div id="header-search">
-                        <BasicSearch 
-                            basicInput={this.state.basicInput}
-                            
-                            borrowCart={this.state.borrowCart}
-                            searchResults={this.state.searchResults}
-                            isNewResultsLoaded={this.state.isNewResultsLoaded}
-
-                            stateUpdater={this.stateUpdater}
-                        />
                         <NavLink to="/AdvancedSearch"><span id="advancedButton"></span></NavLink>
                     </div>
                     <div id="header-buttons"> 
-                        <NavLink to="/Cart"><span id="cartButton"></span></NavLink>
+                        <NavLink to="/Cart">
+                            <span id="cartButton">
+                                <span id="cartCounter">0</span>
+                            </span>
+                        </NavLink>
+                */}   
+                        {/**Controlling functions are borrowRequest() in SearchResults.jsx 
+                        and handleCartCancel() in CartDisplay.jsx
                         <NavLink to="/Borrowings"><span id="borrowingsButton"></span></NavLink>
                     </div>
-                </header>	
+                </header>	*/}
+                
+                <Navbar/>
 
                 <ul className="navbar">                    
                     <li><NavLink to="/">Home</NavLink></li>
@@ -112,7 +109,16 @@ export default class MainPage extends React.Component {
                     in component "Home" are rendered here in the "content" <div>*/}
                     <Route 
                         exact path="/" 
-                        component={NewArrivals}
+                        render={(props) => <HomePage {...props}
+                                basicInput={this.state.basicInput}
+                    
+                                borrowCart={this.state.borrowCart}
+                                searchResults={this.state.searchResults}
+                                isNewResultsLoaded={this.state.isNewResultsLoaded}
+
+                                stateUpdater={this.stateUpdater}
+                            />
+                        }
                     />
                     <Route 
                         path="/LoadingScreen" 
@@ -167,13 +173,6 @@ export default class MainPage extends React.Component {
                     />
 
                 </div>
-                
-                <p>
-                    <button onClick={this.stateChecker}>State check</button>
-                </p>
-                <p>
-                    <Dropdown/>
-                </p>
             </HashRouter>    
         );   
     }

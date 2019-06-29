@@ -36,8 +36,9 @@ app.get("/", (request, response) => {
 })
 
 app.get("/NewArrivals", db.getNewArrivals)
+app.get("/Suggestions/:basicInput", db.getSuggestions)
 
-app.get("/BasicSearch/:input", db.getBasicSearch)
+app.get("/BasicSearch/:basicInput", db.getBasicSearch)
 
 app.get("/AdvSearch/:advTitle/:condTitAuth/:advAuthor/:condAuthYr/:advYearStart/:advYearEnd/:condYrPub/:advPublisher/:condPubSynp/:advSynopsis"
 , db.getAdvSearch)
