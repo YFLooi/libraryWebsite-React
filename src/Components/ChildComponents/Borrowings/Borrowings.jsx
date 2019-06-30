@@ -4,6 +4,9 @@ import {
     withRouter
   } from "react-router-dom"; 
 import "./Borrowings.css";
+import { makeStyles} from '@material-ui/core/styles';
+import { FormControl, FormControlLabel, InputLabel, Input, Button} from '@material-ui/core';
+import TypoGraphy from '@material-ui/core/Typography'
 
 class Borrowings extends React.Component {
     constructor(props) {
@@ -238,33 +241,35 @@ class Borrowings extends React.Component {
         //If wrong/no password, prompts for password
         if(this.props.isBorrowingsPasswordCorrect === false){
             return(
-                <div id="borrowings-page">
+                <div id='borrowings-page'>
                     <div><h1>Borrowings record</h1></div>
-                    <div>Librarians only. Please provide a valid password</div>
-                    <div>
+                    <TypoGraphy variant='body1' align='left'>Librarians only. Please provide a valid password</TypoGraphy>
+                    <p style={{height:48, position:'relative',}}>
                         <form onSubmit = {this.checkBorrowings}>
-                            <input
-                                type="password"
-                                name="passwordInput"
-                                id="passwordInput"
+                            <Input
+                                type='password'
+                                name='passwordInput'
+                                id='passwordInput'
                                 value={this.props.passwordInput}
                                 onChange = {this.handlePasswordInputChange}
                                 onSubmit = {this.checkBorrowings}
+            
                                 placeholder="Hint: 'p***w**d'"
-                                autoComplete="off"
-                                style={{borderColor:"none"}}
+                                autoComplete='off'
+                                style={{border:'2px solid gray', float:'left',}}
+                                size='medium'
                             />
-                            <span><button type="submit">Submit</button></span>
+                            <Button type='submit' variant='contained' color='inherit' size='medium' style={{marginLeft: 10, float:'left'}}>Submit</Button>                         
                         </form>
-                    </div>
+                    </p>
                 </div> 
             )
         }else if(this.props.isBorrowingsPasswordCorrect === true){
             return (
-                <div id="borrowings-page">
+                <div id='borrowings-page'>
                     <div><h1>Borrowings record</h1></div>
                     <div>Late return fine set to RM 0.50 per day late</div>
-                    <div id="borrowings"></div>
+                    <div id='borrowings'></div>
                 </div>
             );
         }
@@ -272,3 +277,4 @@ class Borrowings extends React.Component {
 }
 
 export default withRouter(Borrowings);
+

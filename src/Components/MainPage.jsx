@@ -26,19 +26,19 @@ export default class MainPage extends React.Component {
         /**Placing all states in single parent page allows for easier manipulation with Redux later*/
         this.state = {
             /**For basic search*/
-            basicInput: "",
+            basicInput: '',
 
             /*For advanced search*/
-            advTitle: "",
+            advTitle: '',
             condTitAuth:'OR',
-            advAuthor: "",
+            advAuthor: '',
             condAuthYr:'OR',
-            advYearStart: "",
-            advYearEnd: "",
-            condYrPub: "OR",
-            advPublisher: "",
+            advYearStart: '',
+            advYearEnd: '',
+            condYrPub: 'OR',
+            advPublisher: '',
             condPubSynp:'OR',
-            advSynopsis: "",
+            advSynopsis: '',
 
             //For rendering search results
             searchResults: [],
@@ -68,40 +68,7 @@ export default class MainPage extends React.Component {
     render() {
         return(
             <HashRouter>
-                {/** 
-                <header>
-                    <div id="header-logo">
-                        <NavLink to="/"><img id="logo" src="./assets/logo.png" alt="home button"/></NavLink>
-                    </div>
-
-                    <div id="header-search">
-                        <NavLink to="/AdvancedSearch"><span id="advancedButton"></span></NavLink>
-                    </div>
-                    <div id="header-buttons"> 
-                        <NavLink to="/Cart">
-                            <span id="cartButton">
-                                <span id="cartCounter">0</span>
-                            </span>
-                        </NavLink>
-                */}   
-                        {/**Controlling functions are borrowRequest() in SearchResults.jsx 
-                        and handleCartCancel() in CartDisplay.jsx
-                        <NavLink to="/Borrowings"><span id="borrowingsButton"></span></NavLink>
-                    </div>
-                </header>	*/}
-                
                 <Navbar/>
-
-                <ul className="navbar">                    
-                    <li><NavLink to="/">Home</NavLink></li>
-                    <li><NavLink to="/AdvancedSearch">Advanced Search</NavLink></li>
-                    <li><NavLink to="/Cart">Cart</NavLink></li>
-                    <li id="borrowingsTab"><NavLink to="/Borrowings">Librarian access</NavLink></li>
-                    {/**Secret page! Should not be visible if this.state.searchResults === []
-                    <li><NavLink to="/SearchResults">Search Results</NavLink></li>
-                    */}
-                </ul>
-                
 
                 <div className="content">
                     {/**Matches URL defined in "to" prop to correct content (components)

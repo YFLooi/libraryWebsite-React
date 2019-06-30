@@ -26,7 +26,7 @@ function renderInputComponent(inputProps) {
         <TextField
             //fullWidth //Causes <Textfield/> to occupy full width of box
             variant = 'filled' //Automatically changes <input/> into gray box with underline
-            fullWidth = 'false'
+            fullWidth = {false}
             InputProps={{
                 inputRef: node => {
                     ref(node);

@@ -1,5 +1,6 @@
 import React from 'react';
 import "./HomePage.css";
+import TypoGraphy from '@material-ui/core/Typography'
 import BasicSearch from '../BasicSearch/BasicSearch.jsx';
 
 export default class HomePage extends React.Component {
@@ -93,7 +94,7 @@ export default class HomePage extends React.Component {
 
                     stateUpdater={this.props.stateUpdater}
                 />
-                <h2>New arrivals</h2>
+                <TypoGraphy variant="h5" color="inherit">New Arrivals</TypoGraphy>
                 <div className="results">
                     <section id="newArrivals"></section>
                 </div>
