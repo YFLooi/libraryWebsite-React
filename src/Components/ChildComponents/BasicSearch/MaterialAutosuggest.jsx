@@ -5,12 +5,14 @@ import match from 'autosuggest-highlight/match';
 import parse from 'autosuggest-highlight/parse';
 import TextField from '@material-ui/core/TextField';
 import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 import MenuItem from '@material-ui/core/MenuItem';
 import { makeStyles} from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
 import { Search, Settings } from '@material-ui/icons'
-import Icon from '@material-ui/core/Icon';
-import CloudUploadIcon from '@material-ui/icons/CloudUpload';
+import {
+    withRouter,
+} from "react-router-dom";
+import background from './icons/background.png';
 
 function renderInputComponent(inputProps) {
     //How CSS is passed from "const useStyles()" to this <TextField/>:
@@ -82,13 +84,22 @@ function getSuggestionValue(suggestion) {
 }
 const useStyles = makeStyles(theme => ({
     root: { //Outer div box
-       width:'100%',
-       height: 100,
-       position: 'relative',
+        marginTop: '1%',
+        marginBottom: '1%',
+        width:'100%',
+        height: 200,
+        position: 'relative',
+
+        backgroundImage: `url(${background})`,
+        backgroundPositionX: '50%',
+        backgroundPositionY: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'scroll',
+        backgroundSize: '100%',
     },
     content:{ //Inner div box 
         width:'95%',
-        height: '45%',
+        height: 45, //Controls the height of the <TextField/> by being the relative measure
         position: 'absolute',
         border: '2px solid black',
         background: 'white',
@@ -96,7 +107,7 @@ const useStyles = makeStyles(theme => ({
         //so add 2.5% margin on left and right to centre
         //'6.5%' ensures a bias towards the top (7.5% = centre), due to the searchboxbox text 
         //aligned bottom
-        margin:'6.5% 2.5% 0 2.5%', 
+        margin:'2.5% 2.5% 0 2.5%', 
     },
     container: { //Contains the searchbox
         width:'70%',
@@ -143,6 +154,15 @@ const useStyles = makeStyles(theme => ({
     },
 }));
 
+const titleCss = makeStyles(theme => ({
+    root: { //Outer div box
+        width:'100%',
+        height: 50,
+        color: 'white',
+        paddingTop: '5%',
+    },
+}));
+
 //Contains the suggestions returned by the handleChange() function
 let suggestions = [];
 
@@ -150,6 +170,8 @@ let suggestions = [];
 //Note that access is by "props.function" instead of "this.props.function"
 function IntegrationAutosuggest(props) {
     const classes = useStyles();
+    const titleStyle = titleCss();
+
     const [state, setState] = React.useState({
         single: '',
         popper: '',
@@ -172,6 +194,10 @@ function IntegrationAutosuggest(props) {
             ...state,
             [name]: newValue,
         });
+
+        //Passes the value updated in this component's states to be used in the
+        //function triggered on Enter keypress
+        props.basicSearchStateUpdater(name, newValue);
         
         //String passed to PSQL must be free of special characters, otherwise it'll bug (parentheses not balanced)
         const removeSpecialChars = (string) => {
@@ -209,15 +235,6 @@ function IntegrationAutosuggest(props) {
         .catch(function(error){
             console.log('Request for suggestions failed', error)
         })
-        
-        //Since there's now stuff in the <input/> box, it has been rigged to trigger the 
-        //handleSubmit() function if the enter key is pressed
-        document.getElementById('react-autosuggest-simple').addEventListener('keypress', function (e) {
-            var key = e.which || e.keyCode;
-            if (key === 13) { 
-                handleSubmit();
-            }
-        });
     };
     const handleSubmit = () => { 
         //Cannot call the prop directly, it seems to cause handleBasicSearchSubmit()
@@ -232,17 +249,17 @@ function IntegrationAutosuggest(props) {
         getSuggestionValue,
         renderSuggestion,
     };
-
     return (
         <div className={classes.root}>
+            <Typography variant='h5' align='center' className={titleStyle.root}>Start your search</Typography>
             <div className={classes.content}>
                 <Autosuggest
                     {...autosuggestProps}
                     inputProps={{
                         classes,
                         id: 'react-autosuggest-simple',
-                        label: 'Find books here',
-                        placeholder: 'Title, author, synopsis...',
+                        label: 'Title, author, synopsis...', //Floating text above typing area
+                        placeholder: '', //Background of <Textfield/>
                         value: state.single,
                         onChange: handleChange('single'),
                     }}
@@ -259,16 +276,16 @@ function IntegrationAutosuggest(props) {
                     )}      
                 />    
                 <div className={classes.buttonBox}>
-                    <span className='searchButton' id='basicSearchSubmitButton' onClick={handleSubmit}>
+                    <div className='searchButton' id='basicSearchSubmitButton' onClick={() => {handleSubmit();}}>
                         <Search className={classes.buttonIcon}/>
-                    </span>  
-                    <span className='advancedButton'>
+                    </div>  
+                    <div className='advancedButton' onClick={()=>{props.history.push('/AdvancedSearch');}}>
                         <Settings className={classes.buttonIcon}/>
-                    </span>  
+                    </div>  
                 </div>
             </div>
         </div>
     );
 }
 
-export default IntegrationAutosuggest;
+export default withRouter(IntegrationAutosuggest);

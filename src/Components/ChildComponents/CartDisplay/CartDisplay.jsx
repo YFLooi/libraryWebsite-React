@@ -1,4 +1,6 @@
 import React from 'react';
+import {Input, Button} from '@material-ui/core';
+import TypoGraphy from '@material-ui/core/Typography'
 
 export default class CartDisplay extends React.Component {
     constructor(props){
@@ -214,10 +216,10 @@ export default class CartDisplay extends React.Component {
     render() {
 		return (
             <div id="cartDisplay-page">
-                <h1>Cart contents:</h1>
+                <TypoGraphy variant='h5' align='left'>Cart contents</TypoGraphy>
                 <div id="cartDisplay"></div>
                 {/**checkoutButton only display if items are present in cart*/}
-                <button id="checkoutButton" style={{display: "none"}} onClick={this.handleCartCheckout}>Checkout</button>
+                <Button  id="checkoutButton" style={{display: "none"}} onClick={this.handleCartCheckout} size='medium' variant='contained' color='inherit'>Checkout</Button>
             </div>
 		);
 	}

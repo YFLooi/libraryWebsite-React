@@ -2,6 +2,7 @@ import React from 'react';
 import "./HomePage.css";
 import TypoGraphy from '@material-ui/core/Typography'
 import BasicSearch from '../BasicSearch/BasicSearch.jsx';
+import Carousel from './Carousel.jsx'
 
 export default class HomePage extends React.Component {
     constructor(props) {
@@ -83,8 +84,7 @@ export default class HomePage extends React.Component {
     }
     render() {
 		return (
-            <div className="homepage">
-                
+            <div className="homepage">    
                 <BasicSearch
                     basicInput={this.props.basicInput}
                     
@@ -98,6 +98,29 @@ export default class HomePage extends React.Component {
                 <div className="results">
                     <section id="newArrivals"></section>
                 </div>
+                <p></p>
+                <Carousel/>
+                <p></p>
+                <TypoGraphy variant="h5" color="inherit">Announcements</TypoGraphy>
+                <ul>
+                    <li>
+                        <TypoGraphy variant="body" color="inherit"> 
+                            Good news readers! New books have arrived! Check them out on the carousel above
+                        </TypoGraphy>    
+                    </li>
+                    <li>
+                        <TypoGraphy variant="body" color="inherit"> 
+                            Tip: Need a faster way to find exact books? Try the 'Advanced Search' by clicking on the Gear icon
+                            or checking the menu bar
+                        </TypoGraphy>    
+                    </li>
+                    <li>
+                        <TypoGraphy variant="body" color="inherit"> 
+                            Did you know this site looks great on mobile? Try it today!
+                        </TypoGraphy>    
+                    </li>
+                </ul>
+                
             </div>
 		);
 	}

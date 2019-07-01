@@ -31,15 +31,29 @@ import { Menu, Home, Settings, AccountBox, ShoppingCart } from '@material-ui/ico
 import logo from './icons/logo.png';
 import cartIcon from './icons/cart.svg';
 
-//For styles that just cannot be handled by modifying MaterialUI's className
-//and for HTML elements that do NOT use Material UI APIs
-//Easier to put both styling docs here than in a separate CSS file
-const cssStyles = {
+//The MaterialUI way of modding styles
+const useStyles = makeStyles(theme => ({
+    AppBar: {
+        backgroundColor: 'gray',
+        width: '100%',
+        height: 56,
+        position: 'relative',
+    },
+    //For menu drawer
+    list: {
+        width: 250,
+        zIndex: 2,
+      },
+    //For menu drawer
+    fullList: {
+        width: 'auto',
+    },
     logo: {
         backgroundImage: `url(${logo})`,
         top: 0,
         height: '80%', //Keeps logo from reaching edges of container
-        width: '25%', //Need to, or else defaults to zero
+        width: 55, //Need to, or else defaults to zero
+        cursor: 'pointer',
 
         //Centres logo
         display: 'block',
@@ -52,69 +66,29 @@ const cssStyles = {
         backgroundAttachment: 'scroll',
         backgroundSize: '45px',
     },
+    cartButtonBox: {
+        width: 48,
+        height: 48,
+        right:'0.5%',
+        position: 'absolute',
+    },
+    cartButton: {
+        width: 32,
+        height: 32,
+    },
     cartCounter: {
-        position:'absolute',
         backgroundColor: 'purple',
         color: 'white',
         textAlign: 'center',
-    
-        position: 'relative',
+
+        position: 'absolute',
         zIndex: 0,//Combined with absolute position, allows stacking over other DOM elements
         fontSize: 15,
-        right: 26,
-        bottom: 10,
+        right: 30,
+        top: 20,
         width: 18,
         height: 18,
         borderRadius: '50%',
-    },
-    cartButton: {
-        right: 0,
-        position: 'relative',
-        width: 56, //Need to, or else defaults to zero
-        height: 45, //Keeps logo from reaching edges of container
-
-        /** 
-        outline: 'none',
-        boxShadow: 'none',
-        cursor: 'pointer',
-
-        //Centres background image
-        backgroundPositionX: '50%',
-        backgroundPositionY: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'scroll',
-        backgroundSize: '27px',
-
-        backgroundImage: `url(${cartIcon})`,
-        */
-    },
-};
-
-//The MaterialUI way of modding styles
-const useStyles = makeStyles(theme => ({
-    root: {
-        width: '100%',
-    },
-    AppBar: {
-        backgroundColor: 'gray',
-        width: '100%',
-        position: 'relative',
-    },
-    //For menu drawer
-    list: {
-        width: 250,
-        zIndex: 2,
-      },
-    //For menu drawer
-    fullList: {
-        width: 'auto',
-    },
-    cartButtonBox: {
-        marginRight: '-15%',
-    },
-    cartButton: {
-        width: 35,
-        height: 35,
     },
 }));
 
@@ -169,23 +143,21 @@ function Navbar(props) {
         /**The component's prop value here determines which HTML
          * element it renders to. "nav" = <nav/> and "div" = <div/>*/
         <React.Fragment>
-            <div className={classes.root}>
-                <AppBar position="static" className={classes.AppBar}>
-                    <Toolbar>
-                        <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="Menu" onClick={toggleDrawer('left', true)}>
-                            <Menu/>
-                        </IconButton>
-                        <div id='logo' style={cssStyles.logo}></div>
-                        <IconButton edge="start" color="inherit" className={classes.cartButtonBox}>
-                            <ShoppingCart className={classes.cartButton}/>
-                            <div id="cartCounter" style={cssStyles.cartCounter}>0</div>
-                        </IconButton>
-                    </Toolbar>
-                </AppBar>
-                <Drawer open={state.left} onClose={toggleDrawer('left', false)}>
-                    {sideList('left')}
-                </Drawer>
-            </div>
+            <AppBar position="static" className={classes.AppBar}>
+                <Toolbar>
+                    <IconButton edge="start" className={classes.menuButton} color="inherit" aria-label="Menu" onClick={toggleDrawer('left', true)}>
+                        <Menu/>
+                    </IconButton>
+                    <div id='logo' className={classes.logo} onClick={() => {props.history.push('/')}}></div>
+                    <IconButton className={classes.cartButtonBox} disableRipple={false} color="inherit" onClick={() => {props.history.push('/Cart')}}>
+                        <ShoppingCart className={classes.cartButton}/>
+                        <div id="cartCounter" className={classes.cartCounter}>0</div>
+                    </IconButton>
+                </Toolbar>
+            </AppBar>
+            <Drawer open={state.left} onClose={toggleDrawer('left', false)}>
+                {sideList('left')}
+            </Drawer>
         </React.Fragment>
     )
 }

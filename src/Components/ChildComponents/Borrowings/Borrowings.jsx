@@ -242,7 +242,7 @@ class Borrowings extends React.Component {
         if(this.props.isBorrowingsPasswordCorrect === false){
             return(
                 <div id='borrowings-page'>
-                    <div><h1>Borrowings record</h1></div>
+                    <div><TypoGraphy variant='h5' align='left'>Borrowings record</TypoGraphy></div>
                     <TypoGraphy variant='body1' align='left'>Librarians only. Please provide a valid password</TypoGraphy>
                     <p style={{height:48, position:'relative',}}>
                         <form onSubmit = {this.checkBorrowings}>
