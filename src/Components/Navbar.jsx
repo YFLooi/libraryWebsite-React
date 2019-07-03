@@ -48,17 +48,28 @@ const useStyles = makeStyles(theme => ({
     fullList: {
         width: 'auto',
     },
+    menuButton: {
+        width: 48,
+        height: 48,
+
+        top: '5%',
+        bottom: '5%',
+        left: '3.5%',
+        position: 'absolute',
+    },
     logo: {
         backgroundImage: `url(${logo})`,
         top: 0,
         height: '80%', //Keeps logo from reaching edges of container
-        width: 55, //Need to, or else defaults to zero
+        width: 60, //Need to, or else defaults to zero
         cursor: 'pointer',
 
         //Centres logo
-        display: 'block',
-        marginLeft: '27%',
-        marginRight: '27%',
+        position: 'absolute',
+        left: '45%',
+        right: '45%',
+        top: '5%',
+        bottom: '5%',
 
         backgroundPositionX: '50%',
         backgroundPositionY: 'center',
@@ -69,7 +80,10 @@ const useStyles = makeStyles(theme => ({
     cartButtonBox: {
         width: 48,
         height: 48,
-        right:'0.5%',
+        
+        top: '5%',
+        bottom: '5%',
+        right: '3.5%',
         position: 'absolute',
     },
     cartButton: {

@@ -28,7 +28,7 @@ function renderInputComponent(inputProps) {
         <TextField
             //fullWidth //Causes <Textfield/> to occupy full width of box
             variant = 'filled' //Automatically changes <input/> into gray box with underline
-            fullWidth = {false}
+            fullWidth = {true} //Fill up the entire width of the .container
             InputProps={{
                 inputRef: node => {
                     ref(node);
@@ -83,8 +83,8 @@ function getSuggestionValue(suggestion) {
     return suggestion.label;
 }
 const useStyles = makeStyles(theme => ({
-    root: { //Outer div box
-        marginTop: '1%',
+    outerbox: { //Outer div box
+        marginTop: '0%',
         marginBottom: '1%',
         width:'100%',
         height: 200,
@@ -97,27 +97,41 @@ const useStyles = makeStyles(theme => ({
         backgroundAttachment: 'scroll',
         backgroundSize: '100%',
     },
-    content:{ //Inner div box 
-        width:'95%',
-        height: 45, //Controls the height of the <TextField/> by being the relative measure
+    innerbox: { //Inner div box
+        height: '100%',
+        width: '80%',
+
         position: 'absolute',
+        top: '25%',
+        bottom: '25%',
+        left: '10%',
+        right: '10%',
+    },
+    title: {
+        width:'95%',
+        height: 50,
+        color: 'white',
+        marginLeft: '2.5%',
+    },
+    searchbar:{ 
+        width:'100%',
+        height: 45, //Controls the height of the <TextField/> by being the relative measure
         border: '2px solid black',
         background: 'white',
         //Horizontal and vertical inner divs are 95% of outer div's width and height respectively, 
         //so add 2.5% margin on left and right to centre
         //'6.5%' ensures a bias towards the top (7.5% = centre), due to the searchboxbox text 
         //aligned bottom
-        margin:'2.5% 2.5% 0 2.5%', 
+        margin:'0 auto', 
     },
-    container: { //Contains the searchbox
-        width:'70%',
-        height: 45,
+    container: { //Contains the <input/> box and the resulting suggestions
+        width: '70%',
+        background: 'white',
         float: 'left',
-    },   
+    },
     //CSS in this object is passed to renderInputComponent() for the <TextField/> box
     input: {
         maxHeight: 6,
-        background: 'white',
         //Causes <TextField/>'s background colour to change on hover
         /** transition: theme.transitions.create(['border-color', 'box-shadow']),
             '&:hover': {
@@ -128,19 +142,8 @@ const useStyles = makeStyles(theme => ({
             border: '2px solid green',
         },*/
     },
-    buttonBox: {
-        width: '30%',
-        float: 'left',
-    },
-    //Plain CSS has taken over <button/> sizing. Material <button/> API seems to constantly force size!
-    buttonIcon: {
-        width: '60%',
-        height: '60%',
-        marginLeft: '22%',
-        marginTop: '22%',
-    },
     suggestionsContainerOpen: { //The box containing all suggestions
-        zIndex: 1, //Prevents suggestions from pushing down content
+        zIndex: 2, //Prevents suggestions from pushing down content
         marginTop: 1,
         left: 0,
     },
@@ -152,14 +155,27 @@ const useStyles = makeStyles(theme => ({
     suggestion: { //Each line of suggestions
         display: 'block',
     },
-}));
+    buttonBox: {
+        width: '30%',
+        height: '100%',
+        float: 'right',
+    },
+    button: {
+        width:'50%', 
+        minHeight: '100%',
+        float: 'left',
 
-const titleCss = makeStyles(theme => ({
-    root: { //Outer div box
-        width:'100%',
-        height: 50,
-        color: 'white',
-        paddingTop: '5%',
+        display:'flex',
+        justifyContent:'center',
+        alignItems:'center',
+    },
+    //Plain CSS has taken over <button/> sizing. Material <button/> API seems to constantly force size!
+    buttonIcon: {
+        display: 'table-cell',
+        width: 30,
+        height: 30,  
+        margin: '0 auto',
+        verticalAlign: 'center',
     },
 }));
 
@@ -170,7 +186,6 @@ let suggestions = [];
 //Note that access is by "props.function" instead of "this.props.function"
 function IntegrationAutosuggest(props) {
     const classes = useStyles();
-    const titleStyle = titleCss();
 
     const [state, setState] = React.useState({
         single: '',
@@ -250,38 +265,40 @@ function IntegrationAutosuggest(props) {
         renderSuggestion,
     };
     return (
-        <div className={classes.root}>
-            <Typography variant='h5' align='center' className={titleStyle.root}>Start your search</Typography>
-            <div className={classes.content}>
-                <Autosuggest
-                    {...autosuggestProps}
-                    inputProps={{
-                        classes,
-                        id: 'react-autosuggest-simple',
-                        label: 'Title, author, synopsis...', //Floating text above typing area
-                        placeholder: '', //Background of <Textfield/>
-                        value: state.single,
-                        onChange: handleChange('single'),
-                    }}
-                    theme={{
-                        container: classes.container,
-                        suggestionsContainerOpen: classes.suggestionsContainerOpen,
-                        suggestionsList: classes.suggestionsList,
-                        suggestion: classes.suggestion,
-                    }}
-                    renderSuggestionsContainer={options => (
-                        <Paper {...options.containerProps} square>
-                            {options.children}
-                        </Paper>
-                    )}      
-                />    
-                <div className={classes.buttonBox}>
-                    <div className='searchButton' id='basicSearchSubmitButton' onClick={() => {handleSubmit();}}>
-                        <Search className={classes.buttonIcon}/>
-                    </div>  
-                    <div className='advancedButton' onClick={()=>{props.history.push('/AdvancedSearch');}}>
-                        <Settings className={classes.buttonIcon}/>
-                    </div>  
+        <div className={classes.outerbox}>     
+            <div className={classes.innerbox}> 
+                <Typography variant='h5' align='center' classes={{root: classes.title}}>Start your search</Typography>
+                <div className={classes.searchbar}>
+                    <Autosuggest
+                        {...autosuggestProps}
+                        inputProps={{
+                            classes,
+                            id: 'react-autosuggest-simple',
+                            label: 'Title, author, synopsis...', //Floating text above typing area
+                            placeholder: '', //Background of <Textfield/>
+                            value: state.single,
+                            onChange: handleChange('single'),
+                        }}
+                        theme={{
+                            container: classes.container,
+                            suggestionsContainerOpen: classes.suggestionsContainerOpen,
+                            suggestionsList: classes.suggestionsList,
+                            suggestion: classes.suggestion,
+                        }}
+                        renderSuggestionsContainer={options => (
+                            <Paper {...options.containerProps} square>
+                                {options.children}
+                            </Paper>
+                        )}      
+                    />    
+                    <div className={classes.buttonBox}>
+                        <div className={classes.button}>
+                        <Search className={classes.buttonIcon} onClick={() => {handleSubmit();}}/>
+                        </div>
+                        <div className={classes.button}>
+                        <Settings className={classes.buttonIcon} onClick={()=>{props.history.push('/AdvancedSearch');}} />
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

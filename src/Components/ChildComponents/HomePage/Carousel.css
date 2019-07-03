@@ -1,0 +1,78 @@
+.carousel { /*Outerdiv*/
+    width: 100%;
+    position: relative;
+    /*Need the size of this outer box to scale with content... Otherwise, it deafutlas to zero*/
+}
+.card {
+    background-color: white;
+    margin-left: 5px;
+    margin-bottom: 5px;
+    border: 1.5px solid gray;
+    max-width: 300px;
+}
+.card:hover {
+    border: 1.5px solid black;
+}
+.cardTitle{
+    min-height: 20%;
+}
+.cardAuthor{
+    min-height: 10%; 
+}
+.cardImage{
+    margin: 0 auto;
+    padding-top: 1%;
+
+    /*Forces image to resize, but maintaining aspect ratio*/
+    display: block;
+    max-width: 90%;
+    height: 70%;
+    width: auto;
+    height: auto;
+}
+.AliceCarousel{
+    margin: 0 auto;
+    width: 85%; /*So that left-right buttons don't sit on top of the cards*/
+}
+.prevButtonContainer{
+    display: table-cell;
+    position: absolute;
+    vertical-align: middle;
+    width: 24px;
+    height: 48px;
+
+    /*Centres the button container relative to .AliceCarousel*/
+    top: 25%; bottom: 25%;
+    left: 0;
+
+    background-image: url('./icons/ArrowBackIos.svg');
+    background-position-x: 0%; /*0 for align left , 50% for align centre*/
+    background-position-y: center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-size: 48px;
+}
+.nextButtonContainer{
+    display: table-cell;
+    vertical-align: middle;
+    position: absolute;
+    width: 24px;
+    height: 48px;
+
+    /*Centres the button container relative to .AliceCarousel*/
+    top: 25%; bottom: 25%;
+    right: 0px;
+
+    background-image: url('./icons/ArrowForwardIos.svg');
+    background-position-x: 50%; /*0 for align left , 50% for align centre*/
+    background-position-y: center;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-size: 48px;
+}
+.prevButtonContainer:hover {
+    border: 3.5px solid black;
+}
+.nextButtonContainer:hover {
+    border: 3.5px solid black;
+}

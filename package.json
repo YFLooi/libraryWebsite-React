@@ -34,7 +34,9 @@
     "not ie <= 11",
     "not op_mini all"
   ],
-  "devDependencies": {},
+  "devDependencies": {
+    "react-alice-carousel": "^1.15.1"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/YFLooi/libraryWebsite-React.git"
