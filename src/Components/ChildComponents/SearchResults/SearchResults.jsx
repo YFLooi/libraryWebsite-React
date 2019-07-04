@@ -4,6 +4,7 @@ import {
     withRouter
   } from "react-router-dom"; 
 import "./SearchResults.css"
+import RenderResults from './RenderResults.jsx'
 
 class SearchResults extends React.Component {
     constructor(props){
@@ -17,9 +18,7 @@ class SearchResults extends React.Component {
             //Ensures when page refreshes or if this.state.searchResults is empty, 
             //there is no way to land on a blank results page
             this.props.history.push('/');
-        } else {
-            this.renderResults(this.props.searchResults, this.props.borrowCart);
-        }
+        } 
     }
     renderResults (data, brrwCart) {
         let that = this;
@@ -125,14 +124,16 @@ class SearchResults extends React.Component {
             document.getElementById("borrow."+idx).innerHTML = "Borrow";       
         }
     }
-    render() {
-            return (
-                <div id="searchResults-page" style={{display: "none"}}>
-                    <h1>Generated search results</h1>
-                    <div id="searchResults"></div>           
-                </div>    
-            );
-        
+    render() { 
+        return (
+            <React.Fragment>
+                <RenderResults
+                    searchResults = {this.props.searchResults}
+                    renderResults = {this.renderResults}
+                    borrowRequest = {this.borrowRequest}
+                />
+            </React.Fragment>
+        );
 	}
 }
 

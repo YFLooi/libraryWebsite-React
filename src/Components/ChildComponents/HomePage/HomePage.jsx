@@ -19,7 +19,7 @@ export default class HomePage extends React.Component {
                 />
                 <TypoGraphy variant="h5" color="inherit">New Arrivals</TypoGraphy>
                 <Carousel/>
-                <p>
+                <div>
                     <TypoGraphy variant="h5" color="inherit">Announcements</TypoGraphy>
                     <ul>
                         <li>
@@ -39,7 +39,7 @@ export default class HomePage extends React.Component {
                             </TypoGraphy>    
                         </li>
                     </ul>
-                </p>
+                </div>
             </div>
 		);
 	}

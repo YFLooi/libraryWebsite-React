@@ -144,8 +144,10 @@ const useStyles = makeStyles(theme => ({
     },
     suggestionsContainerOpen: { //The box containing all suggestions
         zIndex: 2, //Prevents suggestions from pushing down content
-        marginTop: 1,
         left: 0,
+        top: '50%',
+        position: 'absolute',
+        maxWidth: '100%',
     },
     suggestionsList: { //The list within the box containing all suggestions
         margin: 0,
@@ -168,6 +170,8 @@ const useStyles = makeStyles(theme => ({
         display:'flex',
         justifyContent:'center',
         alignItems:'center',
+
+        cursor:'pointer',
     },
     //Plain CSS has taken over <button/> sizing. Material <button/> API seems to constantly force size!
     buttonIcon: {
@@ -267,14 +271,14 @@ function IntegrationAutosuggest(props) {
     return (
         <div className={classes.outerbox}>     
             <div className={classes.innerbox}> 
-                <Typography variant='h5' align='center' classes={{root: classes.title}}>Start your search</Typography>
+                <Typography variant='h5' align='center' classes={{root: classes.title}}><u>Start your search</u></Typography>
                 <div className={classes.searchbar}>
                     <Autosuggest
                         {...autosuggestProps}
                         inputProps={{
                             classes,
                             id: 'react-autosuggest-simple',
-                            label: 'Title, author, synopsis...', //Floating text above typing area
+                            label: 'Title, author...', //Floating text above typing area
                             placeholder: '', //Background of <Textfield/>
                             value: state.single,
                             onChange: handleChange('single'),
