@@ -16,7 +16,7 @@ class Carousel extends Component {
         this.state ={
             currentIndex: 0,
             itemsInSlide: 1,
-            responsive: { 0: { items: 3 }}, //Number of cards shown per section
+            responsive: { 0: { items: 2 }}, //Number of cards shown per section
             galleryItems: [],
         }
 
@@ -91,24 +91,30 @@ class Carousel extends Component {
         const { currentIndex, galleryItems, responsive } = this.state
         
         return (
-            <div className='carousel'> 
-                <div className='AliceCarousel'>
-                    <AliceCarousel
-                        items={galleryItems}
-                        slideToIndex={currentIndex}
-                        responsive={responsive}
-                        onInitialized={this.handleOnSlideChange}
-                        onSlideChanged={this.handleOnSlideChange}
-                        onResized={this.handleOnSlideChange}
-                        buttonsDisabled = {true}
-                        mouseDragEnabled = {true}
-                        keysControlDisabled = {true}
-                    />
+            <React.Fragment> 
+                <div className='title'>
+                    <TypoGraphy variant="h5" color="inherit">New Arrivals</TypoGraphy>
                 </div>
-                {/*Using divs as button provider better customisation*/}
-                <div className='prevButtonContainer' onClick={this.slidePrevPage}></div>
-                <div className='nextButtonContainer' onClick={this.slideNextPage}></div>
-            </div>
+                <div className='carousel'> 
+                    <div className='AliceCarousel'>
+                        <AliceCarousel
+                            items={galleryItems}
+                            slideToIndex={currentIndex}
+                            responsive={responsive}
+                            onInitialized={this.handleOnSlideChange}
+                            onSlideChanged={this.handleOnSlideChange}
+                            onResized={this.handleOnSlideChange}
+                            buttonsDisabled = {true}
+                            mouseDragEnabled = {true}
+                            keysControlDisabled = {true}
+                        />
+                    </div>
+                    {/*Using divs as button provider better customisation*/}
+                    <div className='prevButtonContainer' onClick={this.slidePrevPage}></div>
+                    <div className='nextButtonContainer' onClick={this.slideNextPage}></div>
+                </div>
+                <div className='carouselDivider'></div>
+            </React.Fragment> 
         ) 
     }
 }

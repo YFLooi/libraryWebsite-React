@@ -111,20 +111,13 @@ function AdvSearch(props){
 
                             props.stateUpdater('searchResults',newResults)
                             props.stateUpdater('isNewResultsLoaded',true)
-
-                            //Only allows redirect to /Search-Results to render if this.state.searchResults is updated
+        
                             //Timeout necessary because asnyc nature of JS allows code after
                             //props.stateUpdater() to run before it sets 'isNewResultsLoaded'
                             //to 'true'
-                            if(props.isNewResultsLoaded === false){
-                                setTimeout(function(){
-                                    props.history.push('/SearchResults');
-                                }, 100)
-                            } else {
-                                //If the redirect is successful, the componentDidUpdate() of /SearchResults
-                                //will tet this.props.isNewResultsLoaded to 'false'
-                                console.log('Redirect to /SearchResults failed')
-                            }
+                            setTimeout(function(){
+                                props.history.push('/SearchResults');
+                            }, 500)
                         }
                     })
                 })  

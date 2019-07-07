@@ -1,3 +1,7 @@
+.title{
+    margin-top: 3.5%;
+    margin-bottom: 3.5%;
+}
 .carousel { /*Outerdiv*/
     z-index: 0;
     width: 100%;
@@ -76,4 +80,16 @@
 }
 .nextButtonContainer:hover {
     border: 3.5px solid black;
+}
+.carouselDivider{
+    width: 90%;
+    height: 0;
+    border: 1px solid black;
+    margin: 0 auto;
+    margin-top: 3.5%;
+    margin-bottom: 3.5%;
+}
+/*For the <ul> of dots below the carousel*/
+.alice-carousel__dots-item{
+    border: 1px solid rgb(95, 95, 95);
 }

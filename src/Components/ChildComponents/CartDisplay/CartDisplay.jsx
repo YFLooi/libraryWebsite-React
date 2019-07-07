@@ -208,6 +208,9 @@ export default class CartDisplay extends React.Component {
                 resultSpan.appendChild(document.createTextNode("Cart empty"));
                 cartDisplay.appendChild(resultSpan);
                 alert("Books added to account of ID: "+borrowerId);
+
+                //Updates #cartCounter to show number of books in this.props.borrowcart after checkout
+                document.getElementById("cartCounter").innerHTML = 0;
             }else{
                 alert("Please insert your library ID")
             }
