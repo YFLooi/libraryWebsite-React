@@ -18,45 +18,18 @@ const useStyles = makeStyles(theme => ({
     },
 }))
 
-export default function RenderResults(props){
-    const searchResults = props.searchResults
+export default function CartDisplayRender(props){
     const borrowCart = props.borrowCart;
     const classes = useStyles();
 
-    const borrowButtonRender = (resultId,i) => {
-        /*To change innerHTML of 'borrow' button to "Cancel" if book has been borrowed*/
-        /**findIndex() here checks for match between searchResult and cart contents
-        If there is a match (!= -1)), 'borrow' button inner HTML is set to "Cancel" */
-        let cartCheck = borrowCart.findIndex(cart => cart.id === resultId);
-        
-        /*
-        let borrowButton = document.createElement("button");            
-        borrowButton.id = "borrow."+searchResults[i].id; */
-        //Must specify "this" to be equal to "const that" to be defined
-        //borrowButton.onclick = function(event){that.borrowRequest(searchResults[i].id);};
-        if (cartCheck === -1){
-            return (
-                <Button onClick={() => {props.borrowRequest(resultId);}} id={'borrow.'+resultId} size="small" color="primary">
-                    Borrow
-                </Button>
-            )
-        } else {
-            return (
-                <Button onClick={() => {props.borrowRequest(resultId);}} id={'borrow.'+resultId} size="small" color="primary">
-                    Cancel
-                </Button>
-            )
-        }
-    }
     return(
         <React.Fragment>
-            <Typography variant="h5" component="h2">Search results</Typography>
-            <div style={{ marginTop: 20, padding: 4 }}>
+            <div id='cartDisplay' style={{ marginTop: 20, padding: 4, display: 'none'}}>
                 <Grid container spacing={1} justify="center">
                     {/**post.map generates one card for each element in const posts*/}
-                    {searchResults.map(function(result,i) {
+                    {borrowCart.map(function(result,i) {
                         return(
-                            <Grid item key={result.title}>
+                            <Grid item key={result.title} id={'cartCard.'+i} href={result.id}>
                                 <Card classes={{root: classes.card}}>
                                     <CardActionArea>
                                     <CardMedia
@@ -73,13 +46,13 @@ export default function RenderResults(props){
                                         <Typography variant="body1" component="div" noWrap={true}>
                                             {result.author}
                                         </Typography>
-                                        {/**<Typography component="p" variant="body1" noWrap={true}>{result.synopsis}</Typography>*/}
                                     </CardContent>
                                     </CardActionArea>
                                     <CardActions>
-                                        {borrowButtonRender(result.id,i)}
-                                        <Button size="small" color="primary">
-                                            Details
+                                        {/**Need to wrap functions with property passed like this. 
+                                        Otherwise, it runs on ComponentDidMount*/}
+                                        <Button size="small" color="primary" onClick={() => {props.handleCartCancel(i)}}>
+                                            Cancel
                                         </Button>
                                     </CardActions>
                                 </Card>
@@ -87,7 +60,14 @@ export default function RenderResults(props){
                         )
                     })}
                 </Grid>
+                <Button id='checkoutButton' onClick={props.handleCartCheckout} size='medium' variant='contained' color='inherit'>Checkout</Button>
+            </div>    
+            {/**Only works if all books removed from cart. handleCartCancel() will make it 'display: block'*/}
+            <div id="cartEmptyDisplay" style={{display: 'none'}}>
+                <Typography variant="body1" component="div" noWrap={false}>
+                    Cart's empty. Time to get some books!
+                </Typography>
             </div>
         </React.Fragment>
-    )
+    )       
 }

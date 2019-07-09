@@ -1,6 +1,7 @@
 import React from 'react';
 import {Input, Button} from '@material-ui/core';
 import TypoGraphy from '@material-ui/core/Typography'
+import CartDisplayRender from './CartDisplayRender.jsx'
 
 export default class CartDisplay extends React.Component {
     constructor(props){
@@ -11,8 +12,13 @@ export default class CartDisplay extends React.Component {
         this.handleCartCheckout = this.handleCartCheckout.bind(this);
     }
     componentDidMount(){
-        //Runs function to render cart when Router URL is /Cart
-        this.cartDisplay();
+        if (this.props.borrowCart.length === 0){
+            document.getElementById("cartDisplay").style.display = 'none';
+            document.getElementById("cartEmptyDisplay").style.display = 'block';
+        } else {
+            document.getElementById("cartDisplay").style.display = 'block';
+            document.getElementById("cartEmptyDisplay").style.display = 'none';
+        }
     }
     cartDisplay () {
         const that = this;
@@ -74,12 +80,15 @@ export default class CartDisplay extends React.Component {
         */
         const cardIndex = document.getElementById("cartCard."+idx)
         const bookId = cardIndex.getAttribute("href");
+        console.log(cardIndex);
+        console.log(bookId);
         
-        /**Remove book <li> on click*/
+        /**Remove book <li> on click
         if (cardIndex.parentNode) {
             cardIndex.parentNode.removeChild(cardIndex);
-        }
-        
+        }*/
+        cardIndex.style.display = 'none';
+
         console.log("Current books in cart:"+this.props.borrowCart);
         console.log(this.props.borrowCart);
 
@@ -102,12 +111,12 @@ export default class CartDisplay extends React.Component {
     
         /**If user removes all items from cart, the message "Cart empty" 
         appears*/
-        if (newCart.length === 0){
-            const resultSpan = document.createElement("p");
-            resultSpan.appendChild(document.createTextNode("Cart empty"));
-            
-            const cartDisplay = document.getElementById("cartDisplay");
-            cartDisplay.appendChild(resultSpan);
+        if (newCart.length === 0){   
+            const cartEmptyDisplay = document.getElementById("cartEmptyDisplay");
+            cartEmptyDisplay.style.display = 'block';
+
+            const checkoutButton= document.getElementById("checkoutButton");
+            checkoutButton.style.display = 'none';
         }
     }
     handleCartCheckout () {
@@ -203,10 +212,8 @@ export default class CartDisplay extends React.Component {
                 while(cartDisplay.firstChild){
                     cartDisplay.removeChild(cartDisplay.firstChild);
                 }
-                
-                const resultSpan = document.createElement("p");
-                resultSpan.appendChild(document.createTextNode("Cart empty"));
-                cartDisplay.appendChild(resultSpan);
+                const cartEmptyDisplay = document.getElementById("cartEmptyDisplay");
+                cartEmptyDisplay.style.display = 'block';
                 alert("Books added to account of ID: "+borrowerId);
 
                 //Updates #cartCounter to show number of books in this.props.borrowcart after checkout
@@ -218,12 +225,14 @@ export default class CartDisplay extends React.Component {
     }
     render() {
 		return (
-            <div id="cartDisplay-page">
+            <React.Fragment>
                 <TypoGraphy variant='h5' align='left'>Cart contents</TypoGraphy>
-                <div id="cartDisplay"></div>
-                {/**checkoutButton only display if items are present in cart*/}
-                <Button  id="checkoutButton" style={{display: "none"}} onClick={this.handleCartCheckout} size='medium' variant='contained' color='inherit'>Checkout</Button>
-            </div>
+                <CartDisplayRender
+                    borrowCart = {this.props.borrowCart}
+                    handleCartCancel = {this.handleCartCancel}
+                    handleCartCheckout = {this.handleCartCheckout}
+                />
+            </React.Fragment>
 		);
 	}
 }

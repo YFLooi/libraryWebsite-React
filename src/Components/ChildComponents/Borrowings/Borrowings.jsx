@@ -4,9 +4,9 @@ import {
     withRouter
   } from "react-router-dom"; 
 import "./Borrowings.css";
-import { makeStyles} from '@material-ui/core/styles';
-import { FormControl, FormControlLabel, InputLabel, Input, Button} from '@material-ui/core';
+import { Input, Button} from '@material-ui/core';
 import TypoGraphy from '@material-ui/core/Typography'
+import BorrowingsRender from './BorrowingsRender';
 
 class Borrowings extends React.Component {
     constructor(props) {
@@ -66,7 +66,9 @@ class Borrowings extends React.Component {
 
                             return {borrowerId, borrowDate, returnDue, books}
                         })
-                        that.generateBorrowings(borrowingsData)
+                        that.props.stateUpdater("borrowingsRecord",[...this.props.borrowingsRecord, ...data])
+                        //These results will be rendered once the render{} function is triggered after the end of this function
+                        //that.generateBorrowings(borrowingsData)
                     })
                 })  
                 .catch(function(error){
@@ -78,19 +80,19 @@ class Borrowings extends React.Component {
         const that = this;
 
         const borrowingsDisplay = document.getElementById("borrowings");
-        /*Clears <li> in borrowingsDisplay for another re-rendering*/
+        //Clears <li> in borrowingsDisplay for another re-rendering
+        /** 
         while(borrowingsDisplay.firstChild){
             borrowingsDisplay.removeChild(borrowingsDisplay.firstChild);
-        }
+        }*/
 
         this.props.stateUpdater("borrowingsRecord",[...this.props.borrowingsRecord, ...data])
         const borrowingsRecord = this.props.borrowingsRecord;
-        //Check for empty cart
+        //Check for empty borrowings record
         if (borrowingsRecord.length === 0){
-            const recordSpan = document.createElement("p");
-            recordSpan.appendChild(document.createTextNode("No record"));
-            
-            borrowingsDisplay.appendChild(recordSpan);
+            <Typography variant="body1" component="div" noWrap={false}>
+                No borrowings recorded
+            </Typography>
         } else {
             const recordsList = document.createElement("ol");
             recordsList.id = "borrowingsList";
@@ -173,7 +175,7 @@ class Borrowings extends React.Component {
         } 
 
         //Removes password stored in this.state.passwordInput
-        this.props.stateUpdater("passwordInput","")
+        this.props.stateUpdater('passwordInput','')
     }
     handleBorrowingsCancel(idx,borrowDate){
         const cardIndex = document.getElementById("borrowingsCard."+idx)
@@ -244,7 +246,7 @@ class Borrowings extends React.Component {
                 <div id='borrowings-page'>
                     <div><TypoGraphy variant='h5' align='left'>Borrowings record</TypoGraphy></div>
                     <TypoGraphy variant='body1' align='left'>Librarians only. Please provide a valid password</TypoGraphy>
-                    <p style={{height:48, position:'relative',}}>
+                    <div style={{height:48, position:'relative',}}>
                         <form onSubmit = {this.checkBorrowings}>
                             <Input
                                 type='password'
@@ -261,10 +263,11 @@ class Borrowings extends React.Component {
                             />
                             <Button type='submit' variant='contained' color='inherit' size='medium' style={{marginLeft: 10, float:'left'}}>Submit</Button>                         
                         </form>
-                    </p>
+                    </div>
                 </div> 
             )
         }else if(this.props.isBorrowingsPasswordCorrect === true){
+            /** 
             return (
                 <div id='borrowings-page'>
                     <div><h1>Borrowings record</h1></div>
@@ -272,6 +275,14 @@ class Borrowings extends React.Component {
                     <div id='borrowings'></div>
                 </div>
             );
+            */
+            return(
+                <BorrowingsRender
+                    handleBorrowingsCancel = {this.handleBorrowingsCancel}
+                    stateUpdater = {this.props.stateUpdater}
+                    borrowingsRecord = {this.props.borrowingsRecord}
+                />
+            )
         }
 	}
 }
