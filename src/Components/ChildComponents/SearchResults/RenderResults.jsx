@@ -23,17 +23,12 @@ export default function RenderResults(props){
     const borrowCart = props.borrowCart;
     const classes = useStyles();
 
-    const borrowButtonRender = (resultId,i) => {
+    const borrowButtonRender = (resultId) => {
         /*To change innerHTML of 'borrow' button to "Cancel" if book has been borrowed*/
         /**findIndex() here checks for match between searchResult and cart contents
         If there is a match (!= -1)), 'borrow' button inner HTML is set to "Cancel" */
         let cartCheck = borrowCart.findIndex(cart => cart.id === resultId);
         
-        /*
-        let borrowButton = document.createElement("button");            
-        borrowButton.id = "borrow."+searchResults[i].id; */
-        //Must specify "this" to be equal to "const that" to be defined
-        //borrowButton.onclick = function(event){that.borrowRequest(searchResults[i].id);};
         if (cartCheck === -1){
             return (
                 <Button onClick={() => {props.borrowRequest(resultId);}} id={'borrow.'+resultId} size="small" color="primary">
@@ -54,30 +49,30 @@ export default function RenderResults(props){
             <div style={{ marginTop: 20, padding: 4 }}>
                 <Grid container spacing={1} justify="center">
                     {/**post.map generates one card for each element in const posts*/}
-                    {searchResults.map(function(result,i) {
+                    {searchResults.map(function(item,i) {
                         return(
-                            <Grid item key={result.title}>
+                            <Grid item key={item.title}>
                                 <Card classes={{root: classes.card}}>
                                     <CardActionArea>
                                     <CardMedia
                                         component="img"
-                                        alt={result.title}
+                                        alt={item.title}
                                         height="210"
-                                        src={result.coverimg}
+                                        src={item.coverimg}
                                         classes= {{media: classes.cardImage}}
                                     />
                                     <CardContent>
                                         <Typography variant="body1" component="h2" noWrap={false}>
-                                            <b>{result.title}</b>
+                                            <b>{item.title}</b>
                                         </Typography>
                                         <Typography variant="body1" component="div" noWrap={true}>
-                                            {result.author}
+                                            {item.author}
                                         </Typography>
-                                        {/**<Typography component="p" variant="body1" noWrap={true}>{result.synopsis}</Typography>*/}
+                                        {/**<Typography component="p" variant="body1" noWrap={true}>{item.synopsis}</Typography>*/}
                                     </CardContent>
                                     </CardActionArea>
                                     <CardActions>
-                                        {borrowButtonRender(result.id,i)}
+                                        {borrowButtonRender(item.id)}
                                         <Button size="small" color="primary">
                                             Details
                                         </Button>

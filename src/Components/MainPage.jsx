@@ -51,8 +51,9 @@ export default class MainPage extends React.Component {
             
             //For rendering list of borrowers and their details
             borrowingsRecord: [],
-            passwordInput: "",
-            isBorrowingsPasswordCorrect: false
+            passwordInput: '',
+            isBorrowingsPasswordCorrect: false,
+            expandList: false,
         }
         this.stateUpdater = this.stateUpdater.bind(this);
     } 
@@ -132,9 +133,10 @@ export default class MainPage extends React.Component {
                     <Route 
                         path="/Borrowings" 
                         render={(props) => <Borrowings {...props}
-                            borrowingsRecord={this.state.borrowingsRecord}
                             passwordInput={this.state.passwordInput}
+                            borrowingsRecord={this.state.borrowingsRecord}
                             isBorrowingsPasswordCorrect={this.state.isBorrowingsPasswordCorrect}
+                            expandList = {this.state.expandList}
                             stateUpdater={this.stateUpdater}
                         />}
                     />
