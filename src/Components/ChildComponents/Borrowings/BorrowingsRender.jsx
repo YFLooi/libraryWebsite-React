@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import clsx from 'clsx';
+import React, { useEffect } from 'react';
 import { makeStyles} from '@material-ui/core/styles';
 import { Grid } from "@material-ui/core";
-import TypoGraphy from '@material-ui/core/Typography'
-import { IconButton, Collapse } from "@material-ui/core";
-import { ExpandMore, ExpandLess } from "@material-ui/icons/";
-import { Card, CardActionArea, CardActions, CardContent, CardMedia}  from "@material-ui/core";
-import {ListSubheader, List, ListItem, ListItemIcon, ListItemText} from '@material-ui/core';
+import Typography from '@material-ui/core/Typography'
+import { ExpandMore } from "@material-ui/icons/";
+import { Card, CardActions, CardContent, CardHeader, Avatar}  from "@material-ui/core";
+import { List, ListItem, ListItemText} from '@material-ui/core';
 import Button from "@material-ui/core/Button";
+import { ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails } from '@material-ui/core/';
 
 const useStyles = makeStyles(theme => ({ 
     //Width of 155px ensures 2 cards per row on a standard iPhone 
@@ -15,35 +14,34 @@ const useStyles = makeStyles(theme => ({
         minWidth: 350,
         maxWidth: 350,
     },
-    cardImage:{
-        maxWidth: 155,
+    cardAvatar: {
+        backgroundColor: 'purple',
     },
-    nested: {
-        paddingLeft: theme.spacing(4),
+    cardHeaderTitle: {
+        fontSize: 'medium'
     },
-    expand: {
-        transform: 'rotate(0deg)',
-        marginLeft: 'auto',
-        transition: theme.transitions.create('transform', {
-            duration: theme.transitions.duration.shortest,
-        }),
-      },
-    expandOpen: {
-        transform: 'rotate(180deg)',
+    cardHeaderSubheader: {
+        fontSize: 'medium'
+    },
+    bookListItem:{
+
+    },
+    bookListItemImg:{
+        minWidth: 54, 
+        height: 72, 
+        marginRight: 3,
+    },
+    bookListItemDesc:{
+
     },
 }))
 
 export default function BorrowingsRender(props){
     const classes = useStyles();
     
-    let cards = [];
-    let borrowDateStringRecord = [];
-    let returnDueStringRecord = [];
-    let currentDaysLateRecord = [];
-    let lateFineRecord = [];
-    let bookList = [];
-
-    const [expanded, setExpanded] = React.useState(false);
+    //One state Hook per state, otherwise they can add weirdly when mixed
+    //Use 'let', not 'const'. State is always manipulated
+    let [cards, setCards] = React.useState([]); //Place initial state value on pg refresh on right side
 
     //The Hook equivalent of componentDidMount()
     useEffect(() => {
@@ -60,7 +58,10 @@ export default function BorrowingsRender(props){
                 //pg automatically calls JSON.parse()
                 return response.json()
                 .then(function(data){
+                    //Sending data straight to rendering function instead of state first prevents page for 
+                    //zero results from showing first before page of data
                     cardRender(data);
+                    //For handleBorrowingsCancel()
                     props.stateUpdater('borrowingsRecord',[...data]);
                 })
             })  
@@ -78,9 +79,9 @@ export default function BorrowingsRender(props){
         if (borrowingsRecord.length === 0){
             const noBorrowingsCard = [
                 <div id="borrowingsEmptyDisplay">
-                    <TypoGraphy variant="body1" component="div" noWrap={false}>
+                    <Typography variant="body1" component="div" noWrap={false}>
                         No borrowings recorded
-                    </TypoGraphy>
+                    </Typography>
                 </div>
             ]
 
@@ -88,13 +89,11 @@ export default function BorrowingsRender(props){
             cards = [...noBorrowingsCard];
         }else {
             //Immutably clears state
-            borrowDateStringRecord.splice(0, borrowDateStringRecord.length)
-            returnDueStringRecord.splice(0, returnDueStringRecord.length)
-            currentDaysLateRecord.splice(0, currentDaysLateRecord.length)
-            lateFineRecord.splice(0, lateFineRecord.length)
-            bookList.splice(0, bookList.length)
-            
-            //Need to modify to operate on only 1 element of borrowingsRecord at a time
+            cards.splice(0, cards.length);
+            let newCards = [];
+            newCards.splice(0, newCards.length);
+
+            //Operates on only 1 element of borrowingsRecord at a time
             for(let i=0; i<borrowingsRecord.length; i++){
                 //Cannot place JS here. Maybe outsource all JS that renders JSX to functions, like for RenderResults.jsx?
                 //toDateString() turns new Date() into "day-of-week month-day-year"
@@ -103,7 +102,7 @@ export default function BorrowingsRender(props){
                 let currentDate = new Date().getTime();
                 
                 //Months start from zero in JS
-                /** 
+                /* 
                 let testCurrentDate = new Date(2019, 4, 2, 7, 30, 0, 0).getTime();
                 let testReturnDate = new Date(2019, 4, 16, 7, 30, 0, 0).getTime();
                 console.log('Test current date:')
@@ -131,132 +130,128 @@ export default function BorrowingsRender(props){
                 let borrowDateString = new Date(parseInt(borrowDate)).toDateString();
                 let returnDueString = new Date(parseInt(returnDue)).toDateString();
                 
-                borrowDateStringRecord.splice(borrowDateStringRecord.length, 0, borrowDateString);
-                returnDueStringRecord.splice(returnDueStringRecord.length, 0, returnDueString);
-                currentDaysLateRecord.splice(currentDaysLateRecord.length, 0, currentDaysLate);
-                lateFineRecord.splice(lateFineRecord.length, 0, lateFine);
-            }
-            console.log('[borrowDateStringRecord] check');
-            console.log(borrowDateStringRecord);
-            console.log(returnDueStringRecord);
-            console.log(currentDaysLateRecord);
-            console.log(lateFineRecord);
-            console.log('[bookList] check');
-            console.log(bookList);
-            const newCardsArrayLength = borrowingsRecord.length
-            let newCardsArray = Array(newCardsArrayLength).fill().map((item, i) =>
-                <Grid item key={'card.'+i} id={'borrowingsCard.'+i} href={borrowingsRecord[i].borrowerid}>
-                    <Card classes={{root: classes.card}}>
-                        <CardContent>
-                            <TypoGraphy variant="body1" component="div" noWrap={false}>
-                                Borrower id: <b>{borrowingsRecord[i].borrowerid}</b>
-                            </TypoGraphy>
-                            <TypoGraphy variant="body1" component="div" noWrap={true}>
-                                Date borrowed: {borrowDateStringRecord[i]}
-                            </TypoGraphy>
-                            <TypoGraphy variant="body1" component="div" noWrap={true}>
-                                Due date: {returnDueStringRecord[i]}
-                            </TypoGraphy>
-                            <TypoGraphy variant="body1" component="div" noWrap={true}>
-                                Days late: {currentDaysLateRecord[i]}
-                            </TypoGraphy>
-                            <TypoGraphy variant="body1" component="div" noWrap={true}>
-                                Fine due: MYR {lateFineRecord[i]}
-                            </TypoGraphy>
-                        </CardContent>
-                        <CardActions>
-                            {/*Need to wrap functions with property passed like this. 
-                            Otherwise, it runs on ComponentDidMount*/}
-                            <Button size="small" color="primary" onClick={()=>{props.handleBorrowingsCancel(i,borrowingsRecord[i].borrowdate);}}>
-                                Return
-                            </Button>
-                        </CardActions>
-                        <CardContent>
-                            <TypoGraphy variant="body1" component="div" noWrap={true}>
-                                Books borrowed (click to expand)
-                            </TypoGraphy>
-                            <button onClick={handleExpandClick}>Flip</button>
-                            {/**2 sets of classes apply here. On click, the icon rotates 180 deg*/}
-                            {/*() => {booksBorrowed();} Does not work. Need to think how to get an array of JSX here...*/}
-                        </CardContent>
-                        {/** */}
-                        <IconButton
-                            className={clsx(classes.expand, {
-                                [classes.expandOpen]: expanded,
-                            })}
-                            aria-expanded={expanded}
-                            aria-label="Show more"
-                            >
-                            <ExpandMore/>  
-                        </IconButton>
-                        <Collapse in={expanded} timeout="auto" unmountOnExit>
-                            <List component="div" disablePadding>
-                                {/** bookList[i]*/}
-                                <div>Cat</div>
-                                <div>Dog</div>
-                            </List>
-                        </Collapse>
-                    </Card>
-                </Grid>
-            )        
-            
-            //This does not run the return function if it does not set state?
-            cards.splice(0, cards.length);
-            cards.splice(cards.length, 0, newCardsArray);
-            return cards;
+                let booksBorrowed = JSON.parse(borrowingsRecord[i].books);
+                let booksList = booksListRender(booksBorrowed, i);
+                let newCard = [
+                    <Grid item key={'card.'+i} id={'borrowingsCard.'+i} href={borrowingsRecord[i].borrowerid}>
+                        <Card classes={{root: classes.card}}>
+                            <CardHeader
+                                avatar = {
+                                    <Avatar aria-label="id first letter" className={classes.cardAvatar}>
+                                        {borrowingsRecord[i].borrowerid.substring(0,1)}
+                                    </Avatar>
+                                }
+                                title = {borrowingsRecord[i].borrowerid}
+                                subheader = {`Fine due: MYR ${lateFine}`}
+                                classes = {{title: classes.cardHeaderTitle, subheader: classes.cardHeaderSubheader}}
+                            />
+                            <CardContent>
+                                <Typography variant="body1" component="div" noWrap={true}>
+                                    Days late: {currentDaysLate}
+                                </Typography>
+                                <Typography variant="body1" component="div" noWrap={true}>
+                                    Date borrowed: {borrowDateString}
+                                </Typography>
+                                <Typography variant="body1" component="div" noWrap={true}>
+                                    Due date: {returnDueString}
+                                </Typography>
+                            </CardContent>
+                            <ExpansionPanel>
+                                {/**ExpansionPanel automatically rotates <ExpandMore/> by 180 deg onClick*/}
+                                <ExpansionPanelSummary
+                                    expandIcon={<ExpandMore/>}
+                                    aria-controls={'card.'+i+'-book-list'}
+                                    id={'card.'+i+'-book-list-header'}
+                                >
+                                    <Typography className={classes.heading}>{'Books borrowed ('+booksBorrowed.length+')'}</Typography>
+                                </ExpansionPanelSummary>
+                                <ExpansionPanelDetails>
+                                    <List component="div" disablePadding>
+                                        {booksList}
+                                    </List>
+                                </ExpansionPanelDetails>
+                            </ExpansionPanel>
+                            <CardActions>
+                                {/*Need to wrap functions with property passed like this. 
+                                Otherwise, it runs on ComponentDidMount*/}
+                                <Button size="small" color="primary" onClick={()=>{props.handleBorrowingsCancel(i,borrowingsRecord[i].borrowdate);}}>
+                                    Return
+                                </Button>
+                            </CardActions>
+                        </Card>
+                    </Grid>
+                ]
+
+                newCards = [...newCards, ...newCard]
+            }   
+            //For some reason, putting this inside the for loop only causes the last card
+            //to be set to state
+            setCards([...newCards]) 
         }
     }
-
-    const booksBorrowed = (books) => {
-        let borrowersBooks = JSON.parse(books);
-
+    const booksListRender = (books, index) => { 
+        let borrowersBooks = books;
+        let cardIndex = index
+        
         //One <ListItem/> generated per book borrowed
-        let bookList = Array(borrowersBooks.length).fill().map((item, i) =>
-            <ListItem className={classes.nested}>
-                <ListItemIcon>
-                    <img alt='front cover' src={borrowersBooks[i].coverimg}/>
-                </ListItemIcon>
-                <ListItemText primary={borrowersBooks[i].id} />
-                <ListItemText primary={borrowersBooks[i].title} />
-                <ListItemText primary={borrowersBooks[i].year} />
-                <ListItemText primary={borrowersBooks[i].publisher} />
+        let list = Array(borrowersBooks.length).fill().map((item, j) =>
+            <ListItem key={'card.'+cardIndex+'book-list-item.'+j} className={classes.bookListItem}>
+                <img alt='front cover' className={classes.bookListItemImg} src={borrowersBooks[j].coverimg}/>
+                <ListItemText 
+                    primary= {borrowersBooks[j].title} 
+                    secondary={
+                        <React.Fragment>
+                            <Typography
+                                component="span"
+                                variant="body2"
+                                className={classes.bookListItemDesc}
+                                color="textPrimary"
+                            >
+                                {`${borrowersBooks[j].year} (id: ${borrowersBooks[j].id})`}
+                            </Typography>
+                            <br/> 
+                            <Typography
+                                component="span"
+                                variant="body2"
+                                className={classes.bookListItemDesc}
+                                color="textPrimary"
+                            >
+                                {borrowersBooks[j].author}
+                            </Typography>
+                            <br/> 
+                            <Typography
+                                component="span"
+                                variant="body2"
+                                className={classes.bookListItemDesc}
+                                color="textPrimary"
+                            >
+                                {borrowersBooks[j].publisher}
+                            </Typography>
+                        </React.Fragment>
+                    }
+                />
             </ListItem>
         )
 
-        return bookList
-    }
-
-    //For <Collapse/>
-    //Why can't it change false to true???
-    const handleExpandClick = () => {
-        setExpanded(!expanded);
-        console.log(expanded);
-
-        /** 
-        if (props.expandList === false){
-            return props.stateUpdater('expandList',true)
-        } else if (props.expandList === true) {
-            return props.stateUpdater('expandList',false)
-        }
-        */
-    }
-    
-    const checkState = () => {
-        console.log(cards)
+        return list
     }
 
     //Always the last to run. Waits for all functions above it first
     return(   
         <React.Fragment>
-            <TypoGraphy variant="h5" component="h2" noWrap={false}>Borrowings recorded</TypoGraphy>
-            <TypoGraphy variant="body1" component="div" noWrap={false}>Standard loan period is 14 days</TypoGraphy>
-            <TypoGraphy variant="body1" component="div" noWrap={false}>Late fine set to MYR0.50 per day</TypoGraphy>
-            <div id='borrowingsDisplay' style={{ marginTop: 20, padding: 4,}}>
-                <Grid container spacing={1} justify="center">
-                    {[cards]} {/**The array's elements render one by one! No array.map() required*/}
+            <Typography variant="h5" component="h2" noWrap={false} style={{ marginTop: 5, marginBottom: 5,}}>Borrowings recorded</Typography>
+            <Typography variant="body1" component="div" noWrap={false}>Standard borrowing period is 14 days</Typography>
+            <Typography variant="body1" component="div" noWrap={false}>Late fine set to MYR 0.50 per day</Typography>
+            <div id='borrowingsDisplay' style={{ marginTop: 10, padding: 4, display: 'block'}}>
+                <Grid container spacing={1} justify="center">         
+                    {cards} {/**The array's elements render one by one! No array.map() required*/}
                 </Grid>
-            </div>    
-            <button onClick={checkState}>Check [cards]</button>      
+            </div>
+            <div id="borrowingsEmptyDisplay" style={{display: 'none'}}>
+                <Typography variant="body1" component="div" noWrap={false}>
+                    All recorded borrowings cleared
+                </Typography>
+            </div>
         </React.Fragment>    
     )
 }

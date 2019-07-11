@@ -1,7 +1,6 @@
 import React from 'react';
 import {
     Route,
-    NavLink,
     HashRouter,
   } from "react-router-dom";
 import "./MainPage.css";
@@ -15,9 +14,6 @@ import Borrowings from "./ChildComponents/Borrowings/Borrowings.jsx";
 
 //For material UI navbar
 import Navbar from './Navbar.jsx'
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar'
-import TypoGraphy from '@material-ui/core/Typography'
 
 export default class MainPage extends React.Component {
     constructor(props){

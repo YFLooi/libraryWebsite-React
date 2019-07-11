@@ -1,6 +1,5 @@
 import React from 'react';
-import {Input, Button} from '@material-ui/core';
-import TypoGraphy from '@material-ui/core/Typography'
+import Typography from '@material-ui/core/Typography'
 import CartDisplayRender from './CartDisplayRender.jsx'
 
 export default class CartDisplay extends React.Component {
@@ -226,7 +225,7 @@ export default class CartDisplay extends React.Component {
     render() {
 		return (
             <React.Fragment>
-                <TypoGraphy variant='h5' align='left'>Cart contents</TypoGraphy>
+                <Typography variant='h5' align='left' style={{marginTop: 5, marginBottom: 5,}}>Cart contents</Typography>
                 <CartDisplayRender
                     borrowCart = {this.props.borrowCart}
                     handleCartCancel = {this.handleCartCancel}

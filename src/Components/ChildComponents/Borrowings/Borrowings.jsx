@@ -36,7 +36,6 @@ class Borrowings extends React.Component {
         //So that I do not open a new window each time I check /Borrowings
         event.preventDefault();
 
-        const that = this;
         const borrowingsLock = this.props.passwordInput; /**Initialise as "" */
 
         if (borrowingsLock !== "password"){
@@ -45,106 +44,6 @@ class Borrowings extends React.Component {
             this.props.stateUpdater("isBorrowingsPasswordCorrect",true) 
         }
     }
-    /** 
-    generateBorrowings(data){
-        const that = this;
-
-        const borrowingsDisplay = document.getElementById("borrowings");
-        
-        //Clears <li> in borrowingsDisplay for another re-rendering 
-        while(borrowingsDisplay.firstChild){
-            borrowingsDisplay.removeChild(borrowingsDisplay.firstChild);
-        }
-
-        this.props.stateUpdater("borrowingsRecord",[...this.props.borrowingsRecord, ...data])
-        const borrowingsRecord = this.props.borrowingsRecord;
-        //Check for empty borrowings record
-        if (borrowingsRecord.length === 0){
-            <TypoGraphy variant="body1" component="div" noWrap={false}>
-                No borrowings recorded
-            </TypoGraphy>
-        } else {
-            const recordsList = document.createElement("ol");
-            recordsList.id = "borrowingsList";
-
-            for(let i=0; i<borrowingsRecord.length; i++){
-                let recordCard = document.createElement("li");
-                recordCard.id = "borrowingsCard."+i;
-                recordCard.setAttribute("href",borrowingsRecord[i].borrowerId)
-
-                //toDateString() turns new Date() into "day-of-week month-day-year"
-                let borrowDate = borrowingsRecord[i].borrowDate;
-                let returnDue = borrowingsRecord[i].returnDue;
-                let currentDate = new Date().getTime();
-                
-                //Months start from zero in JS
-                //let testCurrentDate = new Date(2019, 5, 29, 7, 30, 0, 0).getTime();
-                
-                //toFixed(1) fixes the equation's output to 1 decimal place by turning 
-                //it into a string, so do the math before invoking this method!
-                let daysLate = ((currentDate - returnDue)/(1000*60*60*24)).toFixed(1);
-                //Adds a check that ensure currentDaysLate = 0 if daysLate > 0 (not late)
-                let currentDaysLate = "0.00";
-                let lateFine = "0.00"
-                //Use parseFloat to convert the strings of number-decimals (floats) back into numbers
-                if(parseFloat(daysLate) >0){
-                    currentDaysLate = daysLate;
-                    //Fine rate of 50 sen per day
-                    lateFine = (parseFloat(currentDaysLate)*0.5).toFixed(2);
-                } else {
-                    currentDaysLate = "0.00";
-                    lateFine = "0.00";
-                }
-
-                let borrowDateString = new Date(parseInt(borrowDate)).toDateString();
-                let returnDueString = new Date(parseInt(returnDue)).toDateString();
-                
-                let recordSpan = document.createElement("span");
-                recordSpan.appendChild(document.createTextNode("Borrower id: "+borrowingsRecord[i].borrowerId+" | "));
-                recordSpan.appendChild(document.createTextNode("Borrow date: "+borrowDateString+" | "));
-                recordSpan.appendChild(document.createTextNode("Return due: "+returnDueString+" | "));
-                recordSpan.appendChild(document.createTextNode("Days late: "+currentDaysLate+" | "));
-                recordSpan.appendChild(document.createTextNode("Late fine: RM "+lateFine+" "));
-
-                let cancelButton = document.createElement("button");            
-                cancelButton.id = "cancel."+i;
-                //This button should remove a record in the database and delete the borrower's entry
-                cancelButton.onclick = function(event){that.handleBorrowingsCancel(i,borrowDate);};
-                //cancelButton.addEventListener("click", that.handleCartCancel[i])
-                cancelButton.innerHTML = "X";
-                recordSpan.appendChild(cancelButton);
-
-                
-                let booksDiv = document.createElement("div");
-                let borrowersBooks = borrowingsRecord[i].books;
-                for(let j=0; j<borrowersBooks.length; j++){
-                    let bookCard = document.createElement("div");
-
-                    let bookSpan = document.createElement("span");
-                    let bookImg = document.createElement("img");
-                    bookImg.id = "cartCardImg."+borrowersBooks[j].id;
-                    bookImg.src = borrowersBooks[j].coverimg;
-                    bookImg.alt = borrowersBooks[j].title;
-                    bookImg.style = "width:80px; height:100px;"
-                    bookSpan.appendChild(bookImg);
-                    
-                    bookSpan.appendChild(document.createTextNode(borrowersBooks[j].id+","))
-                    bookSpan.appendChild(document.createTextNode(borrowersBooks[j].title+","))
-                    bookSpan.appendChild(document.createTextNode(borrowersBooks[j].year+","))
-                    bookSpan.appendChild(document.createTextNode(borrowersBooks[j].publisher))
-                    
-                    bookCard.appendChild(bookSpan);
-                    booksDiv.appendChild(bookCard)
-                } 
-
-                recordCard.appendChild(recordSpan);
-                recordCard.appendChild(booksDiv);
-                recordsList.appendChild(recordCard);
-                borrowingsDisplay.appendChild(recordsList);
-            }
-        } 
-    }
-    */
     handleBorrowingsCancel(idx,borrowDate){
         const cardIndex = document.getElementById("borrowingsCard."+idx)
         const borrowerId = cardIndex.getAttribute("href");
@@ -187,7 +86,7 @@ class Borrowings extends React.Component {
             .then(function(response){
                 return response.json()
                 .then(function(data){
-                    //Returns confirmation that record deleted for borrowerid = x                
+                    //Returns confirmation of record deleted for borrowerid = x                
                     console.log(data)
                 })
             })  
@@ -195,15 +94,12 @@ class Borrowings extends React.Component {
                 console.log('Request failed', error)
             })
             
-        /**If user removes all borrowing entries which is indicated by 
-         * this.state.borrowingRecord.length === 0, the message "No record" 
-        appears*/
+        //If user removes all borrowing entries which is indicated by 
+        //this.state.borrowingRecord.length === 0, the message 
+        //"All recorded borrowings cleared" appears
         if (this.props.borrowingsRecord.length === 0){
-            const resultSpan = document.createElement("p");
-            resultSpan.appendChild(document.createTextNode("No record"));
-            
-            const cartDisplay = document.getElementById("borrowings");
-            cartDisplay.appendChild(resultSpan);
+            document.getElementById('borrowingsDisplay').display = 'none';
+            document.getElementById('borrowingsEmptyDisplay').display = 'block';
         }
     }   
     render() { 
@@ -211,9 +107,9 @@ class Borrowings extends React.Component {
         if(this.props.isBorrowingsPasswordCorrect === false){
             return(
                 <div id='borrowings-page'>
-                    <div><TypoGraphy variant='h5' align='left'>Borrowings record</TypoGraphy></div>
+                    <div><TypoGraphy variant='h5' align='left' style={{ marginTop: 5, marginBottom: 5,}}>Borrowings record</TypoGraphy></div>
                     <TypoGraphy variant='body1' align='left'>Librarians only. Please provide a valid password</TypoGraphy>
-                    <div style={{height:48, position:'relative',}}>
+                    <div style={{marginTop: 10, height:48, position:'relative',}}>
                         <form onSubmit = {this.checkBorrowings}>
                             <Input
                                 type='password'

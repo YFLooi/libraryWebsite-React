@@ -1,10 +1,6 @@
 import React, { Component } from 'react';
 import AliceCarousel from 'react-alice-carousel';
-import PropTypes from 'prop-types';
-import {Typography } from "@material-ui/core";
-
-import TypoGraphy from '@material-ui/core/Typography'
-
+import Typography from "@material-ui/core/Typography";
 import "./Carousel.css";
 import "react-alice-carousel/lib/alice-carousel.css";
 
@@ -56,10 +52,10 @@ class Carousel extends Component {
         //'20' means the array goes from 0-19.
         let newArrivalsArray = Array(20).fill().map((item, i) => 
             <div className='card' onDragStart={this.handleOnDragStart}>
-                <img className='cardImage' src={newArrivals[i].coverimg}/>
+                <img className='cardImage' src={newArrivals[i].coverimg} alt={`carouselImage.${i}`}/>
                 {/**On mobile, it looks really crowded with the text. Maybe enable only on desktop? */}
-                <TypoGraphy variant='body1' color='inherit' className="cardTitle" noWrap={true}>{newArrivals[i].title}</TypoGraphy>
-                <TypoGraphy variant='subtitle1' color='inherit' className="cardAuthor" noWrap={true}>{newArrivals[i].author}</TypoGraphy>
+                <Typography variant='body1' color='inherit' className="cardTitle" noWrap={true}>{newArrivals[i].title}</Typography>
+                <Typography variant='subtitle1' color='inherit' className="cardAuthor" noWrap={true}>{newArrivals[i].author}</Typography>
             </div>
         )
 
@@ -93,7 +89,7 @@ class Carousel extends Component {
         return (
             <React.Fragment> 
                 <div className='title'>
-                    <TypoGraphy variant="h5" color="inherit">New Arrivals</TypoGraphy>
+                    <Typography variant="h5" color="inherit">New Arrivals</Typography>
                 </div>
                 <div className='carousel'> 
                     <div className='AliceCarousel'>

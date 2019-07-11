@@ -24,7 +24,7 @@ export default function CartDisplayRender(props){
 
     return(
         <React.Fragment>
-            <div id='cartDisplay' style={{ marginTop: 20, padding: 4, display: 'none'}}>
+            <div id='cartDisplay' style={{ marginTop: 10, padding: 4, display: 'none'}}>
                 <Grid container spacing={1} justify="center">
                     {/**post.map generates one card for each element in const posts*/}
                     {borrowCart.map(function(result,i) {
@@ -63,8 +63,8 @@ export default function CartDisplayRender(props){
                 <Button id='checkoutButton' onClick={props.handleCartCheckout} size='medium' variant='contained' color='inherit'>Checkout</Button>
             </div>    
             {/**Only works if all books removed from cart. handleCartCancel() will make it 'display: block'*/}
-            <div id="cartEmptyDisplay" style={{display: 'none'}}>
-                <Typography variant="body1" component="div" noWrap={false}>
+            <div id="cartEmptyDisplay" style={{display: 'none',}}>
+                <Typography variant="body1" component="div" noWrap={false} style={{marginTop: 10,}}>
                     Cart's empty. Time to get some books!
                 </Typography>
             </div>

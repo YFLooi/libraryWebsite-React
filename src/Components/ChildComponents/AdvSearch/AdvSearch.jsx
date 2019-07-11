@@ -64,7 +64,6 @@ function AdvSearch(props){
         as the <input> box and updates it as =event.target.value 
         (value or content of input box)*/
         /*Only works if <input> has same name as state!*/
-        console.log(event.target.name)
         props.stateUpdater([event.target.name],event.target.value)
     }
     const handleAdvSearchSubmit = (event) => {
