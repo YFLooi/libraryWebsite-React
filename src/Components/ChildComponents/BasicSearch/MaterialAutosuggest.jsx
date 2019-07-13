@@ -147,7 +147,7 @@ const useStyles = makeStyles(theme => ({
         left: 0,
         top: '50%',
         position: 'absolute',
-        maxWidth: '100%',
+        width: '100%', //Ensures suggestions as wide as search box even with short book title
     },
     suggestionsList: { //The list within the box containing all suggestions
         margin: 0,

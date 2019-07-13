@@ -131,7 +131,7 @@ export default function BorrowingsRender(props){
                 let returnDueString = new Date(parseInt(returnDue)).toDateString();
                 
                 let booksBorrowed = JSON.parse(borrowingsRecord[i].books);
-                let booksList = booksListRender(booksBorrowed, i);
+                let booksList = booksListRender(booksBorrowed, i); //1 call made to bookListRender() for each item in borrowingsRecord
                 let newCard = [
                     <Grid item key={'card.'+i} id={'borrowingsCard.'+i} href={borrowingsRecord[i].borrowerid}>
                         <Card classes={{root: classes.card}}>
@@ -243,7 +243,7 @@ export default function BorrowingsRender(props){
             <Typography variant="body1" component="div" noWrap={false}>Standard borrowing period is 14 days</Typography>
             <Typography variant="body1" component="div" noWrap={false}>Late fine set to MYR 0.50 per day</Typography>
             <div id='borrowingsDisplay' style={{ marginTop: 10, padding: 4, display: 'block'}}>
-                <Grid container spacing={1} justify="center">         
+                <Grid container spacing={4} justify="center">         
                     {cards} {/**The array's elements render one by one! No array.map() required*/}
                 </Grid>
             </div>

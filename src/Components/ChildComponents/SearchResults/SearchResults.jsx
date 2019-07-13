@@ -3,7 +3,7 @@ import {
     //Allows us to connect to <Hashrouter/> from a child component
     withRouter
   } from "react-router-dom"; 
-import RenderResults from './RenderResults.jsx'
+import SearchResultsRender from './SearchResultsRender.jsx'
 
 class SearchResults extends React.Component {
     constructor(props){
@@ -24,7 +24,6 @@ class SearchResults extends React.Component {
         /*'id' here is the book id. It allows access to other data related to 
         the book */
         console.log('Borrow request made');
-        //const buttonText = document.getElementById("borrow."+idx).innerHTML;
         const targetButton = document.getElementById("borrow."+idx)
         //Specify [0] to return the first match to the className
         const buttonText = targetButton.getElementsByClassName('MuiButton-label')[0].innerHTML;
@@ -72,13 +71,13 @@ class SearchResults extends React.Component {
             /**Cancelling a borrow request makes book available to "Borrow" again*/
             targetButton.getElementsByClassName('MuiButton-label')[0].innerHTML = "Borrow";       
         }else{
-            console.log('buttonText is not "borrow" nor "cancel"');
+            console.log('buttonText is not "Borrow" nor "Cancel"');
         }
     }
     render() { 
         return (
             <React.Fragment>
-                <RenderResults
+                <SearchResultsRender
                     searchResults = {this.props.searchResults}
                     borrowCart = {this.props.borrowCart}
                     stateUpdater = {this.props.stateUpdater}

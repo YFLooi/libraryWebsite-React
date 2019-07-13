@@ -17,7 +17,10 @@ export default class HomePage extends React.Component {
 
                     stateUpdater={this.props.stateUpdater}
                 />
-                <Carousel/>
+                <Carousel
+                    borrowCart={this.props.borrowCart}
+                    stateUpdater={this.props.stateUpdater}
+                />
                 <div>
                     <TypoGraphy variant="h5" color="inherit">Announcements</TypoGraphy>
                     <ul>

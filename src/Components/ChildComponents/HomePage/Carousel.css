@@ -29,57 +29,14 @@
     min-height: 10%; 
 }
 .cardImage{
-    margin: 0 auto;
-    padding-top: 1%;
-
+    margin: 2.5% auto;
+    
     /*Forces image to resize, but maintaining aspect ratio*/
     display: block;
     max-width: 90%;
-    height: 70%;
+    max-height: 70%;
     width: auto;
     height: auto;
-}
-.prevButtonContainer{
-    display: table-cell;
-    position: absolute;
-    vertical-align: middle;
-    width: 24px;
-    height: 48px;
-
-    /*Centres the button container relative to .AliceCarousel*/
-    top: 25%; bottom: 25%;
-    left: 0;
-
-    background-image: url('./icons/ArrowBackIos.svg');
-    background-position-x: 0%; /*0 for align left , 50% for align centre*/
-    background-position-y: center;
-    background-repeat: no-repeat;
-    background-attachment: scroll;
-    background-size: 48px;
-}
-.nextButtonContainer{
-    display: table-cell;
-    vertical-align: middle;
-    position: absolute;
-    width: 24px;
-    height: 48px;
-
-    /*Centres the button container relative to .AliceCarousel*/
-    top: 25%; bottom: 25%;
-    right: 0;
-
-    background-image: url('./icons/ArrowForwardIos.svg');
-    background-position-x: 50%; /*0 for align left , 50% for align centre*/
-    background-position-y: center;
-    background-repeat: no-repeat;
-    background-attachment: scroll;
-    background-size: 48px;
-}
-.prevButtonContainer:hover {
-    border: 3.5px solid black;
-}
-.nextButtonContainer:hover {
-    border: 3.5px solid black;
 }
 .carouselDivider{
     width: 90%;
@@ -93,3 +50,71 @@
 .alice-carousel__dots-item{
     border: 1px solid rgb(95, 95, 95);
 }
+
+/*Hides navigation arrow buttons and card title+author on smartphone portrait mode*/
+/*### Smartphones (portrait and landscape)(small). Tablets taken as 768-1023px ### */
+@media screen and (min-width : 0px) and (max-width : 700px){
+    .cardTitle{
+        display: none;
+    }
+    .cardAuthor{
+        display: none;
+    }
+    .prevButtonContainer{
+        display: none;
+    }
+    .nextButtonContainer{
+        display: none;
+    }
+}
+@media screen and (min-width: 701px){
+    .cardTitle{
+        display: block;
+    }
+    .cardAuthor{
+        display: block;
+    }
+    .prevButtonContainer{
+        display: table-cell;
+        position: absolute;
+        vertical-align: middle;
+        width: 24px;
+        height: 48px;
+    
+        /*Centres the button container relative to .AliceCarousel*/
+        top: 25%; bottom: 25%;
+        left: 0;
+    
+        background-image: url('./icons/ArrowBackIos.svg');
+        background-position-x: 0%; /*0 for align left , 50% for align centre*/
+        background-position-y: center;
+        background-repeat: no-repeat;
+        background-attachment: scroll;
+        background-size: 48px;
+    }
+    .nextButtonContainer{
+        display: table-cell;
+        vertical-align: middle;
+        position: absolute;
+        width: 24px;
+        height: 48px;
+    
+        /*Centres the button container relative to .AliceCarousel*/
+        top: 25%; bottom: 25%;
+        right: 0;
+    
+        background-image: url('./icons/ArrowForwardIos.svg');
+        background-position-x: 50%; /*0 for align left , 50% for align centre*/
+        background-position-y: center;
+        background-repeat: no-repeat;
+        background-attachment: scroll;
+        background-size: 48px;
+    }
+    .prevButtonContainer:hover {
+        border: 3.5px solid black;
+    }
+    .nextButtonContainer:hover {
+        border: 3.5px solid black;
+    }
+}
+
