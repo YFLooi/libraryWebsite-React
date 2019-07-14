@@ -69,9 +69,17 @@ function AdvSearch(props){
     const handleAdvSearchSubmit = (event) => {
         event.preventDefault();
         
+        const removeSpecialChars = (string) => {
+            return string.replace(/(?!\w|\s)./g, '')
+              .replace(/\s+/g, ' ')
+              .replace(/\s/g, '') // removes whitespace
+              .replace(/^(\s*)([\W\w]*)(\b\s*$)/g, '$2');
+        }
+        let reducedAdvTitle = removeSpecialChars(props.advTitle).toLowerCase();
+
         /*JSON.parse cannot accept blank strings, ''. The if-else here inserts string 'null'
         if it detects the submitted state is ''*/
-        const advTitle = props.advTitle === '' ? 'null' : props.advTitle;
+        const advTitle = reducedAdvTitle === '' ? 'null' : reducedAdvTitle;
         const condTitAuth = props.condTitAuth 
         const advAuthor = props.advAuthor === '' ? 'null' : props.advAuthor;
         const condAuthYr = props.condAuthYr;
@@ -138,7 +146,7 @@ function AdvSearch(props){
                         {/**Displays label for input field, like a placeholder */}
                         <InputLabel htmlFor='Title'>Title</InputLabel>
                         {/**Same as HTML input field*/}
-                        <Input id='advTitle' name='advTitle' type='text' onChange = {handleAdvSearchChange}/>
+                        <Input id='advTitle' name='advTitle' type='text' autoComplete='off' onChange = {handleAdvSearchChange}/>
                     </FormControl>
                 </div>
                 <div className={classes.categoryContainer}>
@@ -155,7 +163,7 @@ function AdvSearch(props){
                 <div className={classes.categoryContainer}>
                     <FormControl className={classes.formcontrol}>
                         <InputLabel htmlFor='Author'>Author</InputLabel>
-                        <Input id='advAuthor' name='advAuthor' type='text' onChange = {handleAdvSearchChange}/>
+                        <Input id='advAuthor' name='advAuthor' type='text' autoComplete='off' onChange = {handleAdvSearchChange}/>
                     </FormControl>
                 </div>
                 <div className={classes.categoryContainer}>
@@ -172,12 +180,12 @@ function AdvSearch(props){
                 <div className={classes.categoryContainer}>
                     <FormControl className={classes.years}>
                         <InputLabel htmlFor='Year start'>Year start</InputLabel>
-                        <Input id='advYearStart' name='advYearStart' type='text' onChange = {handleAdvSearchChange}/>
+                        <Input id='advYearStart' name='advYearStart' type='text' autoComplete='off' onChange = {handleAdvSearchChange}/>
                     </FormControl>
                     <TypoGraphy className={classes.yearsDivider} variant='body1' align='center'>to</TypoGraphy>
                     <FormControl className={classes.years}>
                         <InputLabel htmlFor='Year end'>Year end</InputLabel>
-                        <Input id='advYearEnd' name='advYearEnd' type='text' onChange = {handleAdvSearchChange}/>
+                        <Input id='advYearEnd' name='advYearEnd' type='text' autoComplete='off' onChange = {handleAdvSearchChange}/>
                     </FormControl>
                 </div>
                 <div className={classes.categoryContainer}>
@@ -194,7 +202,7 @@ function AdvSearch(props){
                 <div className={classes.categoryContainer}>
                     <FormControl className={classes.formcontrol}>
                         <InputLabel htmlFor='Publisher'>Publisher</InputLabel>
-                        <Input id='advPublisher' name='advPublisher' type='text' onChange = {handleAdvSearchChange}/>
+                        <Input id='advPublisher' name='advPublisher' type='text' autoComplete='off' onChange = {handleAdvSearchChange}/>
                     </FormControl>
                 </div>
                 <div className={classes.categoryContainer}>
@@ -214,7 +222,7 @@ function AdvSearch(props){
                         {/**If we pass 'multiline' prop to the Input component it will render 
                         <textarea/> element instead of <input/> field.
                         'rows' prop is used to increase th number of rows in textarea element. */}
-                        <Input id='advSynopsis' name='advSynopsis' type='text' multiline rows={5} onChange={handleAdvSearchChange}/>
+                        <Input id='advSynopsis' name='advSynopsis' type='text' multiline rows={5} autoComplete='off' onChange={handleAdvSearchChange}/>
                     </FormControl>
                 </div>
                 <div className={classes.categoryContainer}>

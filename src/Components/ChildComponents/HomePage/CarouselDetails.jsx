@@ -1,6 +1,6 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { makeStyles} from '@material-ui/core/styles';
-import { Card, CardHeader, CardMedia, CardActionArea, CardActions, CardContent, } from "@material-ui/core/";
+import { Card, CardHeader, CardMedia, CardActions, CardContent, } from "@material-ui/core/";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 
@@ -25,15 +25,31 @@ const useStyles = makeStyles(theme => ({
         margin: '30% auto', /*Centers the card*/
         width: '90%',
         padding: '5px 5px 5px 5px',
-        height: 'auto', 
+        height: '210', 
         cursor: 'pointer',
     },
-    //Width of 155px ensures 2 cards per row on a standard iPhone 
-    card:{
-        maxWidth: 155,
+    infoBox:{
+        display: 'flex',
+        flexDirection: 'row',
+        padding: '3%',
     },
-    cardImage:{
+    detailsCardImage: {
+        display: 'flex',
         maxWidth: 155,
+        maxHeight: 465,
+    },
+    infoAndActions:{
+        display: 'flex',
+        flexDirection: 'column', //So that <CardActions/> appear below text
+    },
+    bookInfo: {
+        display: 'flex',
+    },
+    cardActions:{
+        display: 'flex',
+        justifyContent: 'flex-start',
+        flexWrap: 'nowrap',
+        padding: '0 0 0 20',
     },
 }))
 
@@ -46,14 +62,12 @@ export default function CarouselDetails(props){
 
     useEffect(() => {
         console.log('Target book id: '+props.targetBookId);
-        console.log(props.newArrivals);
         if (props.targetBookId === null || props.targetBookId === '-1'){
-            console.log('No update to state.targetBookId');
+            console.log('No book ID sent to state.targetBookId');
         } else {
             renderDetails(props.targetBookId);
         }
     }, [props.targetBookId]); //Change in this prop effects the above actions
-
 
     const renderDetails = (bookId) => {
         let detailsOverlay = document.getElementById(`detailsOverlay`);
@@ -63,29 +77,32 @@ export default function CarouselDetails(props){
         
         let detailsCard = [
             <Card key='bookDetails' classes={{root: classes.detailsCard}}>
-                <CardMedia
-                    component='img'
-                    alt={`front cover for ${bookDetails.title}`}
-                    height="210"
-                    src={bookDetails.coverimg}
-                    classes= {{media: classes.detailsCardImage}}
-                />
-                <CardHeader
-                    title = {bookDetails.title}
-                    subheader = {
-                        <React.Fragment>
-                            {bookDetails.author} <br/> 
-                            {bookDetails.publisher}
-                        </React.Fragment>
-                    }
-                    classes = {{title: classes.detailsCardTitle, subheader: classes.detailsCardSubheader}}
-                />
-                <CardActions>
-                    {borrowButtonRender(bookId)}
-                    <Button size="small" color="primary" onClick={() => {hideDetails();}}>
-                        Close
-                    </Button>
-                </CardActions>
+                <div className={classes.infoBox}>
+                    <CardMedia
+                        component='img'
+                        alt={`front cover for ${bookDetails.title}`}
+                        src={bookDetails.coverimg}
+                        classes= {{media: classes.detailsCardImage}}
+                    />
+                    <div className={classes.infoAndActions}>
+                    <CardHeader
+                        title = {bookDetails.title}
+                        subheader = {
+                            <React.Fragment>
+                                {bookDetails.author} <br/> 
+                                {bookDetails.publisher}
+                            </React.Fragment>
+                        }
+                        classes = {{root: classes.bookInfo, title: classes.detailsCardTitle, subheader: classes.detailsCardSubheader}}
+                    />
+                    <CardActions classes={{root: classes.cardActions}}>
+                        {borrowButtonRender(bookId)}
+                        <Button size="small" color="primary" onClick={() => {hideDetails();}}>
+                            Close
+                        </Button>
+                    </CardActions>
+                    </div>
+                </div>
                 <CardContent>
                     <Typography variant="h6" component="div" noWrap={true}>
                         <u>Synopsis</u>
@@ -96,27 +113,35 @@ export default function CarouselDetails(props){
                 </CardContent>
             </Card>
         ]
-
-        state.storedDetailsCard.splice(0, state.storedDetailsCard.length);
         setState({
             storedDetailsCard: [...detailsCard],
         });
         detailsOverlay.style.display= 'block';
+    }
+    const hideDetails = () => {
+        //Should not keep appended Details card. Otherwise, async will not trigger borrowButtonRender
+        //resulting in button innerHTML left in 'Cancel' for next detailsCard rendered
+        document.getElementById(`detailsOverlay`).style.display = 'none';
+
+        //Odd how doing this the immutable way (with splice) does not trigger borrowButtonRender
+        //to set the button innerHTML
+        //state.storedDetailsCard.splice(0, state.storedDetailsCard.length);
+        setState({
+            storedDetailsCard: [],
+        });
 
         //Necessary to allow reopening of clicked book on exit
         //This is because ComponentDidUpdate() will not trigger if the same bookId is setState
         //to this.state.targetBookId
+        //Note that this trigger componentDidUpdate() but it will disregard need to render detailsCard
         props.carouselStateUpdater('targetBookId',null)
-    }
-    const hideDetails = () => {
-        //Should keep appended Details card. That way, there is no load time if 'Details' is clicked again
-        document.getElementById(`detailsOverlay`).style.display = 'none';
     }
     const borrowButtonRender = (bookId) => {
         //To change innerHTML of 'borrow' button to "Cancel" if book has been borrowed
         //findIndex() here checks for match between searchResult and cart contents
         //If there is a match (!= -1)), 'borrow' button inner HTML is set to "Cancel" 
         let cartCheck = props.borrowCart.findIndex(cart => cart.id === bookId);
+        console.log('Value returned by cartCheck: '+cartCheck)
         
         if (cartCheck === -1){
             return (

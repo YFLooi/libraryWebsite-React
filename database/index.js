@@ -36,7 +36,7 @@ app.get("/", (request, response) => {
 })
 
 app.get("/NewArrivals", db.getNewArrivals)
-app.get("/Suggestions/:basicInput", db.getSuggestions)
+app.get("/Suggestions/:suggestionRequest", db.getSuggestions)
 
 app.get("/BasicSearch/:basicInput", db.getBasicSearch)
 

@@ -16,6 +16,22 @@ const useStyles = makeStyles(theme => ({
     cardImage:{
         maxWidth: 155,
     },
+    pageTitle: {
+        marginTop: 5, 
+        marginBottom: 5,
+    },
+    cartDisplayContainer: {
+        marginTop: 10, 
+        padding: 4, 
+        display: 'none'
+    },
+    checkoutButtonContainer:{
+        margin: '5% auto',
+        textAlign: 'center', //Centres the <Button/>
+    },
+    cartEmptyDisplayContainerCaption:{
+        marginTop: 10,
+    },
 }))
 
 export default function CartDisplayRender(props){
@@ -24,7 +40,8 @@ export default function CartDisplayRender(props){
 
     return(
         <React.Fragment>
-            <div id='cartDisplay' style={{ marginTop: 10, padding: 4, display: 'none'}}>
+            <Typography variant='h4' align='left' classes={{root: classes.pageTitle}}>Cart contents</Typography>
+            <div id='cartDisplay' className={classes.cartDisplayContainer}>
                 <Grid container spacing={1} justify="center">
                     {/**post.map generates one card for each element in const posts*/}
                     {borrowCart.map(function(result,i) {
@@ -60,11 +77,13 @@ export default function CartDisplayRender(props){
                         )
                     })}
                 </Grid>
-                <Button id='checkoutButton' onClick={props.handleCartCheckout} size='medium' variant='contained' color='inherit'>Checkout</Button>
+                <div className={classes.checkoutButtonContainer}>
+                    <Button id='checkoutButton' classes={{root: classes.checkoutButton}} onClick={props.handleCartCheckout} size='medium' variant='contained' color='inherit'>Checkout</Button>
+                </div>
             </div>    
             {/**Only works if all books removed from cart. handleCartCancel() will make it 'display: block'*/}
-            <div id="cartEmptyDisplay" style={{display: 'none',}}>
-                <Typography variant="body1" component="div" noWrap={false} style={{marginTop: 10,}}>
+            <div id="cartEmptyDisplay" className={classes.cartEmptyDisplayContainer}>
+                <Typography variant="body1" component="div" noWrap={false} classes={{root: classes.cartEmptyDisplayContainerCaption}}>
                     Cart's empty. Time to get some books!
                 </Typography>
             </div>

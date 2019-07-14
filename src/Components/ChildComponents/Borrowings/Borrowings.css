@@ -1,0 +1,19 @@
+.pageHeader{
+    margin-top: 5;
+    margin-bottom: 5;
+}
+.formContainer{
+    margin-top: 10; 
+    height: 48; 
+    position: relative;
+}
+.passwordInput{
+    margin-top: 10;
+    border: 2px solid gray;
+    float: left;
+}
+.submitButton{
+    margin-top: 10;
+    margin-left: 10; 
+    float:left;
+}

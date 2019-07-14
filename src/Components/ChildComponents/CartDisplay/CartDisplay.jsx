@@ -1,12 +1,10 @@
 import React from 'react';
-import Typography from '@material-ui/core/Typography'
 import CartDisplayRender from './CartDisplayRender.jsx'
 
 export default class CartDisplay extends React.Component {
     constructor(props){
         super(props);
 
-        this.cartDisplay = this.cartDisplay.bind(this);
         this.handleCartCancel = this.handleCartCancel.bind(this);
         this.handleCartCheckout = this.handleCartCheckout.bind(this);
     }
@@ -18,59 +16,6 @@ export default class CartDisplay extends React.Component {
             document.getElementById("cartDisplay").style.display = 'block';
             document.getElementById("cartEmptyDisplay").style.display = 'none';
         }
-    }
-    cartDisplay () {
-        const that = this;
-        
-        const cartDisplay = document.getElementById("cartDisplay");
-        /*Clears <li> in cartDisplay for another re-rendering*/
-        while(cartDisplay.firstChild){
-            cartDisplay.removeChild(cartDisplay.firstChild);
-        }
-    
-        const checkoutButton = document.getElementById("checkoutButton");
-        const borrowCart = that.props.borrowCart;
-       
-        /**Check for empty cart*/
-        if (borrowCart.length === 0){
-            const resultSpan = document.createElement("p");
-            resultSpan.appendChild(document.createTextNode("Cart empty"));
-            
-            cartDisplay.appendChild(resultSpan);
-        } else {
-            const resultsList = document.createElement("ul");
-            resultsList.id = "cartResultsList";
-
-            for(let i=0; i<borrowCart.length; i++){
-                let resultCard = document.createElement("li");
-                resultCard.id = "cartCard."+i;
-                resultCard.setAttribute("href",borrowCart[i].id)
-
-                let resultSpan = document.createElement("span");
-                let cardImg = document.createElement("img");
-                cardImg.id = "cartCardImg."+borrowCart[i].id;
-                cardImg.src = borrowCart[i].coverimg;
-                cardImg.alt = borrowCart[i].title;
-                cardImg.style = "width:80px; height:100px;"
-                resultSpan.appendChild(cardImg);
-
-                resultSpan.appendChild(document.createTextNode(borrowCart[i].title+" "));
-
-                let cancelButton = document.createElement("button");            
-                cancelButton.id = "cancel."+borrowCart[i].id;
-                cancelButton.onclick = function(event){that.handleCartCancel(i);};
-                //cancelButton.addEventListener("click", that.handleCartCancel[i])
-                cancelButton.innerHTML = "X";
-                resultSpan.appendChild(cancelButton);
-
-                resultCard.appendChild(resultSpan);
-                resultsList.appendChild(resultCard);
-                cartDisplay.appendChild(resultsList);
-
-                /**checkoutButton should render only if cart has items */
-                checkoutButton.style.display = "block";
-            }
-        } 
     }
     handleCartCancel(idx){
         /**This setup of getting bookId from the card href is necessary because appending
@@ -225,7 +170,6 @@ export default class CartDisplay extends React.Component {
     render() {
 		return (
             <React.Fragment>
-                <Typography variant='h5' align='left' style={{marginTop: 5, marginBottom: 5,}}>Cart contents</Typography>
                 <CartDisplayRender
                     borrowCart = {this.props.borrowCart}
                     handleCartCancel = {this.handleCartCancel}

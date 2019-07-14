@@ -5,6 +5,9 @@ import { Card, CardHeader, CardMedia, CardActionArea, CardActions, CardContent, 
 import Button from "@material-ui/core/Button";
 
 const useStyles = makeStyles(theme => ({ 
+    pageHeader:{
+        marginTop: '5%',
+    },
     detailsOverlay:{
         position: 'fixed',
         display: 'none',
@@ -25,8 +28,31 @@ const useStyles = makeStyles(theme => ({
         margin: '30% auto', /*Centers the card*/
         width: '90%',
         padding: '5px 5px 5px 5px',
-        height: 'auto', 
+        height: '210', 
         cursor: 'pointer',
+    },
+    infoBox:{
+        display: 'flex',
+        flexDirection: 'row',
+        padding: '3%',
+    },
+    detailsCardImage: {
+        display: 'flex',
+        maxWidth: 155,
+        maxHeight: 465,
+    },
+    infoAndActions:{
+        display: 'flex',
+        flexDirection: 'column', //So that <CardActions/> appear below text
+    },
+    bookInfo: {
+        display: 'flex',
+    },
+    cardActions:{
+        display: 'flex',
+        justifyContent: 'flex-start',
+        flexWrap: 'nowrap',
+        padding: '0 0 0 20',
     },
     //Width of 155px ensures 2 cards per row on a standard iPhone 
     card:{
@@ -74,29 +100,32 @@ export default function SearchResultsRender(props){
         
         let detailsCard = [
             <Card key='bookDetails' classes={{root: classes.detailsCard}}>
-                <CardMedia
-                    component='img'
-                    alt={`front cover for ${bookDetails.title}`}
-                    height="210"
-                    src={bookDetails.coverimg}
-                    classes= {{media: classes.detailsCardImage}}
-                />
-                <CardHeader
-                    title = {bookDetails.title}
-                    subheader = {
-                        <React.Fragment>
-                            {bookDetails.author} <br/> 
-                            {bookDetails.publisher}
-                        </React.Fragment>
-                    }
-                    classes = {{title: classes.detailsCardTitle, subheader: classes.detailsCardSubheader}}
-                />
-                <CardActions>
-                    {borrowButtonRender(bookId)}
-                    <Button size="small" color="primary" onClick={() => {hideDetails();}}>
-                        Close
-                    </Button>
-                </CardActions>
+                <div className={classes.infoBox}>
+                    <CardMedia
+                        component='img'
+                        alt={`front cover for ${bookDetails.title}`}
+                        src={bookDetails.coverimg}
+                        classes= {{media: classes.detailsCardImage}}
+                    />
+                    <div className={classes.infoAndActions}>
+                    <CardHeader
+                        title = {bookDetails.title}
+                        subheader = {
+                            <React.Fragment>
+                                {bookDetails.author} <br/> 
+                                {bookDetails.publisher}
+                            </React.Fragment>
+                        }
+                        classes = {{root: classes.bookInfo, title: classes.detailsCardTitle, subheader: classes.detailsCardSubheader}}
+                    />
+                    <CardActions classes={{root: classes.cardActions}}>
+                        {borrowButtonRender(bookId)}
+                        <Button size="small" color="primary" onClick={() => {hideDetails();}}>
+                            Close
+                        </Button>
+                    </CardActions>
+                    </div>
+                </div>
                 <CardContent>
                     <Typography variant="h6" component="div" noWrap={true}>
                         <u>Synopsis</u>
@@ -122,7 +151,7 @@ export default function SearchResultsRender(props){
 
     return(
         <React.Fragment>
-            <Typography variant="h5" component="h2">Search results</Typography>
+            <Typography variant="h5" component="h2" classes={{root: classes.pageHeader}}>Search results</Typography>
             <div id='detailsOverlay' className={classes.detailsOverlay}>
                 {state.storedDetailsCard} {/**Must use state here: When state updates, the update is pushed to all calls of that state*/}
             </div>

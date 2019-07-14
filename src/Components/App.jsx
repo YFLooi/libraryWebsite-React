@@ -3,7 +3,6 @@ import {
     Route,
     HashRouter,
   } from "react-router-dom";
-import "./MainPage.css";
 
 import HomePage from "./ChildComponents/HomePage/HomePage.jsx";
 import LoadingScreen from "./ChildComponents/LoadingScreen/LoadingScreen.jsx";
@@ -15,7 +14,7 @@ import Borrowings from "./ChildComponents/Borrowings/Borrowings.jsx";
 //For material UI navbar
 import Navbar from './Navbar.jsx'
 
-export default class MainPage extends React.Component {
+export default class App extends React.Component {
     constructor(props){
         super(props);
         

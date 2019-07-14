@@ -9,6 +9,10 @@ import Button from "@material-ui/core/Button";
 import { ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails } from '@material-ui/core/';
 
 const useStyles = makeStyles(theme => ({ 
+    pageHeader:{
+        marginTop: 5, 
+        marginBottom: 5,
+    },
     //Width of 155px ensures 2 cards per row on a standard iPhone 
     card:{
         minWidth: 350,
@@ -34,6 +38,14 @@ const useStyles = makeStyles(theme => ({
     bookListItemDesc:{
 
     },
+    borrowingsDisplay:{
+        marginTop: 10, 
+        padding: 4, 
+        display: 'block',
+    },
+    borrowingsEmptyDisplay:{
+        display: 'none'
+    }
 }))
 
 export default function BorrowingsRender(props){
@@ -239,15 +251,15 @@ export default function BorrowingsRender(props){
     //Always the last to run. Waits for all functions above it first
     return(   
         <React.Fragment>
-            <Typography variant="h5" component="h2" noWrap={false} style={{ marginTop: 5, marginBottom: 5,}}>Borrowings recorded</Typography>
+            <Typography variant="h4" noWrap={false} classes={{root: classes.pageHeader}}>Borrowings recorded</Typography>
             <Typography variant="body1" component="div" noWrap={false}>Standard borrowing period is 14 days</Typography>
             <Typography variant="body1" component="div" noWrap={false}>Late fine set to MYR 0.50 per day</Typography>
-            <div id='borrowingsDisplay' style={{ marginTop: 10, padding: 4, display: 'block'}}>
+            <div id='borrowingsDisplay' className={classes.borrowingsDisplay}>
                 <Grid container spacing={4} justify="center">         
                     {cards} {/**The array's elements render one by one! No array.map() required*/}
                 </Grid>
             </div>
-            <div id="borrowingsEmptyDisplay" style={{display: 'none'}}>
+            <div id="borrowingsEmptyDisplay" className={classes.borrowingsEmptyDisplay}>
                 <Typography variant="body1" component="div" noWrap={false}>
                     All recorded borrowings cleared
                 </Typography>

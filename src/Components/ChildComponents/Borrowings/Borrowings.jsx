@@ -3,7 +3,6 @@ import {
     //Allows us to connect to <Hashrouter/> from a child component
     withRouter
   } from "react-router-dom"; 
-import "./Borrowings.css";
 import { Input, Button } from '@material-ui/core';
 import TypoGraphy from '@material-ui/core/Typography'
 import BorrowingsRender from './BorrowingsRender.jsx';
@@ -107,14 +106,13 @@ class Borrowings extends React.Component {
         if(this.props.isBorrowingsPasswordCorrect === false){
             return(
                 <div id='borrowings-page'>
-                    <div><TypoGraphy variant='h5' align='left' style={{ marginTop: 5, marginBottom: 5,}}>Borrowings record</TypoGraphy></div>
+                    <div><TypoGraphy variant='h4' align='left' style={{ marginTop: 5, marginBottom: 5,}}>Borrowings record</TypoGraphy></div>
                     <TypoGraphy variant='body1' align='left'>Librarians only. Please provide a valid password</TypoGraphy>
                     <div style={{marginTop: 10, height:48, position:'relative',}}>
                         <form onSubmit = {this.checkBorrowings}>
                             <Input
                                 type='password'
                                 name='passwordInput'
-                                id='passwordInput'
                                 value={this.props.passwordInput}
                                 onChange = {this.handlePasswordInputChange}
                                 onSubmit = {this.checkBorrowings}

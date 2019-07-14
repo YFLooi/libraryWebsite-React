@@ -2,7 +2,6 @@ import React from 'react';
 import {
     withRouter,
 } from "react-router-dom";
-import "./BasicSearch.css";
 import IntegrationAutosuggest from "./MaterialAutosuggest.jsx"
 
 class BasicSearch extends React.Component {   
@@ -15,7 +14,7 @@ class BasicSearch extends React.Component {
         //the function call in componenetDidMount() will work
         this.state = {
             single: '',
-            popper:'',
+            //Not used. What does the API need it for? popper:'',
         }
     }
     componentDidMount(){
@@ -45,14 +44,15 @@ class BasicSearch extends React.Component {
               .replace(/\s+/g, ' ')
               .replace(/\s/g, '') // removes whitespace
               .replace(/^(\s*)([\W\w]*)(\b\s*$)/g, '$2');
-          }
-        let basicInput = removeSpecialChars(input);
+        }
+        //Set to lower case for sake of homogenity
+        let basicInput = removeSpecialChars(input).toLowerCase();
         //Adds record of Basic search term in state for Redux later
         that.props.stateUpdater("basicInput",basicInput)    
         
         //There is a chance that the update to this.state.basicInput may be delayed
         setTimeout(function(){
-            let searchInput = that.props.basicInput
+            let searchInput = basicInput
             //Use value stored in state instead. <Autocomplete/> returns all kinds of jibberish which
             //enables a search even on an empty string. 
             if(searchInput !== ""){
@@ -86,7 +86,7 @@ class BasicSearch extends React.Component {
                                             //A little cheat: Since I can't push to /SearchResults to trigger
                                             //componentDidMount() when at /SearchResults to render the search results, 
                                             //I jump pages first
-                                            that.props.history.push('/LoadingScreen');
+                                            //that.props.history.push('/LoadingScreen');
                                             that.props.history.push('/SearchResults');
                                     } else {
                                         console.log("Error updating this.state.searchResults")
@@ -113,7 +113,6 @@ class BasicSearch extends React.Component {
                     stateUpdater = {this.props.stateUpdater}
                     searchResults = {this.props.searchResults}
                     single = {this.state.single}
-                    popper = {this.state.popper}
                     basicSearchStateUpdater = {this.basicSearchStateUpdater}
                 />         
             </React.Fragment>
