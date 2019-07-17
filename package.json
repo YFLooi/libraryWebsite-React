@@ -1,53 +1,25 @@
 {
-  "name": "librarywebsite-react",
+  "name": "node-api-postgres",
   "version": "1.0.0",
-  "description": "A new spin on the old OPAC system",
-  "private": true,
+  "description": "RESTful API with Node.js, Express, and PostgreSQL",
+  "main": "index.js",
+  "license": "MIT",
   "dependencies": {
-    "@material-ui/core": "^4.1.3",
-    "@material-ui/icons": "^4.2.1",
-    "autosuggest-highlight": "^3.1.1",
+    "body-parser": "^1.18.3",
+    "concurrently": "^4.1.1",
+    "cors": "^2.8.5",
     "express": "^4.16.4",
-    "pg": "^7.8.1",
-    "prop-types": "^15.7.2",
-    "react": "^16.8.3",
-    "react-autosuggest": "^9.4.3",
-    "react-dom": "^16.8.3",
-    "react-redux": "^6.0.1",
-    "react-router-dom": "^5.0.0",
-    "react-scripts": "2.1.5",
-    "react-search-box": "^2.0.1",
-    "redux": "^4.0.1"
+    "nodemon": "^1.19.1",
+    "pg": "^7.8.0"
+  },
+  "engines": {
+    "node": "10.x"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ],
-  "devDependencies": {
-    "react-alice-carousel": "^1.15.1"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/YFLooi/libraryWebsite-React.git"
-  },
-  "keywords": [
-    "react"
-  ],
-  "author": "YFLooi",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/YFLooi/libraryWebsite-React/issues"
-  },
-  "homepage": "https://github.com/YFLooi/libraryWebsite-React#readme"
+    "start": "concurrently \"npm run server\" \"npm run client\"",
+    "client-install": "npm install --prefix client",
+    "server": "nodemon index.js",
+    "client": "npm start --prefix client",
+    "heroku-postbuild": "NPM_CONFIG_PRODUCTION=false npm install --prefix client && npm run build --prefix client"
+  }
 }
