@@ -1,4 +1,4 @@
-### libraryWebsite-React
+# libraryWebsite-React
 A new spin on the dated UI of the OPAC system typical of today's libraries.
 
 * Main page shows basic search, new book arrivals, and announcements
