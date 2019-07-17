@@ -7,5 +7,5 @@ A new spin on the dated UI of the OPAC system typical of today's libraries.
 * Librarians have a separate login to check all borrowing records
 
 ## Built with
-* Front end: React, Material UI 
-* Back end: PostgreSQL, Express
+* Front end: [React] (https://reactjs.org/), [Material UI] (https://material-ui.com/)
+* Back end: [PostgreSQL] (https://www.postgresql.org/), [Express] (https://expressjs.com/)
