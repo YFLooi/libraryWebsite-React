@@ -6,7 +6,7 @@ import {
 } from 'react-router-dom'; 
 import TypoGraphy from '@material-ui/core/Typography'
 //Radio and RadioGroup are for the radio buttons
-import { FormControl, FormControlLabel, InputLabel, Input, Button, Radio, RadioGroup} from '@material-ui/core';
+import { FormControl, FormControlLabel, InputLabel, Input, TextField, Button, Radio, RadioGroup} from '@material-ui/core';
 
 const useStyles = makeStyles(theme => ({
     root: {
@@ -47,6 +47,9 @@ const useStyles = makeStyles(theme => ({
         width: '100%',
         height: 140,
         marginBottom: '2%'
+    },
+    synopsisBox:{
+        width: '90%',
     },
     submitButton: {
         //Centres the button relative to the <form/>
@@ -98,9 +101,9 @@ function AdvSearch(props){
         && advSynopsis === 'null'){
             console.log('Blank query made. No query submitted');
         } else {
-            fetch('http://localhost:3005/AdvSearch/'+advTitle+'/'+condTitAuth+'/'+advAuthor+'/'+condAuthYr+
+            fetch('/AdvSearch/'+advTitle+'/'+condTitAuth+'/'+advAuthor+'/'+condAuthYr+
             '/'+advYearStart+'/'+advYearEnd+'/'+condYrPub+'/'+advPublisher+'/'+condPubSynp+'/'+advSynopsis
-            ,{method:'GET',mode:'cors'})
+            ,{method:'GET'})
                 //Here we chain 2 promise functions: The first fetches data (response), the second examines text in response (data)
                 .then(function(response){
                     return response.json()
@@ -217,13 +220,7 @@ function AdvSearch(props){
                     </RadioGroup>
                 </div>
                 <div className={classes.synopsisContainer}>
-                    <FormControl className={classes.formcontrol}>
-                        <InputLabel htmlFor='Synopsis keywords'>Synopsis keywords</InputLabel>
-                        {/**If we pass 'multiline' prop to the Input component it will render 
-                        <textarea/> element instead of <input/> field.
-                        'rows' prop is used to increase th number of rows in textarea element. */}
-                        <Input id='advSynopsis' name='advSynopsis' type='text' multiline rows={5} autoComplete='off' onChange={handleAdvSearchChange}/>
-                    </FormControl>
+                    <TextField id='advSynopsis' name='advSynopsis' className={classes.synopsisBox} label='Synopsis Keywords' type='text' multiline rows='4' autoComplete='off' onChange={handleAdvSearchChange}/>
                 </div>
                 <div className={classes.categoryContainer}>
                     <Button variant='contained' color='inherit' size='medium' type='submit' className={classes.submitButton}>

@@ -123,9 +123,7 @@ export default class CartDisplay extends React.Component {
     
                 const POSTReqInit = {
                     method:"POST",
-                    mode:"cors",   
                     cache:"no-cache",
-                    credentials:"same-origin",
                     headers:{
                         "Content-Type": "application/json",
                     },
@@ -135,7 +133,7 @@ export default class CartDisplay extends React.Component {
                     body: JSON.stringify(borrowingData) 
                 }
                 /**Both parameters are initialised with blanks */
-                fetch("http://localhost:3005/Create-Borrowings", POSTReqInit)
+                fetch("/Create-Borrowings", POSTReqInit)
                     .then(function(response){
                         return response.json()
                         .then(function(data){

@@ -68,10 +68,8 @@ class Borrowings extends React.Component {
         }
 
         const DELETEReqInit = {
-            method:"DELETE",
-            mode:"cors",   
+            method:"DELETE", 
             cache:"no-cache",
-            credentials:"same-origin",
             headers:{
                 "Content-Type": "application/json",
             },
@@ -81,7 +79,7 @@ class Borrowings extends React.Component {
             body: JSON.stringify(deleteTarget) 
         }
         /**Both parameters are initialised with blanks */
-        fetch("http://localhost:3005/Delete-Borrowings", DELETEReqInit)
+        fetch("/Delete-Borrowings", DELETEReqInit)
             .then(function(response){
                 return response.json()
                 .then(function(data){

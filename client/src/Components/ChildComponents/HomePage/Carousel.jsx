@@ -30,7 +30,7 @@ class Carousel extends Component {
     componentDidMount(){
         const that = this; //Prevents 'this' from being undefined
         /*Fetches the data on page load for the New Arrivals slideshow*/
-        fetch('http://localhost:3005/newArrivals', {method:"GET", mode:"cors"})
+        fetch('/newArrivals', {method:"GET"})
             //Here we chain 2 promise functions: The first fetches data (response), the second examines text in response (data)
             .then(function(response){
                 return response.json()

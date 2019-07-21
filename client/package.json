@@ -14,7 +14,7 @@
     "react-autosuggest": "^9.4.3",
     "react-dom": "^16.8.3",
     "react-router-dom": "^5.0.0",
-    "react-scripts": "2.1.5",
+    "react-scripts": "^2.1.5",
     "react-search-box": "^2.0.1"
   },
   "engines": {
@@ -30,7 +30,7 @@
   "eslintConfig": {
     "extends": "react-app"
   },
-  "proxy": "http://localhost:3005",
+  "proxy": "http://localhost:5000",
   "browserslist": [
     ">0.2%",
     "not dead",

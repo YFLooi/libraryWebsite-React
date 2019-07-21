@@ -22,6 +22,7 @@ const useStyles = makeStyles(theme => ({
     },
     cartDisplayContainer: {
         marginTop: 10, 
+        marginBottom: '15%',
         padding: 4, 
         display: 'none'
     },
@@ -30,7 +31,8 @@ const useStyles = makeStyles(theme => ({
         textAlign: 'center', //Centres the <Button/>
     },
     cartEmptyDisplayContainerCaption:{
-        marginTop: 10,
+        marginTop: 10, 
+        marginBottom: 20,
     },
 }))
 

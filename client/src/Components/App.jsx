@@ -1,8 +1,10 @@
 import React from 'react';
 import {
-    Route,
+    BrowserRouter,
     HashRouter,
-  } from "react-router-dom";
+    Switch,
+    Route
+} from "react-router-dom";
 
 import HomePage from "./ChildComponents/HomePage/HomePage.jsx";
 import LoadingScreen from "./ChildComponents/LoadingScreen/LoadingScreen.jsx";
@@ -52,8 +54,6 @@ export default class App extends React.Component {
         }
         this.stateUpdater = this.stateUpdater.bind(this);
     } 
-    /*Universal state manipulator! It allows all child component functions to be outsourced 
-    as props by providing them a means to manipulate state!!*/
     stateUpdater(name,data){
         /* [] allows an external variable to define object property "name". In this case, 
         it's parameter "name".*/
@@ -63,10 +63,10 @@ export default class App extends React.Component {
     }
     render() {
         return(
-            <HashRouter>
+            <BrowserRouter>
                 <Navbar/>
 
-                <div className="content">
+                <Switch>
                     {/**Matches URL defined in "to" prop to correct content (components)
                     When the NavLink for "/" is clicked, the contents of the render() method
                     in component "Home" are rendered here in the "content" <div>*/}
@@ -136,8 +136,8 @@ export default class App extends React.Component {
                         />}
                     />
 
-                </div>
-            </HashRouter>    
+                </Switch>
+            </BrowserRouter>    
         );   
     }
 }

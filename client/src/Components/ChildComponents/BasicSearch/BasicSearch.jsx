@@ -57,7 +57,7 @@ class BasicSearch extends React.Component {
             //enables a search even on an empty string. 
             if(searchInput !== ""){
                 console.log("String submitted for basic search: "+searchInput);
-                fetch("http://localhost:3005/BasicSearch/"+searchInput, {method: "GET",mode:"cors"})
+                fetch("/BasicSearch/"+searchInput, {method: "GET"})
                     //Here we chain 2 promise functions: The first fetches data (response), the second examines text in response (data)
                     .then(function(response){
                         return response.json()

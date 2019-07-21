@@ -36,6 +36,10 @@ const useStyles = makeStyles(theme => ({
         flexDirection: 'row',
         padding: '3%',
     },
+    resultsDisplayContainer: {
+        marginTop: 10, 
+        marginBottom: '15%',
+    },
     detailsCardImage: {
         display: 'flex',
         maxWidth: 155,
@@ -155,14 +159,14 @@ export default function SearchResultsRender(props){
             <div id='detailsOverlay' className={classes.detailsOverlay}>
                 {state.storedDetailsCard} {/**Must use state here: When state updates, the update is pushed to all calls of that state*/}
             </div>
-            <div style={{ marginTop: 20, padding: 4 }}>
+            <div className={classes.resultsDisplayContainer}>
                 <Grid container spacing={1} justify="center">
                     {/**post.map generates one card for each element in const posts*/}
                     {searchResults.map(function(item,i) {
                         return(
                             <Grid item key={`card.${i}`}>
                                 <Card classes={{root: classes.card}}>
-                                    <CardActionArea>
+                                    <CardActionArea onClick={() => {renderDetails(item.id, i);}}>
                                         <CardMedia
                                             component="img"
                                             alt={item.title}

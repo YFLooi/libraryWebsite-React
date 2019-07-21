@@ -40,10 +40,13 @@ const useStyles = makeStyles(theme => ({
     },
     borrowingsDisplay:{
         marginTop: 10, 
+        marginBottom: '15%',
         padding: 4, 
         display: 'block',
     },
     borrowingsEmptyDisplay:{
+        marginTop: 10, 
+        marginBottom: '15%',
         display: 'none'
     }
 }))
@@ -58,14 +61,12 @@ export default function BorrowingsRender(props){
     //The Hook equivalent of componentDidMount()
     useEffect(() => {
         const GETReqInit = {
-            method:"GET",
-            mode:"cors",   
+            method:"GET", 
             cache:"no-cache",
-            credentials:"same-origin",
             redirect: "error",
         }
         /**Both parameters are initialised with blanks */
-        fetch("http://localhost:3005/Check-Borrowings", GETReqInit)
+        fetch("/Check-Borrowings", GETReqInit)
             .then(function(response){
                 //pg automatically calls JSON.parse()
                 return response.json()

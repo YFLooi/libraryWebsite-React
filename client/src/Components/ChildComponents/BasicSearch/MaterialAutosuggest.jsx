@@ -239,7 +239,7 @@ function IntegrationAutosuggest(props) {
         //Sending in a blank or null 'newValue' to fetch() returns an JSON.parse() error
         if (newValue !== null && newValue !== ''){
             //Obtains data for search suggestions
-            fetch("http://localhost:3005/Suggestions/"+suggestionRequest, {method: "GET",mode:"cors"})
+            fetch("/Suggestions/"+suggestionRequest, {method: "GET"})
             //Here we chain 2 promise functions: The first fetches data (response), the second examines text in response (data)
             .then(function(response){
                 return response.json()
