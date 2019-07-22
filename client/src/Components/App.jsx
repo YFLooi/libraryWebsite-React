@@ -61,13 +61,17 @@ export default class App extends React.Component {
     }
     render() {
         return(
+            <div>
+                Test to see if App.jsx works
+                <Navbar/>
+            </div>
+        )
+        /** 
+        return(
             <React.Fragment>
                 <Navbar/>
 
                 <Switch>
-                    {/**Matches URL defined in "to" prop to correct content (components)
-                    When the NavLink for "/" is clicked, the contents of the render() method
-                    in component "Home" are rendered here in the "content" <div>*/}
                     <Route 
                         exact path="/" 
                         render={(props) => <HomePage {...props}
@@ -137,6 +141,7 @@ export default class App extends React.Component {
                 </Switch>
             </React.Fragment>
         );   
+        */
     }
 }
 
