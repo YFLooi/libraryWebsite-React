@@ -6,11 +6,10 @@
   "license": "MIT",
   "dependencies": {
     "body-parser": "^1.18.3",
-    "concurrently": "^4.1.1",
-    "cors": "^2.8.5",
     "dotenv": "^8.0.0",
     "express": "^4.17.1",
     "express-promise-router": "^3.0.3",
+    "path": "^0.12.7",
     "pg": "^7.11.0",
     "pg-promise": "^8.7.5"
   },
@@ -20,6 +19,7 @@
   },
   "scripts": {
     "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
     "heroku-postbuild": "npm install && cd client && npm install && npm run build"
   },
   "devDependencies": {},

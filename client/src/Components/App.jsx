@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-    BrowserRouter,
     Switch,
     Route
 } from "react-router-dom";
@@ -62,7 +61,7 @@ export default class App extends React.Component {
     }
     render() {
         return(
-            <BrowserRouter>
+            <React.Fragment>
                 <Navbar/>
 
                 <Switch>
@@ -136,7 +135,7 @@ export default class App extends React.Component {
                     />
 
                 </Switch>
-            </BrowserRouter>    
+            </React.Fragment>
         );   
     }
 }
