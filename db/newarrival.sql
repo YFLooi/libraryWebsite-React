@@ -1,4 +1,15 @@
-﻿DROP TABLE IF EXISTS newarrival;
+﻿/*
+DROP DATABASE IF EXISTS booklibrary
+
+CREATE DATABASE booklibrary;
+
+CREATE USER me
+WITH ENCRYPTED PASSWORD 'x';
+
+
+\c newarrival; 
+*/
+DROP TABLE IF EXISTS newarrival;
 
 CREATE TABLE newarrival(
     id numeric null,
@@ -22,6 +33,7 @@ INSERT INTO newarrival (id,title,author,"year",publisher,synopsis,coverimg) VALU
 ,(111,'Dopesick: Dealers, Doctors, and the Drug Company that Addicted America','Beth Macy','2018','Little, Brown, and Company','Beth Macy’s book revealed the greed that drove OxyContin to be America’s drug of choice, and it opened my eyes to the shame of addiction that kept this epidemic hidden until far too late. Opioid addiction has touched nearly all of us in the 20 years since OxyContin came to market, and it’s something that didn’t have to happen. Money--absurdly huge sums of it--encouraged doctors, politicians, and the pharmaceutical industry to accept claims about the safety of this painkiller even when it was in conflict with what they saw in their practices and communities','https://images-na.ssl-images-amazon.com/images/I/51btuIO7E2L._AC_SR201,266_.jpg')
 ,(113,'My Year of Rest and Relaxation','Ottessa Moshfegh','2018','Penguin Press','My Year of Rest and Relaxation takes place in 2001, when a pretty young Columbia graduate with an easy job at an art gallery decides to take a year off just to sleep. She has access to a quack psychiatrist willing to prescribe her an arsenal of pills, and she has money that she inherited from her deceased parents. She also has a terrible older boyfriend who works on Wall Street and a best friend, Reva, with whom she shares a thorny, complicated relationship.','https://images-na.ssl-images-amazon.com/images/I/513uyAYdssL._AC_SR201,266_.jpg')
 ;
+
 INSERT INTO newarrival (id,title,author,"year",publisher,synopsis,coverimg) VALUES 
 (114,'Frederick Douglass: Prophet of Freedom ','David W. Blight','2018','Simon and Schuster','As a young man Frederick Douglass (1818–1895) escaped from slavery in Baltimore, Maryland. He was fortunate to have been taught to read by his slave owner mistress, and he would go on to become one of the major literary figures of his time. He wrote three versions of his autobiography over the course of his lifetime and published his own newspaper. His very existence gave the lie to slave owners: with dignity and great intelligence he bore witness to the brutality of slavery','https://images-na.ssl-images-amazon.com/images/I/810ygjggs-L._AC_SR201,266_.jpg')
 ,(115,'21 Lessons for the 21st Century ','Yuval Noah Harari','2018','Spiegel and Grau','How do computers and robots change the meaning of being human? How do we deal with the epidemic of fake news? Are nations and religions still relevant? What should we teach our children? Yuval Noah Harari’s 21 Lessons for the 21st Century is a probing and visionary investigation into today’s most urgent issues as we move into the uncharted territory of the future. As technology advances faster than our understanding of it, hacking becomes a tactic of war, and the world feels more polarized than ever, Harari addresses the challenge of navigating life in the face of constant and disorienting change and raises the important questions we need to ask ourselves in order to survive.','https://images-na.ssl-images-amazon.com/images/I/81o9vblSjmL._AC_SR201,266_.jpg')
@@ -34,3 +46,9 @@ INSERT INTO newarrival (id,title,author,"year",publisher,synopsis,coverimg) VALU
 ,(109,'There There: A novel ','Tommy Orange','2018','Knopf','What does it really mean to be an Indian/Native American/American Indian/Native? Orange''s vivid debut novel allows a unique cast—ranging from teenagers to elders—to pull this question apart even as they add a modern layer of complexity: They live in the urban landscape of Oakland, California. The thrust of Orange''s cross-cut storytelling is not to force his characters onto a strict plot line but to explore the varied ways of being an Indian and, more important, of feeling like an Indian. Fractured families, Oakland itself, and detachment from tradition make an Indian identity seem even more elusive to the younger characters, but it''s a feeling that they unknowingly share—and that Orange wants to expose. ','https://images-na.ssl-images-amazon.com/images/I/81FHAZWBpeL._AC_SR201,266_.jpg')
 ,(112,'Wolves of Eden: A Novel ','Kevin McCarthy','2018','W. W. Norton and Company','The setting is post-Civil War in the Dakota Territory, where the U.S. Army has established forts and its soldiers’ time is mostly spent fighting the Native Americans whose land they keep poaching. McCarthy’s characters come alive on the page, particularly his narrators: the long-suffering and quite clever Corporal Daniel Kohn, and Irish immigrant Michael O’Driscoll who, along with his brother Thomas, re-joined the army when they ran out of options. After a politically connected brothel owner and his wife are murdered outside Fort Phil Kearney, Corporal Kohn, along with his superior, a drunk Lieutenant named Molloy, are sent to find the killer—or at least “a neck for the noose” to appease their bosses in Washington.','https://images-na.ssl-images-amazon.com/images/I/81O8doEYnqL._AC_SR201,266_.jpg')
 ;
+
+/*
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO postgres;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO postgres;
+GRANT ALL PRIVILEGES ON DATABASE portal TO postgres;
+*/
