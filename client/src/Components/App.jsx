@@ -61,16 +61,8 @@ export default class App extends React.Component {
     }
     render() {
         return(
-            <div>
-                Test to see if App.jsx works
-                <Navbar/>
-            </div>
-        )
-        /** 
-        return(
             <React.Fragment>
-                <Navbar/>
-
+                {/**<Navbar/>*/}
                 <Switch>
                     <Route 
                         exact path="/" 
@@ -141,7 +133,6 @@ export default class App extends React.Component {
                 </Switch>
             </React.Fragment>
         );   
-        */
     }
 }
 
