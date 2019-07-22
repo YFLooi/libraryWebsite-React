@@ -13,11 +13,6 @@ const db = require('./db/queries.js')
 
 // Use bodyParser to parse JSON
 app.use(bodyParser.json())
-app.use(
-  bodyParser.urlencoded({
-    extended: true,
-  })
-)
 
 //Static file declaration, which is the location of the React app
 //Used in deployment by React app to access index.js
