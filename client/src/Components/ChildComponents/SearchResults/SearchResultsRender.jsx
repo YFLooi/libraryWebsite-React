@@ -7,6 +7,7 @@ import Button from "@material-ui/core/Button";
 const useStyles = makeStyles(theme => ({ 
     pageHeader:{
         marginTop: '5%',
+        marginLeft: '2%',
     },
     detailsOverlay:{
         position: 'fixed',
@@ -25,7 +26,7 @@ const useStyles = makeStyles(theme => ({
     },
     detailsCard:{
         position: 'relative', 
-        margin: '30% auto', /*Centers the card*/
+        margin: '20% auto', /*Centers the card*/
         width: '90%',
         padding: '5px 5px 5px 5px',
         height: '210', 
@@ -42,8 +43,10 @@ const useStyles = makeStyles(theme => ({
     },
     detailsCardImage: {
         display: 'flex',
+        minWidth: 155,
+        minHeight: 205,
         maxWidth: 155,
-        maxHeight: 465,
+        maxHeight: 205,
     },
     infoAndActions:{
         display: 'flex',
@@ -149,6 +152,11 @@ export default function SearchResultsRender(props){
         detailsOverlay.style.display= 'block';
     }
     const hideDetails = () => {
+        //Need to do this mutably. Otherwise, Borrow button will be stuck on last Cancel
+        setState({
+            storedDetailsCard: [],
+        });
+        
         //Should keep appended Details card. That way, there is no load time if 'Details' is clicked again
         document.getElementById(`detailsOverlay`).style.display = 'none';
     }

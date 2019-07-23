@@ -12,6 +12,7 @@ const useStyles = makeStyles(theme => ({
     pageHeader:{
         marginTop: 5, 
         marginBottom: 5,
+        marginLeft: '2%',
     },
     //Width of 155px ensures 2 cards per row on a standard iPhone 
     card:{
@@ -253,8 +254,8 @@ export default function BorrowingsRender(props){
     return(   
         <React.Fragment>
             <Typography variant="h4" noWrap={false} classes={{root: classes.pageHeader}}>Borrowings recorded</Typography>
-            <Typography variant="body1" component="div" noWrap={false}>Standard borrowing period is 14 days</Typography>
-            <Typography variant="body1" component="div" noWrap={false}>Late fine set to MYR 0.50 per day</Typography>
+            <Typography variant="body1" component="div" noWrap={false} style={{marginLeft: '2%',}}>Standard borrowing period is 14 days</Typography>
+            <Typography variant="body1" component="div" noWrap={false} style={{marginLeft: '2%',}}>Late fine set to MYR 0.50 per day</Typography>
             <div id='borrowingsDisplay' className={classes.borrowingsDisplay}>
                 <Grid container spacing={4} justify="center">         
                     {cards} {/**The array's elements render one by one! No array.map() required*/}

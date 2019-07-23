@@ -12,7 +12,7 @@ import { Search, Settings } from '@material-ui/icons'
 import {
     withRouter,
 } from "react-router-dom";
-import background from './icons/background.png';
+import background from './icons/background.jpg';
 
 //How CSS is passed from "const useStyles()" to this <TextField/>:
 /*  Define CSS in input{} object in "const useStyles" 

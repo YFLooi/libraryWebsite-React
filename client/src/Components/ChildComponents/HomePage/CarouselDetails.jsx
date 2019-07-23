@@ -22,7 +22,7 @@ const useStyles = makeStyles(theme => ({
     },
     detailsCard:{
         position: 'relative', 
-        margin: '30% auto', /*Centers the card*/
+        margin: '20% auto', /*Centers the card*/
         width: '90%',
         padding: '5px 5px 5px 5px',
         height: '210', 
@@ -35,8 +35,10 @@ const useStyles = makeStyles(theme => ({
     },
     detailsCardImage: {
         display: 'flex',
+        minWidth: 155,
+        minHeight: 205,
         maxWidth: 155,
-        maxHeight: 465,
+        maxHeight: 205,
     },
     infoAndActions:{
         display: 'flex',

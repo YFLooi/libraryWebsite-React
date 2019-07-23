@@ -21,8 +21,8 @@ export default class HomePage extends React.Component {
                     borrowCart={this.props.borrowCart}
                     stateUpdater={this.props.stateUpdater}
                 />
-                <div>
-                    <TypoGraphy variant="h5" color="inherit">Announcements</TypoGraphy>
+                <div className='announcements'>
+                    <TypoGraphy variant="h5" color="inherit" style={{ marginLeft: '2%',}}>Announcements</TypoGraphy>
                     <ul>
                         <li>
                             <TypoGraphy variant="body1" color="inherit"> 

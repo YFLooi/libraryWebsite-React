@@ -19,10 +19,12 @@ const useStyles = makeStyles(theme => ({
     pageTitle: {
         marginTop: 5, 
         marginBottom: 5,
+        marginLeft: '2%',
     },
     cartDisplayContainer: {
         marginTop: 10, 
         marginBottom: '15%',
+        marginLeft: '2%',
         padding: 4, 
         display: 'none'
     },
@@ -33,6 +35,7 @@ const useStyles = makeStyles(theme => ({
     cartEmptyDisplayContainerCaption:{
         marginTop: 10, 
         marginBottom: 20,
+        marginLeft: '2%',
     },
 }))
 
