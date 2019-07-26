@@ -17,9 +17,6 @@ class App extends React.Component {
 
      /**Placing all states in single parent page allows for easier manipulation with Redux later*/
      this.state = {
-        //For the est
-        cards: [],
-
         /**For basic search*/
         basicInput: '',
 
@@ -51,7 +48,6 @@ class App extends React.Component {
         expandList: false,
     }
     this.stateUpdater = this.stateUpdater.bind(this);
-    this.renderData = this.renderData.bind(this);
   }
   stateUpdater(name,data){
     /* [] allows an external variable to define object property "name". In this case, 
@@ -59,39 +55,6 @@ class App extends React.Component {
     this.setState({
         [name]: data
     })
-  }
-  //Runs on ComponentDidMount() 
-  componentDidMount(){
-    const that = this;
-    fetch('/NewArrivals', {method:"GET"})
-    //Here we chain 2 promise functions: The first fetches data (response), the second examines text in response (data)
-    .then(function(response){
-        return response.json()
-        //Examines data in response
-        .then(function(data){
-            console.log(data)
-            that.renderData(data)
-        })
-    }).catch(function(error){
-        console.log('Request failed', error)
-    })  
-  }
-  renderData(data){ 
-    this.state.cards.splice(0, this.state.cards.length);
-    let newCards = [];
-    newCards.splice(0, newCards.length);
-
-    for(let i=0; i<4; i++){
-      let card = [
-        <div key={`card.${i}`} style={{width: '100%', height: 'auto', border:'1px solid white'}}>
-            {data[i].title}
-        </div>
-      ]
-      newCards = [...newCards, ...card]
-    }
-    this.setState({
-      cards: [...newCards]
-    }) 
   }
   render(){
     return (

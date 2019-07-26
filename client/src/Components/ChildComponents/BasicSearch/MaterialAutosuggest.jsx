@@ -13,6 +13,7 @@ import {
     withRouter,
 } from "react-router-dom";
 import background from './icons/background.jpg';
+import { suggestionsData } from './suggestions.js';
 
 //How CSS is passed from "const useStyles()" to this <TextField/>:
 /*  Define CSS in input{} object in "const useStyles" 
@@ -131,7 +132,7 @@ const useStyles = makeStyles(theme => ({
 //Contains the suggestions returned by the handleChange() function
 //Each suggestion must be attached to the property 'label' inside an object to be
 //retrieved by the subsequent functions
-let suggestions = [];
+let suggestions = suggestionsData;
 
 //Renders the <Textfield/> box to collect the string for state.single
 function renderInputComponent(inputProps) {
@@ -216,13 +217,18 @@ function IntegrationAutosuggest(props) {
         setTimeout(function(){
             //The 'value' property here  = String in state.single 
             setSuggestions(getSuggestions(value));
-        },200) 
+        },100) 
     };
     const handleSuggestionsClearRequested = () => {
         setSuggestions([]);
     };
     //newValue = String typed into <Textfield/>
+     
     const handleChange = name => (event, { newValue }) => {
+        //Passes the value updated in this component's states to be used in the
+        //function triggered on Enter keypress
+        props.basicSearchStateUpdater(name, newValue);
+    /**
         //String passed to PSQL must be free of special characters, otherwise it'll bug (parentheses not balanced)
         const removeSpecialChars = (string) => {
             return string.replace(/(?!\w|\s)./g, '')
@@ -266,10 +272,7 @@ function IntegrationAutosuggest(props) {
                 console.log('Request for suggestions failed', error)
             })
         }
-
-        //Passes the value updated in this component's states to be used in the
-        //function triggered on Enter keypress
-        props.basicSearchStateUpdater(name, newValue);
+    */
     };
     const handleSubmit = () => { 
         //Cannot call the prop directly, it seems to cause handleBasicSearchSubmit()

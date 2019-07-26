@@ -63,7 +63,12 @@ class BasicSearch extends React.Component {
                         return response.json()
                         .then(function(data){
                             console.log("Results of BasicSrch:");
-                            console.log(data);
+                            //console.log(data);
+
+                            let i = 0
+                            for (i=0; i<data.length; i++){
+                                console.log(`{label:"${data[i].title}"},;`)
+                            }
                             
                             //Prevents rendering if no results returned from search
                             if (data.length === 0) {
