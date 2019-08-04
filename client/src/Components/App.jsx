@@ -1,7 +1,6 @@
 import React from 'react';
 import {
     BrowserRouter,
-    HashRouter,
     Switch,
     Route
 } from "react-router-dom";
@@ -10,8 +9,11 @@ import HomePage from "./ChildComponents/HomePage/HomePage.jsx";
 import LoadingScreen from "./ChildComponents/LoadingScreen/LoadingScreen.jsx";
 import AdvSearch from "./ChildComponents/AdvSearch/AdvSearch.jsx";
 import SearchResults from "./ChildComponents/SearchResults/SearchResults.jsx";
+import NoResults from "./ChildComponents/NoResults/NoResults.jsx";
 import CartDisplay from "./ChildComponents/CartDisplay/CartDisplay.jsx";
 import Borrowings from "./ChildComponents/Borrowings/Borrowings.jsx";
+import Explore from "./ChildComponents/Explore/Explore.jsx";
+import SuggestBooks from "./ChildComponents/SuggestBooks/SuggestBooks.jsx";
 
 //For material UI navbar
 import Navbar from './Navbar.jsx'
@@ -119,6 +121,10 @@ export default class App extends React.Component {
                         />}
                     />
                     <Route 
+                        path="/NoResults"
+                        component={NoResults}
+                    />}
+                    <Route 
                         path="/Cart" 
                         render={(props) => <CartDisplay {...props}
                             borrowCart={this.state.borrowCart}
@@ -135,7 +141,14 @@ export default class App extends React.Component {
                             stateUpdater={this.stateUpdater}
                         />}
                     />
-
+                    <Route 
+                        path="/Explore"
+                        component={Explore}
+                    />}
+                    <Route 
+                        path="/SuggestBooks"
+                        component={SuggestBooks}
+                    />}
                 </Switch>
             </BrowserRouter>    
         );   

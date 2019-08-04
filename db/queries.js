@@ -1,6 +1,8 @@
-﻿require('dotenv').config();
+﻿require('dotenv').config(); //Allows retriving variables from the .env file
 const pgp = require('pg-promise')(); // https://www.npmjs.com/package/pg-promise
-const dbase = pgp(process.env.DATABASE); // Connect to database at URL defined in .env file
+//Selects db to use based on value in the .env file's NODE_ENV parameter
+let dbaseURL = process.env.NODE_ENV === 'production' ? process.env.PRODUCTION_DATABASE : process.env.DEPLOYMENT_DATABASE
+const dbase = pgp(dbaseURL); // Connect to database at URL defined in .env file
 
 /*Selects all items in the 'newarrival' table*/
 async function getNewArrivals(request, response){
