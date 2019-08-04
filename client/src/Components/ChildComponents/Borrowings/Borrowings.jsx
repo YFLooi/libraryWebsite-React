@@ -103,7 +103,7 @@ class Borrowings extends React.Component {
         //If wrong/no password, prompts for password
         if(this.props.isBorrowingsPasswordCorrect === false){
             return(
-                <div id='borrowings-page'>
+                <div id='borrowings-page' style={{marginLeft: '2%',}}>
                     <div><TypoGraphy variant='h4' align='left' style={{ marginTop: 5, marginBottom: 5,}}>Borrowings record</TypoGraphy></div>
                     <TypoGraphy variant='body1' align='left'>Librarians only. Please provide a valid password</TypoGraphy>
                     <div style={{marginTop: 10, height:48, position:'relative',}}>

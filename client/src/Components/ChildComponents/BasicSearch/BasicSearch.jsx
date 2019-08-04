@@ -64,7 +64,7 @@ class BasicSearch extends React.Component {
                         .then(function(data){
                             console.log("Results of BasicSrch:");
                             console.log(data);
-                            
+ 
                             //Prevents rendering if no results returned from search
                             if (data.length === 0) {
                                 alert("No results found. Try again");

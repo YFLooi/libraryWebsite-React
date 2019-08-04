@@ -14,6 +14,10 @@ const useStyles = makeStyles(theme => ({
     },
     title: {
         marginTop: '5%',
+        marginLeft: '2%',
+    },
+    form: {
+        marginLeft: '2%',
     },
     //Width of the containing <div> for each box
     categoryContainer:{
@@ -142,7 +146,7 @@ function AdvSearch(props){
             <TypoGraphy variant='h5' className={classes.title} color='inherit'>
                 Use OR/AND to chain multiple criteria together
             </TypoGraphy>
-            <form name='advsearch' onSubmit={handleAdvSearchSubmit}>
+            <form name='advsearch' className={classes.form} onSubmit={handleAdvSearchSubmit}>
                 {/*Styling with className also works on vanilla HTML*/}
                 <div className={classes.categoryContainer}>
                     <FormControl className={classes.formcontrol}>

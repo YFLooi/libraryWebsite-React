@@ -1,11 +1,14 @@
 {
-  "name": "node-api-postgres",
+  "name": "herokutest",
   "version": "1.0.0",
-  "description": "RESTful API with Node.js, Express, and PostgreSQL",
+  "description": "",
   "main": "index.js",
-  "license": "MIT",
   "dependencies": {
+<<<<<<< HEAD
     "body-parser": "^1.18.3",
+=======
+    "body-parser": "^1.19.0",
+>>>>>>> c501ff8d6b57afe230a625dc655c08aa1c1161b5
     "dotenv": "^8.0.0",
     "express": "^4.17.1",
     "express-promise-router": "^3.0.3",
@@ -14,15 +17,15 @@
     "pg-promise": "^8.7.5"
   },
   "engines": {
-    "node": "10.15.1",
-    "npm": "6.4.1"
+    "npm": "6.4.1",
+    "node": "10.15.3"
   },
+  "devDependencies": {},
   "scripts": {
     "start": "node index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "heroku-postbuild": "npm install && cd client && npm install && npm run build"
   },
-  "devDependencies": {},
-  "keywords": [],
-  "author": ""
+  "author": "me",
+  "license": "ISC"
 }

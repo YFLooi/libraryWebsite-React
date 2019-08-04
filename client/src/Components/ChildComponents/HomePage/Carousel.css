@@ -6,7 +6,25 @@
     z-index: 0;
     width: 100%;
     position: relative;
-    /*Need the size of this outer box to scale with content... Otherwise, it deafutlas to zero*/
+    /*Need the size of this outer box to scale with content... Otherwise, it defaults to zero*/
+}
+.carouselPlaceholder {
+    display: block;
+    margin: auto auto;
+    width: 300px;
+    height: 100px;
+    
+    /*Centres the button container relative to .AliceCarousel*/
+    top: 25%; bottom: 25%;
+    
+    text-align: center;
+
+    background-image: url('./icons/loadingimg.gif');
+    background-position-x: 0%; /*0 for align left , 50% for align centre*/
+    background-position-y: bottom 10px;
+    background-repeat: no-repeat;
+    background-attachment: scroll;
+    background-size: 100% 75%;
 }
 .AliceCarousel{
     margin: 0 auto;
@@ -75,15 +93,15 @@
         display: block;
     }
     .prevButtonContainer{
-        display: table-cell;
+        display: block;
         position: absolute;
-        vertical-align: middle;
         width: 24px;
         height: 48px;
     
         /*Centres the button container relative to .AliceCarousel*/
         top: 25%; bottom: 25%;
-        left: 0;
+        /*can only set in %. Using px returns CSS error*/
+        left: 3%;
     
         background-image: url('./icons/ArrowBackIos.svg');
         background-position-x: 0%; /*0 for align left , 50% for align centre*/
@@ -93,16 +111,16 @@
         background-size: 48px;
     }
     .nextButtonContainer{
-        display: table-cell;
-        vertical-align: middle;
+        display: block;
         position: absolute;
         width: 24px;
         height: 48px;
     
         /*Centres the button container relative to .AliceCarousel*/
         top: 25%; bottom: 25%;
-        right: 0;
-    
+        /*can only set in %. Using px returns CSS error*/
+        right: 3%;
+       
         background-image: url('./icons/ArrowForwardIos.svg');
         background-position-x: 50%; /*0 for align left , 50% for align centre*/
         background-position-y: center;

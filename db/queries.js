@@ -4,10 +4,11 @@ const pgp = require('pg-promise')(); // https://www.npmjs.com/package/pg-promise
 let dbaseURL = process.env.NODE_ENV === 'production' ? process.env.PRODUCTION_DATABASE : process.env.DEPLOYMENT_DATABASE
 const dbase = pgp(dbaseURL); // Connect to database at URL defined in .env file
 
-/*Selects all items in the 'newarrival' table*/
-async function getNewArrivals(request, response){
-    const results = await dbase.query('SELECT * FROM newarrival ORDER BY id ASC');
-    response.status(200).send(results);
+//Selects all items in the 'newarrival' table
+async function getNewArrivals (request, response) {
+    console.log('Request for new arrivals received');
+    const rowList = await dbase.query('SELECT * FROM newarrival ORDER BY id ASC');
+    response.send(rowList);
 }
 
 /*Selects all items in the "catalog" table where title partially matches [basicInput]*/
@@ -130,6 +131,4 @@ module.exports = {
     checkBorrowings,
     deleteBorrowings
 }
-
-
 

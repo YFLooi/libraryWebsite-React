@@ -4,6 +4,7 @@ import Typography from "@material-ui/core/Typography";
 import "./Carousel.css";
 import "react-alice-carousel/lib/alice-carousel.css";
 import CarouselDetails from './CarouselDetails.jsx'
+import { NONAME } from 'dns';
 
 //Do not attempt to style with Material UI's withStyle(). It weirds out handleOnSlideChange()
 class Carousel extends Component {
@@ -61,6 +62,8 @@ class Carousel extends Component {
     componentWillUnmount() {
         //Each time the window is resized, the DOM is re-rendered. This ensures event listeners do NOT stack up
         window.removeEventListener('resize', this.updateWindowDimensions);
+
+        document.getElementsByClassName("carouselPlaceholder")[0].style.display = "block";
     }
     carouselStateUpdater(name,data){
         /* [] allows an external variable to define object property "name". In this case, 
@@ -82,8 +85,8 @@ class Carousel extends Component {
 
         //'20' means the array goes from 0-19.
         let newArrivalsArray = Array(20).fill().map((item, i) => 
-            <div className='card' onDragStart={this.handleOnDragStart} onClick={() => {this.triggerDetailsRender(newArrivals[i].id)}}>
-                <img className='cardImage' src={newArrivals[i].coverimg} alt={`carouselImage.${i}`}/>
+            <div className='card' onDragStart={this.handleOnDragStart}>
+                <img className='cardImage' src={newArrivals[i].coverimg} alt={`carouselImage.${i}`} onClick={() => {this.triggerDetailsRender(newArrivals[i].id)}}/>
                 {/**On mobile, it looks really crowded with the text. Maybe enable only on desktop? */}
                 <Typography variant='body1' color='inherit' className="cardTitle" noWrap={true}>{newArrivals[i].title}</Typography>
                 <Typography variant='subtitle1' color='inherit' className="cardAuthor" noWrap={true}>{newArrivals[i].author}</Typography>
@@ -94,6 +97,7 @@ class Carousel extends Component {
         this.setState({
             galleryItems: [...newArrivalsArray]
         })
+        document.getElementsByClassName("carouselPlaceholder")[0].style.display = "none";
     }
     triggerDetailsRender = (bookId) => {
         this.setState ({
@@ -125,10 +129,12 @@ class Carousel extends Component {
         
         return (
             <React.Fragment> 
-                <div className='title'>
-                    <Typography variant="h5" color="inherit">New Arrivals</Typography>
+                <div className='title' style={{ marginLeft: '2%',}}>
+                    <Typography variant="h5" color="inherit" margin="normal">New Arrivals</Typography>
                 </div>
                 <div className='carousel'> 
+                    <div className="carouselPlaceholder"><Typography variant="h6" color="inherit">Loading</Typography></div>
+                    <div className='prevButtonContainer' onClick={this.slidePrevPage}></div>
                     <div className='AliceCarousel'>
                         <AliceCarousel
                             items={galleryItems}
@@ -143,7 +149,6 @@ class Carousel extends Component {
                         />
                     </div>
                     {/*Using divs as button provider better customisation*/}
-                    <div className='prevButtonContainer' onClick={this.slidePrevPage}></div>
                     <div className='nextButtonContainer' onClick={this.slideNextPage}></div>
                 </div>
                 <CarouselDetails
