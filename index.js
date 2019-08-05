@@ -3,8 +3,16 @@ const express = require('express');
 const app = express();
 const bodyParser = require('body-parser');
 const path = require('path');
+<<<<<<< HEAD
+const app = express();
+//Allows access on browser at http://localhost:5000
+//Can also be defined in .env file
+//const port = process.env.PORT || 5000; 
+const port = 5000; 
+=======
 //Defined in .env file
 const port = process.env.PORT || 5000; 
+>>>>>>> c501ff8d6b57afe230a625dc655c08aa1c1161b5
 
 //To get all the exported functions from queries.js, we'll 'require' the file and assign it to a variable.
 const db = require('./db/queries.js')
