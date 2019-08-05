@@ -17,11 +17,12 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 
+import TypoGraphy from '@material-ui/core/Typography'
 import { makeStyles} from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 
 //Material UI icon imports
-import { Menu, Home, Settings, AccountBox, ShoppingCart } from '@material-ui/icons'
+import { Menu, Home, Settings, AccountBox, ShoppingCart, Explore, FavoriteOutlined } from '@material-ui/icons'
 //Custom icon imports
 import logo from './icons/logo.png';
 
@@ -97,6 +98,12 @@ const useStyles = makeStyles(theme => ({
         height: 18,
         borderRadius: '50%',
     },
+    githubLink: {
+        color:'blue',
+        '&:hover': { 
+            color: 'purple', 
+        }, 
+    }
 }));
 
 /**Contains the items for <Toolbar/>*/
@@ -128,12 +135,20 @@ function Navbar(props) {
             onKeyDown={toggleDrawer(side, false)} 
         >
             <List>
-                <ListItem>
+                <ListItem key='title'>
                     <ListItemText primary='Menu' />
                 </ListItem>
                 <ListItem button key='home' onClick={() => {props.history.push('/')}}>
                     <ListItemIcon><Home/></ListItemIcon>
                     <ListItemText primary='Home' />
+                </ListItem>
+                <ListItem button key='explore' onClick={() => {props.history.push('/Explore')}}>
+                    <ListItemIcon><Explore/></ListItemIcon>
+                    <ListItemText primary='Explore'/>
+                </ListItem>
+                <ListItem button key='SuggestBooks' onClick={() => {props.history.push('/SuggestBooks')}}>
+                    <ListItemIcon><FavoriteOutlined/></ListItemIcon>
+                    <ListItemText primary='Suggest books'/>
                 </ListItem>
                 <ListItem button key='advancedSearch' onClick={() => {props.history.push('/AdvancedSearch')}}>
                     <ListItemIcon><Settings/></ListItemIcon>
@@ -143,6 +158,15 @@ function Navbar(props) {
                     <ListItemIcon><AccountBox/></ListItemIcon>
                     <ListItemText primary='Librarian access' />
                 </ListItem>                
+                <ListItem>
+                    <ListItemText key='feedback' primary='Feedback? 😁' secondary={
+                        <React.Fragment>
+                            <TypoGraphy component='span' variant='body1' align='left'>
+                                Find the author on <a className={classes.githubLink} href="https://github.com/YFLooi/libraryWebsite-React">Github</a>
+                            </TypoGraphy>
+                        </React.Fragment>
+                    }/>
+                </ListItem>
             </List>
         </div>
     );
