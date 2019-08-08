@@ -4,7 +4,6 @@ import Typography from "@material-ui/core/Typography";
 import "./Carousel.css";
 import "react-alice-carousel/lib/alice-carousel.css";
 import CarouselDetails from './CarouselDetails.jsx'
-import { NONAME } from 'dns';
 
 //Do not attempt to style with Material UI's withStyle(). It weirds out handleOnSlideChange()
 class Carousel extends Component {
@@ -31,7 +30,7 @@ class Carousel extends Component {
     componentDidMount(){
         const that = this; //Prevents 'this' from being undefined
         /*Fetches the data on page load for the New Arrivals slideshow*/
-        fetch('/newArrivals', {method:"GET"})
+        fetch('/NewArrivals', {method:"GET"})
             //Here we chain 2 promise functions: The first fetches data (response), the second examines text in response (data)
             .then(function(response){
                 return response.json()
@@ -47,7 +46,7 @@ class Carousel extends Component {
                         //Send data directly to rendering function. This skips use of state for storage
                         that.galleryItems(data);
                     }else{
-                        console.log("Render failed: newarrivals.db is empty")
+                        console.log("Render failed: newarrivals data not found")
                     }
                 })
             }).catch(function(error){

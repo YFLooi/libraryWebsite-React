@@ -4,10 +4,13 @@ const pgp = require('pg-promise')(); // https://www.npmjs.com/package/pg-promise
 let dbaseURL = process.env.NODE_ENV === 'production' ? process.env.PRODUCTION_DATABASE : process.env.DEPLOYMENT_DATABASE
 const dbase = pgp(dbaseURL); // Connect to database at URL defined in .env file
 
-//Selects all items in the 'newarrival' table
+//Selects the 20 newest books stored in the 'catalog' table
+//OFFSET sets the start point for collecting row data, LIMIT sets the max no. of rows from
+//the start point to collect data
 async function getNewArrivals (request, response) {
     console.log('Request for new arrivals received');
-    const rowList = await dbase.query('SELECT * FROM newarrival ORDER BY id ASC');
+    const rowList = await dbase.query('SELECT * FROM catalog ORDER BY id ASC OFFSET 99 LIMIT 20');
+    console.log(rowList);
     response.send(rowList);
 }
 
@@ -118,6 +121,13 @@ async function deleteBorrowings(request, response){
     response.status(200).json(`SERVER RESP: Borrow record on ${new Date(parseInt(borrowdate)).toDateString()} deleted for userID: ${borrowerid}`);
 }
 
+//Selects all items in the 'newarrival' table
+async function getExploreData (request, response) {
+    const bookCategory = request.body.BookCategory;
+    console.log(`Request received for books of category ${bookCategory}`);
+    //const rowList = await dbase.query('SELECT * FROM catalog ORDER BY id ASC');
+    //response.send(rowList);
+}
 
 /*'module.export' allows multiple functions to be exported at the same time! No need to declare
  one by one (ie export const deleteUser(){}).
@@ -129,6 +139,7 @@ module.exports = {
     getAdvSearch,
     createBorrowings,
     checkBorrowings,
-    deleteBorrowings
+    deleteBorrowings,
+    getExploreData
 }
 
