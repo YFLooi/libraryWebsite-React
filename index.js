@@ -39,7 +39,7 @@ app.post("/Create-Borrowings", db.createBorrowings)
 app.get("/Check-Borrowings", db.checkBorrowings)
 app.delete("/Delete-Borrowings", db.deleteBorrowings)
 
-app.get("/Explore/:BookCategory", db.getExploreData)
+app.get("/Explore/:genre", db.getExploreData)
 
 //Put this last among all routes. Otherwise, it will return HTML to all fetch requests and trip up CORS. They interrupt each other
 // For any request that doesn't match, this sends the index.html file from the client. This is used for all of our React code.

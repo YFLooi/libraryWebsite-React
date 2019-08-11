@@ -10,7 +10,6 @@ const dbase = pgp(dbaseURL); // Connect to database at URL defined in .env file
 async function getNewArrivals (request, response) {
     console.log('Request for new arrivals received');
     const rowList = await dbase.query('SELECT * FROM catalog ORDER BY id ASC OFFSET 99 LIMIT 20');
-    console.log(rowList);
     response.send(rowList);
 }
 
@@ -123,10 +122,12 @@ async function deleteBorrowings(request, response){
 
 //Selects all items in the 'newarrival' table
 async function getExploreData (request, response) {
-    const bookCategory = request.body.BookCategory;
-    console.log(`Request received for books of category ${bookCategory}`);
-    //const rowList = await dbase.query('SELECT * FROM catalog ORDER BY id ASC');
-    //response.send(rowList);
+    const targetGenre = request.params.genre;
+    console.log(`Request received for books of genre ${targetGenre}`);
+    
+    const rowList = await dbase.query('SELECT * FROM catalog WHERE genre = $1 ORDER BY id ASC', [targetGenre]);
+    
+    response.status(200).send(rowList);
 }
 
 /*'module.export' allows multiple functions to be exported at the same time! No need to declare

@@ -52,7 +52,7 @@ const useStyles = makeStyles(theme => ({
 
 //Renders on load into buttons
 const genres = [
-    'new arrivals', 'adult-fiction', 'adventure', '(auto)biography', 'business', 
+    'adult-fiction', 'adventure', 'autobiography', 'biography', 'business', 
     'childrens', 'childrens-classics', 'classics', 'comic-book', 'contemporary', 'fantasy', 
     'historical-fiction', 'history', 'horror', 'mystery', 'religion', 'science', 'self-help'
 ]
@@ -69,7 +69,7 @@ function Explore(props){
     //Handles all lifecycle methods for this component
     useEffect(() => {
         //Set 'new arrivals' as default category on load of this page
-        fetch('/NewArrivals', {method:"GET"})
+        fetch('/Explore/adventure', {method:"GET"})
             //Here we chain 2 promise functions: The first fetches data (response), the second examines text in response (data)
             .then(function(response){
                 return response.json()
@@ -80,8 +80,9 @@ function Explore(props){
                     if(data.length > 0){
                         cardData.splice(0, cardData.length);
                         setCardData([...data])
-                        //Send data directly to rendering function. This skips use of state for storage
                         genreButtonsRender();
+                        
+                        //Send data directly to card rendering function. This eliminates render lag
                         resultsCards(data);
                     }else{
                         console.log("Render failed: newarrivals data not found")
@@ -102,11 +103,45 @@ function Explore(props){
         
         //'20' means the array goes from 0-19.
         let genresButtonsArray = Array(arrayLength).fill().map((item, i) => 
-            <Button variant="contained" color="inherit" classes={{root: classes.genreButton}} key={`genreButton.${i}`}>{genres[i]}</Button>
+            <Button 
+                id = {`genreButton.${i}`} 
+                variant = "contained" color="inherit" 
+                classes = {{root: classes.genreButton}} 
+                key = {`genreButton.${i}`} onClick={() => {genreButtonClick(genres[i]);}}>
+                {genres[i]}
+            </Button>
         )
 
         genreButtons.splice(0, genreButtons.length);
         setGenreButtons([...genresButtonsArray])
+    }
+
+    const genreButtonClick = (genreText) => {
+        //Set 'selectedGenre' <span> of page title to the genre chosen
+        document.getElementById('selectedGenre').innerHTML = genreText;
+
+        //Looks for books matching selected genre
+        fetch(`/Explore/${genreText}`, {method:"GET"})
+            //Here we chain 2 promise functions: The first fetches data (response), the second examines text in response (data)
+            .then(function(response){
+                return response.json()
+                //Examines data in response
+                .then(function(data){
+                    console.log(data)
+
+                    if(data.length > 0){
+                        cardData.splice(0, cardData.length);
+                        setCardData([...data])
+                        //Send data directly to rendering function to prevent lag
+                        resultsCards(data);
+                        
+                    }else{
+                        console.log(`Render failed: No data not found for genre ${genreText}`)
+                    }
+                })
+            }).catch(function(error){
+                console.log('Request failed', error)
+            })
     }
 
     const resultsCards = (data) => {  //Every item to insert into slide
@@ -154,7 +189,9 @@ function Explore(props){
     return (
         <div className={classes.outerContainer}> 
             <div className='title'>
-                <Typography variant="h5" color="inherit" margin="normal">Explore</Typography>
+                <Typography variant="h5" color="inherit" margin="normal">
+                    Explore <b><span id='selectedGenre'>adventure</span></b>
+                </Typography>
             </div>
             <div className={classes.genres}> 
                 {genreButtons}
