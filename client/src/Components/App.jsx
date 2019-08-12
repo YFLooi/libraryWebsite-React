@@ -143,7 +143,10 @@ export default class App extends React.Component {
                     />
                     <Route 
                         path="/Explore"
-                        component={Explore}
+                        render={(props) => <Explore {...props} 
+                            borrowCart={this.state.borrowCart}
+                            stateUpdater={this.stateUpdater}
+                        />}
                     />}
                     <Route 
                         path="/SuggestBooks"

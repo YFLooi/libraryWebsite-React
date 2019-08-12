@@ -37,6 +37,7 @@ class SearchResults extends React.Component {
     
             /**Obtains the object at the target index position in searchResults */
             const bookData  = searchResults[targetIndex];
+            console.log(bookData);
     
             /*This method adds new book object data to the end of the 
             existing array immutably*/

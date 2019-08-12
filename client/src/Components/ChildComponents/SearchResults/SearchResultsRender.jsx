@@ -99,7 +99,7 @@ export default function SearchResultsRender(props){
             )
         }
     }
-    const renderDetails = (bookId) => {
+    const renderDetailsCard = (bookId) => {
         let detailsOverlay = document.getElementById(`detailsOverlay`);
         let targetIndex = searchResults.findIndex(item => item.id === bookId);
         console.log(`Array position containing target book details: ${targetIndex}`)
@@ -174,7 +174,7 @@ export default function SearchResultsRender(props){
                         return(
                             <Grid item key={`card.${i}`}>
                                 <Card classes={{root: classes.card}}>
-                                    <CardActionArea onClick={() => {renderDetails(item.id, i);}}>
+                                    <CardActionArea onClick={() => {renderDetailsCard(item.id, i);}}>
                                         <CardMedia
                                             component="img"
                                             alt={item.title}
@@ -192,10 +192,10 @@ export default function SearchResultsRender(props){
                                         </CardContent>
                                     </CardActionArea>
                                     <CardActions>
-                                        {/*Do not wrap like renderDetails() so that it runs on render{}. Otherwise, there will
+                                        {/*Do not wrap like renderDetailsCard() so that it runs on render{}. Otherwise, there will
                                         be an error about some 'invalid child prop'*/}
                                         {borrowButtonRender(item.id)} 
-                                        <Button size="small" color="primary" onClick={() => {renderDetails(item.id, i);}}>
+                                        <Button size="small" color="primary" onClick={() => {renderDetailsCard(item.id, i);}}>
                                             Details
                                         </Button>
                                     </CardActions>
