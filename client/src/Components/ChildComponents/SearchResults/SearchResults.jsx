@@ -41,12 +41,12 @@ class SearchResults extends React.Component {
     
             /*This method adds new book object data to the end of the 
             existing array immutably*/
-            let updatedBorrowCart = [...cart, bookData]
-            this.props.stateUpdater("borrowCart",updatedBorrowCart)
+            cart.splice(cart.length, 0, bookData)
+            this.props.stateUpdater("borrowCart",cart)
 
             //Updates #cartCounter to show number of books in this.props.borrowcart
             //Use updatedBorrowCart instead of this.props.borrowCart because it updates first
-            document.getElementById("cartCounter").innerHTML = parseInt(updatedBorrowCart.length,10);
+            document.getElementById("cartCounter").innerHTML = parseInt(cart.length,10);
     
             //Changes button to say "Cancel" after being clicked
             //document.querySelector('.borrow.'+idx+'.MuiButton-label').innerHTML = "Cancel";
@@ -61,13 +61,13 @@ class SearchResults extends React.Component {
                 /*Removes item at targetPosition. If we set const new = cart.splice(), 
                 "const new" has a value = the removed item*/
                 cart.splice(targetIndex,1);  
-                let updatedBorrowCart = [...cart] //Keep state immutable with spread syntax!               
-                console.log(updatedBorrowCart.length)
-                this.props.stateUpdater("borrowCart",updatedBorrowCart) 
+                console.log('Update to be sent to this.state.borrowCart:')
+                console.log(cart);
+                this.props.stateUpdater("borrowCart",cart) 
 
                 //Updates #cartCounter to show number of books in this.props.borrowcart
                 //Use updatedBorrowCart instead of this.props.borrowCart because it updates first
-                document.getElementById("cartCounter").innerHTML = parseInt(updatedBorrowCart.length,10);
+                document.getElementById("cartCounter").innerHTML = parseInt(cart.length,10);
             }
             /**Cancelling a borrow request makes book available to "Borrow" again*/
             targetButton.getElementsByClassName('MuiButton-label')[0].innerHTML = "Borrow";       

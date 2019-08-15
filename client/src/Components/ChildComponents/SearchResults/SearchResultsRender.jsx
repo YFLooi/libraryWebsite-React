@@ -9,6 +9,16 @@ const useStyles = makeStyles(theme => ({
         marginTop: '5%',
         marginLeft: '2%',
     },
+    resultsDisplayContainer: {
+        marginTop: 10, 
+        marginBottom: '15%',
+    },
+    resultsCard:{
+        maxWidth: 155,
+    },
+    resultsCardImage:{
+        maxWidth: 155,
+    },
     detailsOverlay:{
         position: 'fixed',
         display: 'none',
@@ -32,14 +42,10 @@ const useStyles = makeStyles(theme => ({
         height: '210', 
         cursor: 'pointer',
     },
-    infoBox:{
+    detailsCardInfoBox:{
         display: 'flex',
         flexDirection: 'row',
         padding: '3%',
-    },
-    resultsDisplayContainer: {
-        marginTop: 10, 
-        marginBottom: '15%',
     },
     detailsCardImage: {
         display: 'flex',
@@ -48,26 +54,19 @@ const useStyles = makeStyles(theme => ({
         maxWidth: 155,
         maxHeight: 205,
     },
-    infoAndActions:{
+    detailsCardInfoAndActions:{
         display: 'flex',
         flexDirection: 'column', //So that <CardActions/> appear below text
     },
-    bookInfo: {
+    detailsCardBookInfo: {
         display: 'flex',
     },
-    cardActions:{
+    detailsCardActions:{
         display: 'flex',
         justifyContent: 'flex-start',
         flexWrap: 'nowrap',
         padding: '0 0 0 20',
-    },
-    //Width of 155px ensures 2 cards per row on a standard iPhone 
-    card:{
-        maxWidth: 155,
-    },
-    cardImage:{
-        maxWidth: 155,
-    },
+    }
 }))
 
 export default function SearchResultsRender(props){
@@ -107,30 +106,30 @@ export default function SearchResultsRender(props){
         
         let detailsCard = [
             <Card key='bookDetails' classes={{root: classes.detailsCard}}>
-                <div className={classes.infoBox}>
+                <div className={classes.detailsCardInfoBox}>
                     <CardMedia
                         component='img'
                         alt={`front cover for ${bookDetails.title}`}
                         src={bookDetails.coverimg}
                         classes= {{media: classes.detailsCardImage}}
                     />
-                    <div className={classes.infoAndActions}>
-                    <CardHeader
-                        title = {bookDetails.title}
-                        subheader = {
-                            <React.Fragment>
-                                {bookDetails.author} <br/> 
-                                {bookDetails.publisher}
-                            </React.Fragment>
-                        }
-                        classes = {{root: classes.bookInfo, title: classes.detailsCardTitle, subheader: classes.detailsCardSubheader}}
-                    />
-                    <CardActions classes={{root: classes.cardActions}}>
-                        {borrowButtonRender(bookId)}
-                        <Button size="small" color="primary" onClick={() => {hideDetails();}}>
-                            Close
-                        </Button>
-                    </CardActions>
+                    <div className={classes.detailsCardInfoAndActions}>
+                        <CardHeader
+                            title = {bookDetails.title}
+                            subheader = {
+                                <React.Fragment>
+                                    {bookDetails.author} <br/> 
+                                    {bookDetails.publisher}
+                                </React.Fragment>
+                            }
+                            classes = {{root: classes.detailsCardBookInfo, title: classes.detailsCardTitle, subheader: classes.detailsCardSubheader}}
+                        />
+                        <CardActions classes={{root: classes.detailsCardActions}}>
+                            {borrowButtonRender(bookId)}
+                            <Button size="small" color="primary" onClick={() => {hideDetailsCard();}}>
+                                Close
+                            </Button>
+                        </CardActions>
                     </div>
                 </div>
                 <CardContent>
@@ -151,7 +150,7 @@ export default function SearchResultsRender(props){
         });
         detailsOverlay.style.display= 'block';
     }
-    const hideDetails = () => {
+    const hideDetailsCard = () => {
         //Need to do this mutably. Otherwise, Borrow button will be stuck on last Cancel
         setState({
             storedDetailsCard: [],
@@ -169,18 +168,23 @@ export default function SearchResultsRender(props){
             </div>
             <div className={classes.resultsDisplayContainer}>
                 <Grid container spacing={1} justify="center">
-                    {/**post.map generates one card for each element in const posts*/}
+                    {/**searchResults.map generates one card for each element in
+                    this.state.searchResults. It re-renders entirely upon any change in 
+                    state, for example when a 'Borrow' request is made.
+                    That's why if 'Details' overlay is activated, both 'Borrow' 
+                    butons change when the 'Borrow' button in the 'Details' 
+                    overlay is clicked*/}
                     {searchResults.map(function(item,i) {
                         return(
                             <Grid item key={`card.${i}`}>
-                                <Card classes={{root: classes.card}}>
+                                <Card classes={{root: classes.resultsCard}}>
                                     <CardActionArea onClick={() => {renderDetailsCard(item.id, i);}}>
                                         <CardMedia
                                             component="img"
                                             alt={item.title}
                                             height="210"
                                             src={item.coverimg}
-                                            classes= {{media: classes.cardImage}}
+                                            classes= {{media: classes.resultsCardImage}}
                                         />
                                         <CardContent>
                                             <Typography variant="body1" component="h2" noWrap={false}>
