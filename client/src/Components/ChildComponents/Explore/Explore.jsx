@@ -66,7 +66,7 @@ const useStyles = makeStyles(theme => ({
     },
     detailsCard:{
         position: 'relative', 
-        margin: '20% auto', /*Centers the card*/
+        margin: '100px auto 0 auto', /*Centers the card*/
         width: '90%',
         padding: '5px 5px 5px 5px',
         height: '210', 

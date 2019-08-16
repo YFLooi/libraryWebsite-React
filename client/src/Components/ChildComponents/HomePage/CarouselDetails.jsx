@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { makeStyles} from '@material-ui/core/styles';
 import { Card, CardHeader, CardMedia, CardActions, CardContent, } from "@material-ui/core/";
+import { Avatar, List, ListItem, ListItemText} from '@material-ui/core';
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
+import { ExpandMore } from "@material-ui/icons/";
+import { ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails } from '@material-ui/core/';
 
 const useStyles = makeStyles(theme => ({ 
     detailsOverlay:{
@@ -22,13 +25,13 @@ const useStyles = makeStyles(theme => ({
     },
     detailsCard:{
         position: 'relative', 
-        margin: '20% auto', /*Centers the card*/
+        margin: '100px auto 0 auto', /*Centers the card*/
         width: '90%',
         padding: '5px 5px 5px 5px',
         height: '210', 
         cursor: 'pointer',
     },
-    infoBox:{
+    detailsCardInfoBox:{
         display: 'flex',
         flexDirection: 'row',
         padding: '3%',
@@ -40,18 +43,24 @@ const useStyles = makeStyles(theme => ({
         maxWidth: 155,
         maxHeight: 205,
     },
-    infoAndActions:{
+    detailsCardInfoAndActions:{
         display: 'flex',
         flexDirection: 'column', //So that <CardActions/> appear below text
     },
-    bookInfo: {
+    detailsCardBookInfo: {
         display: 'flex',
     },
-    cardActions:{
+    detailsCardActions:{
         display: 'flex',
         justifyContent: 'flex-start',
         flexWrap: 'nowrap',
         padding: '0 0 0 20',
+    },
+    commentAvatar: {
+        backgroundColor: 'purple',
+    },
+    replyAvatar: {
+        backgroundColor: 'green',
     },
 }))
 
@@ -76,42 +85,78 @@ export default function CarouselDetails(props){
         let targetIndex = props.newArrivals.findIndex(item => item.id === bookId);
         console.log(`Array position containing target book details: ${targetIndex}`)
         let bookDetails = props.newArrivals[targetIndex];
-        
+        let bookComments = JSON.parse(bookDetails.comments);
+       
+        let commentsList = [];
+        //Only render list of comments if available. Indicated when 1st entry in 'comments' array
+        // does not have a blank string for userId. 
+        if (bookComments[0].userId === '' && bookComments[0].comment === ''){
+            let renderedCommentsList = [
+                <React.Fragment>
+                    <ListItem key={`noBookCommentPlaceholder`}>
+                        <ListItemText 
+                            primary= {`Be the first to comment!`} 
+                        />
+                    </ListItem>
+                </React.Fragment>
+            ]
+            commentsList.splice(0, commentsList.length);
+            commentsList = renderedCommentsList;
+        } else {
+            commentsList.splice(0, commentsList.length);
+            commentsList = renderCommentsList(bookId, bookComments);
+        }
+            
         let detailsCard = [
             <Card key='bookDetails' classes={{root: classes.detailsCard}}>
-                <div className={classes.infoBox}>
+                <div className={classes.detailsCardInfoBox}>
                     <CardMedia
                         component='img'
                         alt={`front cover for ${bookDetails.title}`}
                         src={bookDetails.coverimg}
                         classes= {{media: classes.detailsCardImage}}
                     />
-                    <div className={classes.infoAndActions}>
-                    <CardHeader
-                        title = {bookDetails.title}
-                        subheader = {
-                            <React.Fragment>
-                                {bookDetails.author} <br/> 
-                                {bookDetails.publisher}
-                            </React.Fragment>
-                        }
-                        classes = {{root: classes.bookInfo, title: classes.detailsCardTitle, subheader: classes.detailsCardSubheader}}
-                    />
-                    <CardActions classes={{root: classes.cardActions}}>
-                        {borrowButtonRender(bookId)}
-                        <Button size="small" color="primary" onClick={() => {hideDetails();}}>
-                            Close
-                        </Button>
-                    </CardActions>
+                    <div className={classes.detailsCardInfoAndActions}>
+                        <CardHeader
+                            title = {bookDetails.title}
+                            subheader = {
+                                <React.Fragment>
+                                    {bookDetails.author} <br/> 
+                                    {bookDetails.publisher}
+                                </React.Fragment>
+                            }
+                            classes = {{root: classes.detailsCardBookInfo, title: classes.detailsCardTitle, subheader: classes.detailsCardSubheader}}
+                        />
+                        <CardActions classes={{root: classes.detailsCardActions}}>
+                            {borrowButtonRender(bookId)}
+                            <Button size="small" color="primary" onClick={() => {hideDetailsCard();}}>
+                                Close
+                            </Button>
+                        </CardActions>
                     </div>
                 </div>
+                <ExpansionPanel>
+                    {/**ExpansionPanel automatically rotates <ExpandMore/> by 180 deg onClick*/}
+                    <ExpansionPanelSummary
+                        expandIcon={<ExpandMore/>}
+                        aria-controls={'bookDetails.'+bookId}
+                        id={'bookDetails.'+bookId}
+                    >
+                        <Typography className={classes.heading}>Synopsis</Typography>
+                    </ExpansionPanelSummary>
+                    <ExpansionPanelDetails>
+                        <Typography variant="body1" component="div" noWrap={false}>
+                            {bookDetails.synopsis}
+                        </Typography>
+                    </ExpansionPanelDetails>
+                </ExpansionPanel>
                 <CardContent>
-                    <Typography variant="h6" component="div" noWrap={true}>
-                        <u>Synopsis</u>
-                    </Typography>
                     <Typography variant="body1" component="div" noWrap={false}>
-                        {bookDetails.synopsis}
+                        Comments
                     </Typography>
+                    <List component="div" disablePadding>
+                        {commentsList}
+                    </List>
                 </CardContent>
             </Card>
         ]
@@ -120,7 +165,78 @@ export default function CarouselDetails(props){
         });
         detailsOverlay.style.display= 'block';
     }
-    const hideDetails = () => {
+    const renderCommentsList = (bookId, bookComments) => {
+        let commentsArray = []
+        
+        for(let i=0; i<bookComments.length; i++){
+            let repliesList = []
+            repliesList.splice(0, repliesList.length)
+
+            //Prevents rendering of repliesList if no comment replies present
+            if(bookComments[i].replies.length !== 0){
+                repliesList = renderRepliesList(bookId, bookComments[i].replies)
+            }
+
+            let comment = [
+                <React.Fragment>
+                    <ListItem key={`bookId.${bookId}-comment.${i}`}>
+                        <Avatar aria-label="id first letter" classes={{root: classes.commentAvatar}}>
+                            {bookComments[i].userid.substring(0,1)}
+                        </Avatar>
+                        <ListItemText 
+                            primary= {bookComments[i].userid} 
+                            secondary={
+                                <React.Fragment>
+                                    <Typography
+                                        component="span"
+                                        variant="body2"
+                                        color="textPrimary"
+                                    >
+                                    {bookComments[i].comment} 
+                                    </Typography>    
+                                </React.Fragment>
+                            }
+                        />
+                    </ListItem>
+                    <List component="div" disablePadding>
+                        {repliesList}
+                    </List>
+                </React.Fragment>
+            ]
+            
+            commentsArray = [...commentsArray, ...comment]
+        }
+
+        return commentsArray;
+    }
+    const renderRepliesList = (bookId, commentReplies) => {
+        let repliesArray = Array(commentReplies.length).fill().map((item, j) =>
+            <React.Fragment>
+                 <ListItem key={`bookId.${bookId}-reply.${j}`}>
+                    <Avatar aria-label="id first letter" classes={{root: classes.replyAvatar}}>
+                        {commentReplies[j].userid.substring(0,1)}
+                    </Avatar>
+                    <ListItemText 
+                        primary= {commentReplies[j].userid} 
+                        secondary={
+                            <React.Fragment>
+                                <Typography
+                                    component="span"
+                                    variant="body2"
+                                    color="textPrimary"
+                                >
+                                   {commentReplies[j].comment} 
+                                </Typography>    
+                            </React.Fragment>
+                        }
+                    />
+                </ListItem>
+            </React.Fragment>
+        )
+
+        return repliesArray;
+    }
+    const hideDetailsCard = () => {
         //Should not keep appended Details card. Otherwise, async will not trigger borrowButtonRender
         //resulting in button innerHTML left in 'Cancel' for next detailsCard rendered
         document.getElementById(`detailsOverlay`).style.display = 'none';
