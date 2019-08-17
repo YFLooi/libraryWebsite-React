@@ -6,6 +6,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import { ExpandMore } from "@material-ui/icons/";
 import { ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails } from '@material-ui/core/';
+import { TextField } from '@material-ui/core/';
 
 const useStyles = makeStyles(theme => ({ 
     detailsOverlay:{
@@ -56,21 +57,55 @@ const useStyles = makeStyles(theme => ({
         flexWrap: 'nowrap',
         padding: '0 0 0 20',
     },
+    commentContainer: {
+        display: 'flex',
+        //Causes each <div> container in this flexbox to fill the entire vertical space
+        alignItems: 'stretch'
+    },
     commentAvatar: {
         backgroundColor: 'purple',
+        marginRight: 10,
+        top: 20,
+    },
+    commentReplyButton:{
+        left: '0',
+        padding: '0',
+    },
+    commentReplyButtonLabel:{
+        display: 'table-cell',
+        textAlign: 'left'
     },
     replyAvatar: {
         backgroundColor: 'green',
+        marginRight: 10,
+        top: 0
     },
+    replies_primaryText : {
+        fontSize: '15px'
+    },
+    replies_secondaryText : {
+        fontSize: '12px'
+    },
+    commentBox_userName: {
+        width: '90%',
+        marginLeft: 10
+    },
+    commentBox_comment:{
+        width: '90%',
+        marginLeft: 10
+    },
+    commentBox_submitButton:{
+        marginLeft: 10
+    }
 }))
 
 export default function CarouselDetails(props){
     const classes = useStyles();
 
-    let [state, setState] = useState({
-        storedDetailsCard: [],
-    });
+    let [storedDetailsCard, setStoredDetailsCard] = useState([]);
 
+    //Serves as the trigger to render Details card
+    //Necessary because parent component cannot reach here to run the renderDetails() function
     useEffect(() => {
         console.log('Target book id: '+props.targetBookId);
         if (props.targetBookId === null || props.targetBookId === '-1'){
@@ -86,29 +121,9 @@ export default function CarouselDetails(props){
         console.log(`Array position containing target book details: ${targetIndex}`)
         let bookDetails = props.newArrivals[targetIndex];
         let bookComments = JSON.parse(bookDetails.comments);
-       
-        let commentsList = [];
-        //Only render list of comments if available. Indicated when 1st entry in 'comments' array
-        // does not have a blank string for userId. 
-        if (bookComments[0].userId === '' && bookComments[0].comment === ''){
-            let renderedCommentsList = [
-                <React.Fragment>
-                    <ListItem key={`noBookCommentPlaceholder`}>
-                        <ListItemText 
-                            primary= {`Be the first to comment!`} 
-                        />
-                    </ListItem>
-                </React.Fragment>
-            ]
-            commentsList.splice(0, commentsList.length);
-            commentsList = renderedCommentsList;
-        } else {
-            commentsList.splice(0, commentsList.length);
-            commentsList = renderCommentsList(bookId, bookComments);
-        }
             
         let detailsCard = [
-            <Card key='bookDetails' classes={{root: classes.detailsCard}}>
+            <Card classes={{root: classes.detailsCard}}>
                 <div className={classes.detailsCardInfoBox}>
                     <CardMedia
                         component='img'
@@ -154,87 +169,170 @@ export default function CarouselDetails(props){
                     <Typography variant="body1" component="div" noWrap={false}>
                         Comments
                     </Typography>
-                    <List component="div" disablePadding>
-                        {commentsList}
+                    <form id={`newCommentBox`} onSubmit={handleCommentSubmit} 
+                    onClick={() => {
+                        document.getElementById(`newCommentBox_Actions`).style.display = 'block'
+                    }}>
+                        <TextField
+                            name='comment' type='text' autoComplete='off'
+                            label="Add public comment..."
+                            classes={{root: classes.commentBox_comment}}
+                            margin="normal"
+                        />
+                        <div id={`newCommentBox_Actions`} style={{display: 'none'}}>
+                            <TextField
+                                name='userid' type='text' autoComplete='off'
+                                label="Username (required)"
+                                classes={{root: classes.commentBox_userName}}
+                                margin="normal"
+                            />
+                            <Button variant='contained' color='inherit'
+                            onClick={() => {
+                                document.getElementById(`newCommentBox_Actions`).style.display = 'none'
+                            }}>
+                                Cancel
+                            </Button>
+                            <Button variant='contained' color='secondary' type='submit'
+                            classes={{root: classes.commentBox_submitButton}}>
+                                Submit
+                            </Button>
+                        </div>
+                    </form>
+                    <List>
+                        {renderCommentsList(bookId, bookComments)}
                     </List>
                 </CardContent>
             </Card>
         ]
-        setState({
-            storedDetailsCard: [...detailsCard],
-        });
+        setStoredDetailsCard([...detailsCard]);
         detailsOverlay.style.display= 'block';
     }
     const renderCommentsList = (bookId, bookComments) => {
-        let commentsArray = []
-        
-        for(let i=0; i<bookComments.length; i++){
-            let repliesList = []
-            repliesList.splice(0, repliesList.length)
-
-            //Prevents rendering of repliesList if no comment replies present
-            if(bookComments[i].replies.length !== 0){
-                repliesList = renderRepliesList(bookId, bookComments[i].replies)
-            }
-
-            let comment = [
+        //Only render list of comments if available. Indicated when 1st entry in 'comments' array
+        // does not have a blank string for userId. 
+        if (bookComments[0].userId === '' || bookComments[0].comment === ''){
+            let renderedCommentsList = [
                 <React.Fragment>
-                    <ListItem key={`bookId.${bookId}-comment.${i}`}>
-                        <Avatar aria-label="id first letter" classes={{root: classes.commentAvatar}}>
-                            {bookComments[i].userid.substring(0,1)}
-                        </Avatar>
+                    <ListItem key={`noCommentPlaceholder`}>
                         <ListItemText 
-                            primary= {bookComments[i].userid} 
-                            secondary={
-                                <React.Fragment>
-                                    <Typography
-                                        component="span"
-                                        variant="body2"
-                                        color="textPrimary"
-                                    >
-                                    {bookComments[i].comment} 
-                                    </Typography>    
-                                </React.Fragment>
-                            }
+                            primary= {`Be the first to comment!`} 
                         />
                     </ListItem>
-                    <List component="div" disablePadding>
-                        {repliesList}
-                    </List>
                 </React.Fragment>
             ]
-            
-            commentsArray = [...commentsArray, ...comment]
-        }
+            return renderedCommentsList;
+        } else {
+            let commentsArray = []
 
-        return commentsArray;
+            for(let i=0; i<bookComments.length; i++){
+                let repliesList = []
+                //To clear replies to last comment
+                repliesList.splice(0, repliesList.length)
+    
+                //Prevents rendering of repliesList if no comment replies present
+                if(bookComments[i].replies.length !== 0){
+                    repliesList = renderRepliesList(bookId, bookComments[i].replies)
+                }
+    
+                let comment = [
+                    <ListItem classes={{root: classes.commentContainer}} key={`comment.${i}`}>
+                        <div>
+                            <Avatar aria-label="id first letter" classes={{root: classes.commentAvatar}}>
+                                {bookComments[i].userid.substring(0,1)}
+                            </Avatar>
+                        </div>
+                        <div>
+                            <ListItemText 
+                                primary= {bookComments[i].userid} 
+                                secondary={
+                                    <React.Fragment>
+                                        <Typography
+                                            component="span"
+                                            variant="body2"
+                                            color="textPrimary"
+                                        >
+                                            {bookComments[i].comment} 
+                                        </Typography>    
+                                    </React.Fragment>
+                                }
+                            />
+                            <Button size="small" color="primary" id={`comment.${i}_commentButton`}
+                            classes={{root: classes.commentReplyButton, label: classes.commentReplyButtonLabel}}
+                            onClick={() => {
+                                document.getElementById(`comment.${i}_commentBox`).style.display = 'block'
+                                document.getElementById(`comment.${i}_commentButton`).style.display = 'none'
+                            }}>
+                                Reply
+                            </Button> 
+
+                            <div id={`comment.${i}_commentBox`} style={{display:'none'}}>
+                                <TextField
+                                        label="Add public comment..."
+                                        classes={{root: classes.commentBox_comment}}
+                                        margin="normal"
+                                />
+                                <TextField
+                                    label="Username (required)"
+                                    classes={{root: classes.commentBox_userName}}
+                                    type="password"
+                                    margin="normal"
+                                />
+                                <Button variant='contained' color='inherit'
+                                onClick={() => {
+                                    document.getElementById(`comment.${i}_commentBox`).style.display = 'none'
+                                    document.getElementById(`comment.${i}_commentButton`).style.display = 'block'
+                                }}>
+                                    Cancel
+                                </Button>
+                                <Button variant='contained' color='secondary' classes={{root: classes.commentBox_submitButton}}>
+                                    Submit
+                                </Button>
+                            </div>
+                            <List>
+                                {repliesList}
+                            </List>
+                        </div>
+                    </ListItem>
+                ]
+                
+                commentsArray = [...commentsArray, ...comment]
+            }
+    
+            return commentsArray;
+        }
     }
     const renderRepliesList = (bookId, commentReplies) => {
         let repliesArray = Array(commentReplies.length).fill().map((item, j) =>
-            <React.Fragment>
-                 <ListItem key={`bookId.${bookId}-reply.${j}`}>
-                    <Avatar aria-label="id first letter" classes={{root: classes.replyAvatar}}>
-                        {commentReplies[j].userid.substring(0,1)}
-                    </Avatar>
-                    <ListItemText 
-                        primary= {commentReplies[j].userid} 
-                        secondary={
-                            <React.Fragment>
-                                <Typography
-                                    component="span"
-                                    variant="body2"
-                                    color="textPrimary"
-                                >
-                                   {commentReplies[j].comment} 
-                                </Typography>    
-                            </React.Fragment>
-                        }
-                    />
-                </ListItem>
-            </React.Fragment>
+            <ListItem key={`reply.${j}`}>
+                <Avatar aria-label="id first letter" classes={{root: classes.replyAvatar}}>
+                    {commentReplies[j].userid.substring(0,1)}
+                </Avatar>
+                <ListItemText 
+                    classes={{
+                        primary: classes.replies_primaryText , 
+                        secondary: classes.replies_secondaryText
+                    }}
+                    primary= {commentReplies[j].userid} 
+                    secondary={
+                        <React.Fragment>
+                            <Typography
+                                component="span"
+                                variant="body2"
+                                color="textPrimary"
+                            >
+                                {commentReplies[j].comment} 
+                            </Typography>    
+                        </React.Fragment>
+                    }
+                />
+            </ListItem>
         )
 
         return repliesArray;
+    }
+    const handleCommentSubmit = (event) => {
+        event.preventDefault();
+        console.log('Comment submitted');
     }
     const hideDetailsCard = () => {
         //Should not keep appended Details card. Otherwise, async will not trigger borrowButtonRender
@@ -244,9 +342,7 @@ export default function CarouselDetails(props){
         //Odd how doing this the immutable way (with splice) does not trigger borrowButtonRender
         //to set the button innerHTML
         //state.storedDetailsCard.splice(0, state.storedDetailsCard.length);
-        setState({
-            storedDetailsCard: [],
-        });
+        setStoredDetailsCard([])
 
         //Necessary to allow reopening of clicked book on exit
         //This is because ComponentDidUpdate() will not trigger if the same bookId is setState
@@ -333,7 +429,7 @@ export default function CarouselDetails(props){
    return(
        <React.Fragment>
             <div id='detailsOverlay' className={classes.detailsOverlay}>
-                {state.storedDetailsCard} {/**Must use state here: When state updates, the update is pushed to all calls of that state */}
+                {storedDetailsCard} {/**Must use state here: When state updates, the update is pushed to all calls of that state */}
             </div>
         </React.Fragment>
    )
