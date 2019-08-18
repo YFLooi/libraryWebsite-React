@@ -102,9 +102,7 @@ const useStyles = makeStyles(theme => ({
 export default function CarouselDetails(props){
     const classes = useStyles();
 
-    let targetBookId = '';
-    let targetBookDetails = {};
-    const [storedDetailsCard, setStoredDetailsCard] = useState([]);
+    let [storedDetailsCard, setStoredDetailsCard] = useState([]);
 
     //Serves as the trigger to render Details card
     //Necessary because parent component cannot reach here to run the renderDetails() function
@@ -121,11 +119,7 @@ export default function CarouselDetails(props){
         let detailsOverlay = document.getElementById(`detailsOverlay`);
         let targetIndex = props.newArrivals.findIndex(item => item.id === bookId);
         console.log(`Array position containing target book details: ${targetIndex}`)
-
         let bookDetails = props.newArrivals[targetIndex];
-        //For use later in handleCommentSubmit()
-        targetBookId = bookId;
-        targetBookDetails = bookDetails;
         let bookComments = JSON.parse(bookDetails.comments);
             
         let detailsCard = [
@@ -176,7 +170,7 @@ export default function CarouselDetails(props){
                         Comments
                     </Typography>
                     <form id={`newCommentInput_commentBox`}
-                    onSubmit={(event) => {event.preventDefault(); handleCommentSubmit('newCommentInput_commentBox', '');}} > 
+                    onSubmit={(event) => {event.preventDefault(); handleCommentSubmit('newCommentInput_commentBox');}} > 
                         <TextField
                             id='newCommentInput_commentBox_comment' type='text' autoComplete='off'
                             label=''
@@ -282,7 +276,7 @@ export default function CarouselDetails(props){
                                 Reply
                             </Button> 
                             <form id={`comment.${i}_commentBox`} style={{display:'none'}}
-                            onSubmit={(event) => {event.preventDefault(); handleCommentSubmit(`comment.${i}_commentBox`, bookComments[i].userid);}} > 
+                            onSubmit={(event) => {event.preventDefault(); handleCommentSubmit(`comment.${i}_commentBox`);}} > 
                                 <TextField
                                     id={`comment.${i}_commentBox_comment`} type='text' autoComplete='off'
                                     label=''
@@ -362,15 +356,12 @@ export default function CarouselDetails(props){
 
         return repliesArray;
     }
-    const handleCommentSubmit = (boxId, commentUserId) => {
-        const bookComments = JSON.parse(targetBookDetails.comments);
+    const handleCommentSubmit = (boxId) => {
         console.log('Comments submitted for box '+boxId);
 
         const commentBoxUserId = document.getElementById(`${boxId}_userid`).value;
         const commentBoxComment = document.getElementById(`${boxId}_comment`).value;
 
-        //Need to add check to block submitting comments/replies if no userid supplied
-        //and in the case of blank comment
         console.log(`Id of submitting user: ${commentBoxUserId}`);
         console.log(`Comment by submitting user: ${commentBoxComment}`);
 
@@ -378,33 +369,17 @@ export default function CarouselDetails(props){
         document.getElementById(`${boxId}_userid`).value = '';
         document.getElementById(`${boxId}_comment`).value = '';
 
-        if(boxId === 'newCommentInput_commentBox'){
-            const newComment = [{userid: commentBoxUserId, comment: commentBoxComment, replies: []}];
-            const newBookComments = [...newComment, ...bookComments];
-            console.log(newBookComments)
-        }else {
-            const newReply = [{userid: commentBoxUserId, comment: commentBoxComment}]
-
-            const targetIndex = bookComments.findIndex(user => user.userid === commentUserId);
-            console.log("Index of target comment for newReply: "+targetIndex);
-            const newReplies = [...newReply, ...bookComments[targetIndex].replies];
-            console.log(newReplies);
-        }
-
-        //Time to build fetch request here to replace comment for bookId 'x' with the new one built above
+        
     }
     const hideDetailsCard = () => {
         //Should not keep appended Details card. Otherwise, async will not trigger borrowButtonRender
         //resulting in button innerHTML left in 'Cancel' for next detailsCard rendered
         document.getElementById(`detailsOverlay`).style.display = 'none';
 
-        //Clear out state when detailsCard is closed
-        targetBookId = '';
-        targetBookDetails = {};
         //Odd how doing this the immutable way (with splice) does not trigger borrowButtonRender
         //to set the button innerHTML
         //state.storedDetailsCard.splice(0, state.storedDetailsCard.length);
-        setStoredDetailsCard([]);
+        setStoredDetailsCard([])
 
         //Necessary to allow reopening of clicked book on exit
         //This is because ComponentDidUpdate() will not trigger if the same bookId is setState
