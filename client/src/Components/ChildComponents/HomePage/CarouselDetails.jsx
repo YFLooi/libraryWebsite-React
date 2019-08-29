@@ -95,7 +95,7 @@ const useStyles = makeStyles(theme => ({
         marginLeft: 10
     },
     commentBox_submitButton:{
-        marginLeft: 10
+        marginLeft: 10,
     }
 }))
 
@@ -109,9 +109,9 @@ export default function CarouselDetails(props){
     //Serves as the trigger to render Details card
     //Necessary because parent component cannot reach here to run the renderDetails() function
     useEffect(() => {
-        console.log('Target book id: '+props.targetBookId);
+        //console.log('Target book id: '+props.targetBookId);
         if (props.targetBookId === null || props.targetBookId === '-1'){
-            console.log('No book ID sent to state.targetBookId');
+            //console.log('No book ID sent to state.targetBookId');
         } else {
             renderDetails(props.targetBookId);
         }
@@ -120,7 +120,7 @@ export default function CarouselDetails(props){
     const renderDetails = (bookId) => {
         let detailsOverlay = document.getElementById(`detailsOverlay`);
         let targetIndex = props.newArrivals.findIndex(item => item.id === bookId);
-        console.log(`Array position containing target book details: ${targetIndex}`)
+        //console.log(`Array position containing target book details: ${targetIndex}`)
 
         let bookDetails = props.newArrivals[targetIndex];
         //For use later in handleCommentSubmit()
@@ -176,7 +176,7 @@ export default function CarouselDetails(props){
                         Comments
                     </Typography>
                     <form id={`newCommentInput_commentBox`}
-                    onSubmit={(event) => {event.preventDefault(); handleCommentSubmit('newCommentInput_commentBox', '');}} > 
+                    onSubmit={(event) => {event.preventDefault(); handleCommentSubmit('newCommentInput_commentBox', '', '');}} > 
                         <TextField
                             id='newCommentInput_commentBox_comment' type='text' autoComplete='off'
                             label=''
@@ -201,16 +201,14 @@ export default function CarouselDetails(props){
                             />
                             <Button variant='contained' color='inherit'
                             onClick={() => {
-                                document.getElementById(`newCommentInput_commentBox_actions`).style.display = 'none'
+                                document.getElementById('newCommentInput_commentBox_actions').style.display = 'none'
                             }}>
                                 Cancel
                             </Button>
                             {/*Necessary to allow submitting on Enter key*/}
                             <Button variant='contained' color='secondary' type='submit'
-                            classes={{root: classes.commentBox_submitButton}}
-                            onClick={() => {
-                                document.getElementById(`newCommentInput_commentBox_actions`).style.display = 'none'
-                            }} >
+                            id='newCommentInput_commentBox_submitButton'
+                            classes={{root: classes.commentBox_submitButton}}>
                                 Submit
                             </Button>
                         </div>
@@ -227,7 +225,7 @@ export default function CarouselDetails(props){
     const renderCommentsList = (bookId, bookComments) => {
         //Only render list of comments if available. Indicated when 1st entry in 'comments' array
         // does not have a blank string for userId. 
-        if (bookComments[0].userId === '' || bookComments[0].comment === ''){
+        if (bookComments.length === 0){
             let renderedCommentsList = [
                 <React.Fragment>
                     <ListItem key={`noCommentPlaceholder`}>
@@ -243,7 +241,7 @@ export default function CarouselDetails(props){
 
             for(let i=0; i<bookComments.length; i++){
                 let repliesList = []
-                //To clear replies to last comment
+                //To clear replies to previous comment
                 repliesList.splice(0, repliesList.length)
     
                 //Prevents rendering of repliesList if no comment replies present
@@ -282,7 +280,7 @@ export default function CarouselDetails(props){
                                 Reply
                             </Button> 
                             <form id={`comment.${i}_commentBox`} style={{display:'none'}}
-                            onSubmit={(event) => {event.preventDefault(); handleCommentSubmit(`comment.${i}_commentBox`, bookComments[i].userid);}} > 
+                            onSubmit={(event) => {event.preventDefault(); handleCommentSubmit(`comment.${i}_commentBox`, bookComments[i].userid, `comment.${i}_commentButton`);}} > 
                                 <TextField
                                     id={`comment.${i}_commentBox_comment`} type='text' autoComplete='off'
                                     label=''
@@ -311,11 +309,7 @@ export default function CarouselDetails(props){
                                     </Button>
                                     {/*Necessary to allow submitting on Enter key*/}
                                     <Button variant='contained' color='secondary' type='submit'
-                                    classes={{root: classes.commentBox_submitButton}}
-                                    onClick={() => {
-                                        document.getElementById(`comment.${i}_commentBox`).style.display = 'none'
-                                        document.getElementById(`comment.${i}_commentButton`).style.display = 'block'
-                                    }} >
+                                    classes={{root: classes.commentBox_submitButton}} >
                                         Submit
                                     </Button>
                                 </div>
@@ -362,7 +356,7 @@ export default function CarouselDetails(props){
 
         return repliesArray;
     }
-    const handleCommentSubmit = (boxId, commentUserId) => {
+    const handleCommentSubmit = (boxId, commentUserId, replyButtonId) => {
         const bookComments = JSON.parse(targetBookDetails.comments);
         console.log('Comments submitted for box '+boxId);
 
@@ -373,25 +367,88 @@ export default function CarouselDetails(props){
         //and in the case of blank comment
         console.log(`Id of submitting user: ${commentBoxUserId}`);
         console.log(`Comment by submitting user: ${commentBoxComment}`);
-
+ 
         //Clears <TextField> boxes on submit
         document.getElementById(`${boxId}_userid`).value = '';
         document.getElementById(`${boxId}_comment`).value = '';
 
-        if(boxId === 'newCommentInput_commentBox'){
+        if(boxId === 'newCommentInput_commentBox' && commentBoxUserId.length !== 0 && 
+        commentBoxComment.length !== 0){
+            //Handles new comments
             const newComment = [{userid: commentBoxUserId, comment: commentBoxComment, replies: []}];
-            const newBookComments = [...newComment, ...bookComments];
+            let newBookComments = []
+
+            if (bookComments.userid==='' || bookComments.comment===''){
+                //Catch ensures that if this is first comment, no blank user/comment object is added 
+                //to the end of newBookComments
+                newBookComments = [...newComment];
+            } else{
+                //Adds the new comments to the start of the array so that it appears first
+                //on render
+                newBookComments= [...newComment, ...bookComments];
+            }
             console.log(newBookComments)
-        }else {
+            
+            //Placing this here ensures the comment box will only hide if a valid comment+username
+            //combination is supplied. 'Hiding' indicates 'Comment submitted'
+            document.getElementById(`newCommentInput_commentBox_actions`).style.display = 'none';
+
+        }else if(boxId !== 'newCommentInput_commentBox' && commentBoxUserId.length !== 0 && 
+        commentBoxComment.length !== 0) {
+            //Handles replies to comments
             const newReply = [{userid: commentBoxUserId, comment: commentBoxComment}]
 
             const targetIndex = bookComments.findIndex(user => user.userid === commentUserId);
             console.log("Index of target comment for newReply: "+targetIndex);
-            const newReplies = [...newReply, ...bookComments[targetIndex].replies];
+
+            let newReplies = [];
+            if (bookComments[targetIndex].replies.length === 0){
+                //Catch ensures that if this is first reply, no blank user/comment object is added 
+                //to the end of newBookComments
+                newReplies = [...newReply];
+            } else{
+                //Adds the new replies to the start of the array so that it appears first
+                //on render
+                newReplies = [...newReply, ...bookComments[targetIndex].replies];
+            }
             console.log(newReplies);
+
+            //Placing this here ensures the comment box will only hide if a valid comment+username
+            //combination is supplied. 'Hiding' indicates 'Comment submitted'
+            document.getElementById(boxId).style.display = 'none'
+            document.getElementById(replyButtonId).style.display = 'block'
+            
+        } else {
+            console.log('Empty userid or empty comment/reply detected. No comment/reply submitted to db.');
+            //alert('No userid/comment entered. Comment not recorded')
         }
 
+        /** 
         //Time to build fetch request here to replace comment for bookId 'x' with the new one built above
+        const DELETEReqInit = {
+            method:"DELETE", 
+            cache:"no-cache",
+            headers:{
+                "Content-Type": "application/json",
+            },
+            redirect: "error",
+            //Contains data to send. Need to JSON.stringify, pg's auto-convert bugged 
+            //and pg only accepts arrays as JSON, since PSQL does the same
+            body: JSON.stringify(deleteTarget) 
+        }
+        //Both parameters are initialised with blanks
+        fetch("/Delete-Borrowings", DELETEReqInit)
+            .then(function(response){
+                return response.json()
+                .then(function(data){
+                    //Returns confirmation of record deleted for borrowerid = x                
+                    console.log(data)
+                })
+            })  
+            .catch(function(error){
+                console.log('Request failed', error)
+            })
+        */
     }
     const hideDetailsCard = () => {
         //Should not keep appended Details card. Otherwise, async will not trigger borrowButtonRender

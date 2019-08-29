@@ -16,8 +16,7 @@ app.use(bodyParser.json())
 //Used in deployment by React app to access index.js
 app.use(express.static(path.join(__dirname, 'client/build'))); 
 
-//tell a route to look for a GET request on the root (/) URL, 
-//and return some JSON.
+//tell a route making a GET request on the root (/) URL to head to the HomePage
 app.get("/", (request, response) => {
   if (error) {
     throw error
@@ -31,15 +30,18 @@ app.get("/NewArrivals", db.getNewArrivals)
 app.get("/Suggestions/:suggestionRequest", db.getSuggestions)
 
 app.get("/BasicSearch/:basicInput", db.getBasicSearch)
-
 app.get("/AdvSearch/:advTitle/:condTitAuth/:advAuthor/:condAuthYr/:advYearStart/:advYearEnd/:condYrPub/:advPublisher/:condPubSynp/:advSynopsis"
 , db.getAdvSearch)
+
+app.get("/UpdateComment", db.updateComment)
+
+app.get("/Explore/:genre", db.getExploreData)
 
 app.post("/Create-Borrowings", db.createBorrowings)
 app.get("/Check-Borrowings", db.checkBorrowings)
 app.delete("/Delete-Borrowings", db.deleteBorrowings)
 
-app.get("/Explore/:genre", db.getExploreData)
+
 
 //Put this last among all routes. Otherwise, it will return HTML to all fetch requests and trip up CORS. They interrupt each other
 // For any request that doesn't match, this sends the index.html file from the client. This is used for all of our React code.

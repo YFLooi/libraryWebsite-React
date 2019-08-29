@@ -74,6 +74,10 @@ async function getAdvSearch(request, response){
     response.status(200).send(results);    
 }
 
+async function updateComment (request,response){
+    
+}
+
 async function createBorrowings(request, response){
     console.log("POST request made to insert borrowing record");
 
