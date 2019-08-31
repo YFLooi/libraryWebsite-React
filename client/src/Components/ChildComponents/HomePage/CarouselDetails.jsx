@@ -176,7 +176,7 @@ export default function CarouselDetails(props){
                         Comments
                     </Typography>
                     <form id={`newCommentInput_commentBox`}
-                    onSubmit={(event) => {event.preventDefault(); handleCommentSubmit('newCommentInput_commentBox', '', '');}} > 
+                    onSubmit={(event) => {event.preventDefault(); handleCommentSubmit('newCommentInput_commentBox', bookId,'', '');}} > 
                         <TextField
                             id='newCommentInput_commentBox_comment' type='text' autoComplete='off'
                             label=''
@@ -280,7 +280,7 @@ export default function CarouselDetails(props){
                                 Reply
                             </Button> 
                             <form id={`comment.${i}_commentBox`} style={{display:'none'}}
-                            onSubmit={(event) => {event.preventDefault(); handleCommentSubmit(`comment.${i}_commentBox`, bookComments[i].userid, `comment.${i}_commentButton`);}} > 
+                            onSubmit={(event) => {event.preventDefault(); handleCommentSubmit(`comment.${i}_commentBox`, bookId, bookComments[i].userid, `comment.${i}_commentButton`);}} > 
                                 <TextField
                                     id={`comment.${i}_commentBox_comment`} type='text' autoComplete='off'
                                     label=''
@@ -356,8 +356,8 @@ export default function CarouselDetails(props){
 
         return repliesArray;
     }
-    const handleCommentSubmit = (boxId, commentUserId, replyButtonId) => {
-        const bookComments = JSON.parse(targetBookDetails.comments);
+    const handleCommentSubmit = (boxId, bookId, commentUserId, replyButtonId) => {
+        let bookComments = JSON.parse(targetBookDetails.comments);
         console.log('Comments submitted for box '+boxId);
 
         const commentBoxUserId = document.getElementById(`${boxId}_userid`).value;
@@ -378,7 +378,7 @@ export default function CarouselDetails(props){
             const newComment = [{userid: commentBoxUserId, comment: commentBoxComment, replies: []}];
             let newBookComments = []
 
-            if (bookComments.userid==='' || bookComments.comment===''){
+            if (bookComments.length === 0){
                 //Catch ensures that if this is first comment, no blank user/comment object is added 
                 //to the end of newBookComments
                 newBookComments = [...newComment];
@@ -392,6 +392,30 @@ export default function CarouselDetails(props){
             //Placing this here ensures the comment box will only hide if a valid comment+username
             //combination is supplied. 'Hiding' indicates 'Comment submitted'
             document.getElementById(`newCommentInput_commentBox_actions`).style.display = 'none';
+
+            const POSTCommentInit = {
+                method:"POST", 
+                cache:"no-cache",
+                headers:{
+                    "Content-Type": "application/json",
+                },
+                redirect: "error",
+                //Contains data to send. Need to JSON.stringify, pg's auto-convert bugged 
+                //and pg only accepts arrays as JSON, since PSQL does the same
+                body: JSON.stringify(newBookComments) 
+            }
+            //Both parameters are initialised with blanks
+            fetch('/Post-CommentReply/'+bookId, POSTCommentInit)
+                .then(function(response){
+                    return response.json()
+                    .then(function(data){
+                        //Returns confirmation of record deleted for borrowerid = x                
+                        console.log(data)
+                    })
+                })  
+                .catch(function(error){
+                    console.log('Request failed', error)
+                })
 
         }else if(boxId !== 'newCommentInput_commentBox' && commentBoxUserId.length !== 0 && 
         commentBoxComment.length !== 0) {
@@ -412,12 +436,38 @@ export default function CarouselDetails(props){
                 newReplies = [...newReply, ...bookComments[targetIndex].replies];
             }
             console.log(newReplies);
+            let newBookComments = [...bookComments];
+            newBookComments[targetIndex].replies = newReplies
+            console.log(newBookComments);
 
             //Placing this here ensures the comment box will only hide if a valid comment+username
             //combination is supplied. 'Hiding' indicates 'Comment submitted'
             document.getElementById(boxId).style.display = 'none'
             document.getElementById(replyButtonId).style.display = 'block'
             
+            const POSTCommentInit = {
+                method:"POST", 
+                cache:"no-cache",
+                headers:{
+                    "Content-Type": "application/json",
+                },
+                redirect: "error",
+                //Contains data to send. Need to JSON.stringify, pg's auto-convert bugged 
+                //and pg only accepts arrays as JSON, since PSQL does the same
+                body: JSON.stringify(newBookComments) 
+            }
+            //Both parameters are initialised with blanks
+            fetch('/Post-CommentReply/'+bookId, POSTCommentInit)
+                .then(function(response){
+                    return response.json()
+                    .then(function(data){
+                        //Returns confirmation of record deleted for borrowerid = x                
+                        console.log(data)
+                    })
+                })  
+                .catch(function(error){
+                    console.log('Request failed', error)
+                })
         } else {
             console.log('Empty userid or empty comment/reply detected. No comment/reply submitted to db.');
             //alert('No userid/comment entered. Comment not recorded')

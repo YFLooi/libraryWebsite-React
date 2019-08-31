@@ -33,7 +33,15 @@ app.get("/BasicSearch/:basicInput", db.getBasicSearch)
 app.get("/AdvSearch/:advTitle/:condTitAuth/:advAuthor/:condAuthYr/:advYearStart/:advYearEnd/:condYrPub/:advPublisher/:condPubSynp/:advSynopsis"
 , db.getAdvSearch)
 
-app.get("/UpdateComment", db.updateComment)
+app.post("/Post-CommentReply/:bookId", db.postCommentReply)
+/**
+app.get("/Update-Comment", db.updateComment)
+app.get("/Delete-Comment", db.deleteComment)
+ 
+app.get("/Post-Reply", db.postReply)
+app.get("/Update-Reply", db.updateReply)
+app.get("/Delete-Reply", db.deleteReply)
+*/
 
 app.get("/Explore/:genre", db.getExploreData)
 

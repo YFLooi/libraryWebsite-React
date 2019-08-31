@@ -9,8 +9,14 @@ const dbase = pgp(dbaseURL); // Connect to database at URL defined in .env file
 //the start point to collect data
 async function getNewArrivals (request, response) {
     console.log('Request for new arrivals received');
-    const rowList = await dbase.query('SELECT * FROM catalog ORDER BY id ASC OFFSET 99 LIMIT 20');
-    response.send(rowList);
+
+    try{
+        const rowList = await dbase.query('SELECT * FROM catalog ORDER BY id ASC OFFSET 99 LIMIT 20');
+        response.send(rowList);
+    } catch (error){
+        console.log('Error retrieving new arrivals. Log:')
+        console.log(error);
+    }
 }
 
 /*Selects all items in the "catalog" table where title partially matches [basicInput]*/
@@ -18,11 +24,16 @@ async function getSuggestions (request, response){
     let suggestionString = `^${request.params.suggestionRequest}`;
     console.log(`suggestionRequest string: ${suggestionString}`);
 
-    if (suggestionString !== ``){
-        const results = await dbase.query(`SELECT title FROM catalog WHERE title ~* $1 ORDER BY id ASC`, [suggestionString]);
-        response.status(200).send(results);
-    } else {
-        response.status(400).json('Blank suggestionString received')
+    try{
+        if (suggestionString !== ``){
+            const results = await dbase.query(`SELECT title FROM catalog WHERE title ~* $1 ORDER BY id ASC`, [suggestionString]);
+            response.status(200).send(results);
+        } else {
+            response.status(400).json('Blank suggestionString received')
+        }
+    } catch (error){
+        console.log('Error getting suggestions. Log:')
+        console.log(error)
     }
 }
 
@@ -34,11 +45,16 @@ async function getBasicSearch(request, response){
     //'titlekeyword' is the book title in lowercase without spaces and special characters
     //Necessary because PSQL cannot find strings with special characters unless query wrapped in 
     //escape characters.
-    if (basicInput !== ``){
-        const results = await dbase.query('SELECT * FROM catalog WHERE title ~* $1 OR author ~* $1 OR titlekeyword ~* $1 ORDER BY id ASC', [basicInput]);
-        response.status(200).send(results);
-    } else {
-        response.status(400).json('Blank basicInput received')
+    try{
+        if (basicInput !== ``){
+            const results = await dbase.query('SELECT * FROM catalog WHERE title ~* $1 OR author ~* $1 OR titlekeyword ~* $1 ORDER BY id ASC', [basicInput]);
+            response.status(200).send(results);
+        } else {
+            response.status(400).json('Blank basicInput received')
+        }
+    } catch (error){
+        console.log('Error getting basic search results. Log:')
+        console.log(error)
     }
 }
 
@@ -70,12 +86,36 @@ async function getAdvSearch(request, response){
     ${condAuthYr} (year >=$3 AND year <=$4) ${condYrPub} publisher ~* $5 ${condPubSynp}
     synopsis ~* $6`;
     const values = [advTitle, advAuthor, advYearStart, advYearEnd, advPublisher, advSynopsis]
-    const results = await dbase.query(query, values);
-    response.status(200).send(results);    
+
+    try{
+        const results = await dbase.query(query, values);
+        response.status(200).send(results);    
+    } catch (error){
+        console.log('Error getting advanced search results. Log:')
+        console.log(error)
+    }
 }
 
-async function updateComment (request,response){
-    
+async function postCommentReply (request,response){
+    const newComment = JSON.stringify(request.body);
+    const bookId = request.params.bookId;
+
+    try{
+        const query = `UPDATE catalog SET comments=$1 WHERE id=$2`
+        const values = [newComment,bookId]
+        await dbase.query(query, values);
+       
+        response.status(200).json(`SERVER RESP: Comments added to book of ID ${bookId}`);
+    } catch (error) {
+        console.log(error)
+        response.status(404).json(`SERVER RESP: Error adding comments to book of ID ${bookId}`);
+    }
+}
+async function updateCommentReply (request,response){
+    console.log('updateComment triggered');
+}
+async function deleteCommentReply (request,response){
+    console.log('deleteComment triggered');
 }
 
 async function createBorrowings(request, response){
@@ -99,16 +139,26 @@ async function createBorrowings(request, response){
     console.log("for: "+request.body.borrowerid);
     console.log("containing books of: ");
     console.log(books)
-
+    
     const query = 'INSERT INTO borrowings (borrowerid, borrowdate, returndue, books) VALUES ($1, $2, $3, $4)';
     const values = [borrowerid, borrowdate, returndue, books];
-    await dbase.query(query, values);
-    response.status(200).json(`SERVER RESP: Borrowings added for borrower ${request.body.borrowerid}`);
+    try{
+        await dbase.query(query, values);
+        response.status(200).json(`SERVER RESP: Borrowings added for borrower ${request.body.borrowerid}`);
+    } catch (error){
+        console.log('Error creating new borrowing entry. Log:')
+        console.log(error)
+    }
 }
 
 async function checkBorrowings(request, response){
-    const results = await dbase.query('SELECT * FROM borrowings');
-    response.status(200).send(results);
+    try{
+        const results = await dbase.query('SELECT * FROM borrowings');
+        response.status(200).send(results);
+    } catch (error){
+        console.log('Error retriving borrowings. Log:')
+        console.log(error)
+    }
 }
 
 async function deleteBorrowings(request, response){
@@ -120,18 +170,27 @@ async function deleteBorrowings(request, response){
     //borrowdate has to be converted to string, otherwise ElephantSQL will have trouble deleting
     //because it interprets it as a very large numeric entry
     const values = [borrowerid, borrowdate.toString()]
-    await dbase.query(query, values);
-    response.status(200).json(`SERVER RESP: Borrow record on ${new Date(parseInt(borrowdate)).toDateString()} deleted for userID: ${borrowerid}`);
+
+    try{
+        await dbase.query(query, values);
+        response.status(200).json(`SERVER RESP: Borrow record on ${new Date(parseInt(borrowdate)).toDateString()} deleted for userID: ${borrowerid}`);
+    } catch (error){
+        console.log('Error deleting borrowing. Log:')
+        console.log(error)
+    }
 }
 
-//Selects all items in the 'newarrival' table
 async function getExploreData (request, response) {
     const targetGenre = request.params.genre;
     console.log(`Request received for books of genre ${targetGenre}`);
     
-    const rowList = await dbase.query('SELECT * FROM catalog WHERE genre = $1 ORDER BY id ASC', [targetGenre]);
-    
-    response.status(200).send(rowList);
+    try{
+        const rowList = await dbase.query('SELECT * FROM catalog WHERE genre = $1 ORDER BY id ASC', [targetGenre]);
+        response.status(200).send(rowList);
+    } catch (error){
+        console.log('Error getting "Explore" suggestions. Log:')
+        console.log(error)
+    }
 }
 
 /*'module.export' allows multiple functions to be exported at the same time! No need to declare
@@ -142,6 +201,9 @@ module.exports = {
     getSuggestions,
     getBasicSearch,
     getAdvSearch,
+    postCommentReply,
+    updateCommentReply,
+    deleteCommentReply,
     createBorrowings,
     checkBorrowings,
     deleteBorrowings,
