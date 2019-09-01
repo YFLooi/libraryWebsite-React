@@ -100,7 +100,7 @@ class Carousel extends Component {
     }
     triggerDetailsRender = (bookId) => {
         this.setState ({
-            targetBookId: bookId
+            targetBookId: bookId,
         }) //ComponentDidUpdate() in CarouselDetails.jsx detects this change
     }
     slidePrevPage = () => {

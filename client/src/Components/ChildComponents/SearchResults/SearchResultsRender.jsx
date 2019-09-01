@@ -3,6 +3,7 @@ import { makeStyles} from '@material-ui/core/styles';
 import { Grid, Typography } from "@material-ui/core";
 import { Card, CardHeader, CardMedia, CardActionArea, CardActions, CardContent, } from "@material-ui/core/";
 import Button from "@material-ui/core/Button";
+import DetailsCardRender from '../DetailsCardRender/DetailsCardRender.jsx'
 
 const useStyles = makeStyles(theme => ({ 
     pageHeader:{
@@ -27,16 +28,16 @@ const useStyles = makeStyles(theme => ({
         top: 0,
         left: 0,
         right: 0,
-        zIndex: 2, /*Allows the sidebar <div> to stack on top of all other <div>-s. Number = Stack Order*/
-        backgroundColor: 'rgba(0,0,0,0.5)', /*Adds a shadow to denote the overlay area to click to exit*/
+        zIndex: 2, //Allows the sidebar <div> to stack on top of all other <div>-s. Number = Stack Order
+        backgroundColor: 'rgba(0,0,0,0.5)', //Adds a shadow to denote the overlay area to click to exit
         
-        /*Scolling `takes place in the overlay, NOT the <div> within the overlay*/
+        //Scolling `takes place in the overlay, NOT the <div> within the overlay
         overflowY:'scroll',
         webkitOverflowScrolling:'touch',
     },
     detailsCard:{
         position: 'relative', 
-        margin: '100px auto 0 auto', /*Centers the card*/
+        margin: '100px auto 0 auto', //Centers the card
         width: '90%',
         padding: '5px 5px 5px 5px',
         height: '210', 
@@ -79,9 +80,9 @@ export default function SearchResultsRender(props){
     });
 
     const borrowButtonRender = (bookId) => {
-        /*To change innerHTML of 'borrow' button to "Cancel" if book has been borrowed*/
-        /**findIndex() here checks for match between searchResult and cart contents
-        If there is a match (!= -1)), 'borrow' button inner HTML is set to "Cancel" */
+        //To change innerHTML of 'borrow' button to "Cancel" if book has been borrowed
+        //findIndex() here checks for match between searchResult and cart contents
+        //If there is a match (!= -1)), 'borrow' button inner HTML is set to "Cancel" 
         let cartCheck = borrowCart.findIndex(cart => cart.id === bookId);
         
         if (cartCheck === -1){
@@ -163,6 +164,7 @@ export default function SearchResultsRender(props){
     return(
         <React.Fragment>
             <Typography variant="h5" component="h2" classes={{root: classes.pageHeader}}>Search results</Typography>
+            
             <div id='detailsOverlay' className={classes.detailsOverlay}>
                 {state.storedDetailsCard} {/**Must use state here: When state updates, the update is pushed to all calls of that state*/}
             </div>

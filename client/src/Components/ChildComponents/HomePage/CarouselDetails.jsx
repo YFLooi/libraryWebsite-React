@@ -102,16 +102,13 @@ const useStyles = makeStyles(theme => ({
 export default function CarouselDetails(props){
     const classes = useStyles();
 
-    let targetBookId = '';
-    let targetBookDetails = {};
     const [storedDetailsCard, setStoredDetailsCard] = useState([]);
 
     //Serves as the trigger to render Details card
     //Necessary because parent component cannot reach here to run the renderDetails() function
     useEffect(() => {
-        //console.log('Target book id: '+props.targetBookId);
         if (props.targetBookId === null || props.targetBookId === '-1'){
-            //console.log('No book ID sent to state.targetBookId');
+            console.log('Details card not rendered. No book ID sent to state.targetBookId');
         } else {
             renderDetails(props.targetBookId);
         }
@@ -119,14 +116,11 @@ export default function CarouselDetails(props){
 
     const renderDetails = (bookId) => {
         let detailsOverlay = document.getElementById(`detailsOverlay`);
+        
         let targetIndex = props.newArrivals.findIndex(item => item.id === bookId);
-        //console.log(`Array position containing target book details: ${targetIndex}`)
-
         let bookDetails = props.newArrivals[targetIndex];
-        //For use later in handleCommentSubmit()
-        targetBookId = bookId;
-        targetBookDetails = bookDetails;
-        let bookComments = JSON.parse(bookDetails.comments);
+
+        let parsedBookComments = JSON.parse(bookDetails.comments);
             
         let detailsCard = [
             <Card classes={{root: classes.detailsCard}} key='detailsCard'>
@@ -214,7 +208,7 @@ export default function CarouselDetails(props){
                         </div>
                     </form>
                     <List>
-                        {renderCommentsList(bookId, bookComments)}
+                        {renderCommentsList(bookId, parsedBookComments)}
                     </List>
                 </CardContent>
             </Card>
@@ -357,7 +351,10 @@ export default function CarouselDetails(props){
         return repliesArray;
     }
     const handleCommentSubmit = (boxId, bookId, commentUserId, replyButtonId) => {
-        let bookComments = JSON.parse(targetBookDetails.comments);
+        let targetBookIndex = props.newArrivals.findIndex(item => item.id === bookId);
+        let bookDetails = props.newArrivals[targetBookIndex];
+
+        let bookComments = JSON.parse(bookDetails.comments);
         console.log('Comments submitted for box '+boxId);
 
         const commentBoxUserId = document.getElementById(`${boxId}_userid`).value;
@@ -393,6 +390,17 @@ export default function CarouselDetails(props){
             //combination is supplied. 'Hiding' indicates 'Comment submitted'
             document.getElementById(`newCommentInput_commentBox_actions`).style.display = 'none';
 
+            //renderDetails pulls book comment data from state instead of db to prevent delay from 
+            //call to db on each re-render after a new comment/reply 
+            //Need to update otherwise the new comment will overwrite the previous one
+            let updatedNewArrivals = props.newArrivals;
+            updatedNewArrivals[targetBookIndex].comments = JSON.stringify(newBookComments);
+            props.carouselStateUpdater('newArrivals', updatedNewArrivals);
+
+            //Re-render comments list to update with new changes
+            //Need to stringify. renderDetails expects a JSON array straight from the db
+            renderDetails(bookId);
+
             const POSTCommentInit = {
                 method:"POST", 
                 cache:"no-cache",
@@ -422,22 +430,22 @@ export default function CarouselDetails(props){
             //Handles replies to comments
             const newReply = [{userid: commentBoxUserId, comment: commentBoxComment}]
 
-            const targetIndex = bookComments.findIndex(user => user.userid === commentUserId);
-            console.log("Index of target comment for newReply: "+targetIndex);
+            const targetCommentIndex = bookComments.findIndex(user => user.userid === commentUserId);
+            console.log("Index of target comment for newReply: "+targetCommentIndex);
 
             let newReplies = [];
-            if (bookComments[targetIndex].replies.length === 0){
+            if (bookComments[targetCommentIndex].replies.length === 0){
                 //Catch ensures that if this is first reply, no blank user/comment object is added 
                 //to the end of newBookComments
                 newReplies = [...newReply];
             } else{
-                //Adds the new replies to the start of the array so that it appears first
-                //on render
-                newReplies = [...newReply, ...bookComments[targetIndex].replies];
+                //Adds the new replies to the end ofthe array so that it appears last on render
+                //It gives the effect of continuing a conversation with the Comment
+                newReplies = [...bookComments[targetCommentIndex].replies, ...newReply];
             }
             console.log(newReplies);
             let newBookComments = [...bookComments];
-            newBookComments[targetIndex].replies = newReplies
+            newBookComments[targetCommentIndex].replies = newReplies
             console.log(newBookComments);
 
             //Placing this here ensures the comment box will only hide if a valid comment+username
@@ -445,6 +453,17 @@ export default function CarouselDetails(props){
             document.getElementById(boxId).style.display = 'none'
             document.getElementById(replyButtonId).style.display = 'block'
             
+            //renderDetails pulls book comment data from state instead of db to prevent delay from 
+            //call to db on each re-render after a new comment/reply 
+            //Need to update otherwise the new comment will overwrite the previous one
+            let updatedNewArrivals = props.newArrivals;
+            updatedNewArrivals[targetBookIndex].comments = JSON.stringify(newBookComments);
+            props.carouselStateUpdater('newArrivals', updatedNewArrivals);
+
+            //Re-render comments list to update with new changes
+            //Need to stringify. renderDetails expects a JSON array straight from the db
+            renderDetails(bookId);
+
             const POSTCommentInit = {
                 method:"POST", 
                 cache:"no-cache",
@@ -505,9 +524,6 @@ export default function CarouselDetails(props){
         //resulting in button innerHTML left in 'Cancel' for next detailsCard rendered
         document.getElementById(`detailsOverlay`).style.display = 'none';
 
-        //Clear out state when detailsCard is closed
-        targetBookId = '';
-        targetBookDetails = {};
         //Odd how doing this the immutable way (with splice) does not trigger borrowButtonRender
         //to set the button innerHTML
         //state.storedDetailsCard.splice(0, state.storedDetailsCard.length);

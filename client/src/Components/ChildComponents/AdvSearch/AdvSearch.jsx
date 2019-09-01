@@ -117,7 +117,8 @@ function AdvSearch(props){
 
                         //Prevents rendering if no results returned from search
                         if (data.length === 0) {
-                            alert('No results found. Try again');
+                            //alert('No results found. Try again');
+                            props.history.push('/NoResults');
                         } else {
                             let currentResults = props.searchResults
                             currentResults.splice(0, currentResults.length);

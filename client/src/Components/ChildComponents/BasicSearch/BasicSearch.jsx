@@ -67,7 +67,7 @@ class BasicSearch extends React.Component {
  
                             //Prevents rendering if no results returned from search
                             if (data.length === 0) {
-                                alert("No results found. Try again");
+                                that.props.history.push('/NoResults');
                             } else {
                                 let currentResults = that.props.searchResults
                                 currentResults.splice(0, currentResults.length);
