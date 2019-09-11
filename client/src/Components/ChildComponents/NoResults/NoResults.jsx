@@ -4,8 +4,7 @@ import {
     withRouter,
 } from "react-router-dom";
 import TypoGraphy from '@material-ui/core/Typography'
-//Radio and RadioGroup are for the radio buttons
-import { Button } from '@material-ui/core';
+//import { Button } from '@material-ui/core';
 import background from './icons/ConfusedOwl.png'
 
 const useStyles = makeStyles(theme => ({
