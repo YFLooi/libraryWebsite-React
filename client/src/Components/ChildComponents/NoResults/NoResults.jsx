@@ -62,7 +62,7 @@ function NoResults (props) {
             </TypoGraphy>
             <p></p>
             <TypoGraphy classes={{root: classes.typography}} variant='body1' color='inherit'>
-                Want new books for the library? <span className={classes.links} onClick={() => {props.history.push('/SuggestBooks');}}>Let us know here</span>
+                Want new books for the library? <span className={classes.links} onClick={() => {props.history.push('/SuggestBooks');}}>Suggest here</span>
             </TypoGraphy>
             <p></p>
             <TypoGraphy classes={{root: classes.typography}} variant='body1' color='inherit'>

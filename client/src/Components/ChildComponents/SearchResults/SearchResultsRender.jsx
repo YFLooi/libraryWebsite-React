@@ -20,6 +20,7 @@ const useStyles = makeStyles(theme => ({
     resultsCardImage:{
         maxWidth: 155,
     },
+    /** 
     detailsOverlay:{
         position: 'fixed',
         display: 'none',
@@ -68,6 +69,7 @@ const useStyles = makeStyles(theme => ({
         flexWrap: 'nowrap',
         padding: '0 0 0 20',
     }
+    */
 }))
 
 export default function SearchResultsRender(props){
@@ -164,10 +166,9 @@ export default function SearchResultsRender(props){
     return(
         <React.Fragment>
             <Typography variant="h5" component="h2" classes={{root: classes.pageHeader}}>Search results</Typography>
+            <DetailsCardRender 
+            />
             
-            <div id='detailsOverlay' className={classes.detailsOverlay}>
-                {state.storedDetailsCard} {/**Must use state here: When state updates, the update is pushed to all calls of that state*/}
-            </div>
             <div className={classes.resultsDisplayContainer}>
                 <Grid container spacing={1} justify="center">
                     {/**searchResults.map generates one card for each element in
@@ -201,7 +202,7 @@ export default function SearchResultsRender(props){
                                         {/*Do not wrap like renderDetailsCard() so that it runs on render{}. Otherwise, there will
                                         be an error about some 'invalid child prop'*/}
                                         {borrowButtonRender(item.id)} 
-                                        <Button size="small" color="primary" onClick={() => {renderDetailsCard(item.id, i);}}>
+                                        <Button size="small" color="primary" onClick={() => {renderDetailsCard(item.id, ix);}}>
                                             Details
                                         </Button>
                                     </CardActions>
