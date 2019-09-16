@@ -1,7 +1,8 @@
 ﻿require('dotenv').config(); //Allows retriving variables from the .env file
 const pgp = require('pg-promise')(); // https://www.npmjs.com/package/pg-promise
 //Selects db to use based on value in the .env file's NODE_ENV parameter
-let dbaseURL = process.env.NODE_ENV === 'production' ? process.env.PRODUCTION_DATABASE : process.env.DEPLOYMENT_DATABASE
+const dbaseURL = process.env.NODE_ENV === 'production' ? process.env.PRODUCTION_DATABASE : process.env.DEPLOYMENT_DATABASE
+//const dbaseURL = 'postgres://qqzdpxpy:6poqhwoSsUVeCwDUdp2xhPk8C_UnvQqe@rosie.db.elephantsql.com:5432/qqzdpxpy';
 const dbase = pgp(dbaseURL); // Connect to database at URL defined in .env file
 
 //Selects the 20 newest books stored in the 'catalog' table

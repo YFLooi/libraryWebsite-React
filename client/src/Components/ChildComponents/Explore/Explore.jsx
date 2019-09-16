@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import Typography from '@material-ui/core/Typography';
 import loadingBackground from './icons/loadingimg.gif';
+import DetailsCardRender from '../DetailsCardRender/DetailsCardRender.jsx'
 
 const useStyles = makeStyles(theme => ({
     outerContainer:{
@@ -48,54 +49,6 @@ const useStyles = makeStyles(theme => ({
         minWidth: 140,
         maxWidth: 145,
         margin: 'auto auto',
-    },
-    detailsOverlay:{
-        position: 'fixed',
-        display: 'none',
-        width: '100%',
-        height: '100%',
-        top: 0,
-        left: 0,
-        right: 0,
-        zIndex: 2, /*Allows the sidebar <div> to stack on top of all other <div>-s. Number = Stack Order*/
-        backgroundColor: 'rgba(0,0,0,0.5)', /*Adds a shadow to denote the overlay area to click to exit*/
-        
-        /*Scolling `takes place in the overlay, NOT the <div> within the overlay*/
-        overflowY:'scroll',
-        webkitOverflowScrolling:'touch',
-    },
-    detailsCard:{
-        position: 'relative', 
-        margin: '100px auto 0 auto', /*Centers the card*/
-        width: '90%',
-        padding: '5px 5px 5px 5px',
-        height: '210', 
-        cursor: 'pointer',
-    },
-    detailsCardInfoBox:{
-        display: 'flex',
-        flexDirection: 'row',
-        padding: '3%',
-    },
-    detailsCardImage: {
-        display: 'flex',
-        minWidth: 155,
-        minHeight: 205,
-        maxWidth: 155,
-        maxHeight: 205,
-    },
-    detailsCardInfoAndActions:{
-        display: 'flex',
-        flexDirection: 'column', //So that <CardActions/> appear below text
-    },
-    detailsCardBookInfo: {
-        display: 'flex',
-    },
-    detailsCardActions:{
-        display: 'flex',
-        justifyContent: 'flex-start',
-        flexWrap: 'nowrap',
-        padding: '0 0 0 20',
     }
 }));
 
@@ -115,8 +68,8 @@ function Explore(props){
     //Use 'let', not 'const'. State is always manipulated
     const [genreButtons, setGenreButtons] = useState([])
     const [resultsCards, setResultsCards] = useState([])
-    const [detailsCard, setDetailsCard] = useState([])
-
+    const [cardDataCopy, setCardDataCopy] = useState([]);
+    const [targetBookId, setTargetBookId] = useState(null);
 
     //Necessary because for some reason, none of the functions
     //can access state if they manipulate the data they pull from state!
@@ -139,6 +92,9 @@ function Explore(props){
                         stateClone.cardData.splice(0, stateClone.cardData.length);
                         stateClone.cardData = [...data];
 
+                        cardDataCopy.splice(0, cardDataCopy.length);
+                        setCardDataCopy([...data]);
+
                         genreButtonsRender();
                         
                         //Send data directly to card rendering function. This eliminates render lag
@@ -156,6 +112,18 @@ function Explore(props){
                 document.getElementById("resultsPlaceholder").style.display = "block";
             }
     }, []);
+    const exploreStateUpdater = (name,data) => {
+        if (name === 'bookData'){
+            stateClone.cardData.splice(0, stateClone.cardData.length);
+            stateClone.cardData = [...data];
+
+            setCardDataCopy([...data]);
+        } else if (name === 'targetBookId'){
+            setTargetBookId(data);
+        } else {
+            console.log('Invalid state name passed')
+        }
+    }
     const genreButtonsRender = () => { 
         let arrayLength = genres.length;
         
@@ -197,6 +165,9 @@ function Explore(props){
                         stateClone.cardData.splice(0, stateClone.cardData.length);
                         stateClone.cardData = [...data]
                         
+                        cardDataCopy.splice(0, cardDataCopy.length);
+                        setCardDataCopy([...data]);
+
                         //Send data directly to rendering function to prevent lag
                         renderResultsCards(data);
                         
@@ -222,7 +193,7 @@ function Explore(props){
                             height="210"
                             src={data[i].coverimg}
                             classes= {{media: classes.resultsCardImage}}
-                            onClick={() => {renderDetailsCard(data[i].id);}}
+                            onClick={() => {exploreStateUpdater('targetBookId', data[i].id);}}
                         />
                         <CardContent>
                             <Typography variant="body1" component="h2" noWrap={false}>
@@ -235,7 +206,7 @@ function Explore(props){
                     </CardActionArea>
                     <CardActions>
                         {borrowButtonRender(data[i].id)} 
-                        <Button size="small" color="primary" onClick={() => {renderDetailsCard(data[i].id);}}>
+                        <Button size="small" color="primary" onClick={() => {exploreStateUpdater('targetBookId', data[i].id);}}>
                             Details
                         </Button>
                     </CardActions>
@@ -343,64 +314,6 @@ function Explore(props){
             console.log('buttonText is not "Borrow" nor "Cancel"');
         }
     }
-    const renderDetailsCard = (bookId) => {
-        let detailsOverlay = document.getElementById(`detailsOverlay`);
-        let targetIndex = stateClone.cardData.findIndex(item => item.id === bookId);
-        console.log(`Array position containing target book details: ${targetIndex}`)
-        let bookDetails = stateClone.cardData[targetIndex];
-        
-        let newDetailsCardArray = [
-            <Card key='bookDetails' classes={{root: classes.detailsCard}}>
-                <div className={classes.detailsCardInfoBox}>
-                    <CardMedia
-                        component='img'
-                        alt={`front cover for ${bookDetails.title}`}
-                        src={bookDetails.coverimg}
-                        classes= {{media: classes.detailsCardImage}}
-                    />
-                    <div className={classes.detailsCardInfoAndActions}>
-                        <CardHeader
-                            title = {bookDetails.title}
-                            subheader = {
-                                <React.Fragment>
-                                    {bookDetails.author} <br/> 
-                                    {bookDetails.publisher}
-                                </React.Fragment>
-                            }
-                            classes = {{root: classes.detailsCardBookInfo, title: classes.detailsCardTitle, subheader: classes.detailsCardSubheader}}
-                        />
-                        <CardActions classes={{root: classes.detailsCardActions}}>
-                            {borrowButtonRender(bookId)}
-                            <Button size="small" color="primary" onClick={() => {hideDetailsCard();}}>
-                                Close
-                            </Button>
-                        </CardActions>
-                    </div>
-                </div>
-                <CardContent>
-                    <Typography variant="h6" component="div" noWrap={true}>
-                        <u>Synopsis</u>
-                    </Typography>
-                    <Typography variant="body1" component="div" noWrap={false}>
-                        {bookDetails.synopsis}
-                    </Typography>
-                </CardContent>
-            </Card>
-        ]
-
-        let oldDetailsCard = detailsCard
-        let newDetailsCard = oldDetailsCard.splice(0, oldDetailsCard.length);
-        setDetailsCard([...newDetailsCard, ...newDetailsCardArray])
-        detailsOverlay.style.display= 'block';
-    }
-    const hideDetailsCard = () => {
-        //Need to do this mutably. Otherwise, Borrow button will be stuck on last Cancel
-        setDetailsCard([]);
-                
-        //Should keep appended Details card. That way, there is no load time if 'Details' is clicked again
-        document.getElementById(`detailsOverlay`).style.display = 'none';
-    }
-
     return (
         <div className={classes.outerContainer}> 
             <div className='title'>
@@ -408,9 +321,13 @@ function Explore(props){
                     Explore <b><span id='selectedGenre'>adventure</span></b>
                 </Typography>
             </div>
-            <div id='detailsOverlay' className={classes.detailsOverlay}>
-                {detailsCard} {/**Must use state here: When state updates, the update is pushed to all calls of that state*/}
-            </div>
+            <DetailsCardRender
+                targetBookId={targetBookId}
+                bookData={cardDataCopy}
+                borrowCart={props.borrowCart}
+                stateUpdater={props.stateUpdater}
+                callingComponentStateUpdater={exploreStateUpdater}
+            />
             <div className={classes.genres}> 
                 {genreButtons}
             </div>

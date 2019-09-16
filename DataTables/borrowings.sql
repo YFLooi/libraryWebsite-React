@@ -1,13 +1,4 @@
-﻿DROP TABLE IF EXISTS borrowings;
-
-CREATE TABLE borrowings (
-    borrowerid varchar,
-    borrowdate varchar,
-    returndue varchar,
-    books varchar
-);
-
-INSERT INTO borrowings (borrowerid,borrowdate,returndue,books) VALUES 
+INSERT INTO public.borrowings (borrowerid,borrowdate,returndue,books) VALUES 
 ('sam','1558675725797','1559885325797','[{"id":"25","title":"How the Body Works","year":"2012","author":"Dr. Peter Abrahams","publisher":"Popular U.K. Pte. Ltd.","coverimg":"https://images-na.ssl-images-amazon.com/images/I/51cpMlDnFIL._SX258_BO1,204,203,200_.jpg"},{"id":"93","title":"The Strange Case of Dr. Jekyll and Mr. Hyde","year":"N/A","author":"Robert Louis Stevenson, retold by Mitsu Yamamoto","publisher":"Baronet Books","coverimg":"https://images-na.ssl-images-amazon.com/images/I/51PTrPC-F0L.jpg"},{"id":"111","title":"Dopesick: Dealers, Doctors, and the Drug Company that Addicted America","year":"2018","author":"Beth Macy","publisher":"Little, Brown, and Company","coverimg":"https://images-na.ssl-images-amazon.com/images/I/51btuIO7E2L._AC_SR201,266_.jpg"}]')
 ,('alex21','1562574820493','1563784420493','[{"id":"115","title":"21 Lessons for the 21st Century ","year":"2018","author":"Yuval Noah Harari","publisher":"Spiegel and Grau","coverimg":"https://images-na.ssl-images-amazon.com/images/I/81o9vblSjmL._AC_SR201,266_.jpg"}]')
 ,('mrhyde','1563330664018','1564540264018','[{"id":"28","title":"Kidnapped","year":"N/A","author":"Robert Louis Stevenson","publisher":"Peter Haddock Publishing","coverimg":"https://images-na.ssl-images-amazon.com/images/I/5161HlPWaML._SX322_BO1,204,203,200_.jpg"},{"id":"62","title":"Treasure Island","year":"N/A","author":"Robert Louis Stevenson","publisher":"Peter Haddock Publishing","coverimg":"https://images-na.ssl-images-amazon.com/images/I/51W7H0q4HPL._SX328_BO1,204,203,200_.jpg"},{"id":"58","title":"The Outcasts of Poker Flat, THe Luck of Roaring Camp and Other Stories","year":"N/A","author":"Bret Harte, with introduction by John Robert Colombo","publisher":"Airmont Publishing Co. Inc.","coverimg":"https://images-na.ssl-images-amazon.com/images/I/51CM1uAaGuL._SX326_BO1,204,203,200_.jpg"},{"id":"93","title":"The Strange Case of Dr. Jekyll and Mr. Hyde","year":"N/A","author":"Robert Louis Stevenson, retold by Mitsu Yamamoto","publisher":"Baronet Books","coverimg":"https://images-na.ssl-images-amazon.com/images/I/51PTrPC-F0L.jpg"}]')
@@ -19,6 +10,6 @@ INSERT INTO borrowings (borrowerid,borrowdate,returndue,books) VALUES
 ,('keanu2077','1562575374516','1563784974516','[{"id":"25","title":"How the Body Works","year":"2012","author":"Dr. Peter Abrahams","publisher":"Popular U.K. Pte. Ltd.","coverimg":"https://images-na.ssl-images-amazon.com/images/I/51cpMlDnFIL._SX258_BO1,204,203,200_.jpg"}]')
 ,('ara','1558343735178','1559553335178','[{"id":"7","title":"Archie''s Double Digest (#190)","year":"N/A","author":"N/A","publisher":"N/A","coverimg":"https://images-na.ssl-images-amazon.com/images/I/61n-RTHjTgL._SX368_BO1,204,203,200_.jpg"},{"id":"5","title":"Adventures of the Six Cousins","year":"2002","author":"Enid Blyton","publisher":"Award Publications Ltd.","coverimg":"https://images-na.ssl-images-amazon.com/images/I/51zifsQYC7L._SX346_BO1,204,203,200_.jpg"},{"id":"6","title":"Aesop''s Fables for Little Children: The Kite and the Butterfly","year":"N/A","author":"Arowana Research and Development Unit","publisher":"Arowana Publications Sdn. Bhd.","coverimg":"https://images-na.ssl-images-amazon.com/images/I/51Z4yJW7uwL._SX258_BO1,204,203,200_.jpg"}]')
 ;
-INSERT INTO borrowings (borrowerid,borrowdate,returndue,books) VALUES 
+INSERT INTO public.borrowings (borrowerid,borrowdate,returndue,books) VALUES 
 ('tom','1555430400000','1556640000000','[{"id":"119","title":"Bad Blood: Secrets and Lies in a Silicon Valley Startup","year":"2018","author":"John Carreyrou","publisher":"Knopf","coverimg":"https://images-na.ssl-images-amazon.com/images/I/71rtQvf5UVL._AC_SR201,266_.jpg"},{"id":"114","title":"Frederick Douglass: Prophet of Freedom ","year":"2018","author":"David W. Blight","publisher":"Simon and Schuster","coverimg":"https://images-na.ssl-images-amazon.com/images/I/810ygjggs-L._AC_SR201,266_.jpg"},{"id":"107","title":"Children of Blood and Bone (Legacy of Orisha)","year":"2018","author":"Tomi Adeyemi","publisher":"Henry Holt and Co.","coverimg":"https://images-na.ssl-images-amazon.com/images/I/A1agLFsWkOL._AC_SR201,266_.jpg"}]')
 ;

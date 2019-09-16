@@ -8,6 +8,37 @@ import { ExpandMore } from "@material-ui/icons/";
 import { ExpansionPanel, ExpansionPanelSummary, ExpansionPanelDetails } from '@material-ui/core/';
 import { TextField } from '@material-ui/core/';
 
+/** 
+How-to use to this component:
+In the calling component, have:
+    this.state ={ 
+        targetBookId: null,
+        bookData: []
+    }
+a general function that changes its state, such as:
+    callingComponentStateUpdater(name,data){
+        //[] allows an external variable to define object property "name". In this case, 
+        //it's parameter "name".
+        this.setState({
+            [name]: data
+        })
+    }
+
+Each time this.state.targetBookId changes, the listening componentDidUpdate() in 
+RenderDetailsCard will be triggered
+
+To render the resulting details card, in the 'render()' function
+of the calling component, pass this component the following props:
+    <RenderDetailsCard
+        targetBookId={this.state.targetBookId}
+        bookData={this.state.bookData}
+        borrowCart={this.props.borrowCart}
+        stateUpdater={this.props.stateUpdater}
+        callingComponentStateUpdater={this.callingComponentStateUpdater}
+    />
+
+*/
+
 const useStyles = makeStyles(theme => ({ 
     detailsOverlay:{
         position: 'fixed',
@@ -107,7 +138,8 @@ export default function DetailsCardRender(props){
     //Serves as the trigger to render Details card
     //Necessary because parent component cannot reach here to run the renderDetails() function
     useEffect(() => {
-        if (props.targetBookId === null || props.targetBookId === '-1'){
+        console.log('targetBookId passed to DetailsCardRender.jsx: '+props.targetBookId)
+        if (props.targetBookId === null || props.targetBookId === '' || props.targetBookId === '-1'){
             console.log('Details card not rendered. No book ID sent to state.targetBookId');
         } else {
             renderDetails(props.targetBookId);
@@ -117,104 +149,110 @@ export default function DetailsCardRender(props){
     const renderDetails = (bookId) => {
         let detailsOverlay = document.getElementById(`detailsOverlay`);
         
-        let targetIndex = props.newArrivals.findIndex(item => item.id === bookId);
-        let bookDetails = props.newArrivals[targetIndex];
+        let targetIndex = props.bookData.findIndex(item => item.id === bookId);
+        let bookDetails = props.bookData[targetIndex];
 
-        let parsedBookComments = JSON.parse(bookDetails.comments);
-            
-        let detailsCard = [
-            <Card classes={{root: classes.detailsCard}} key='detailsCard'>
-                <div className={classes.detailsCardInfoBox}>
-                    <CardMedia
-                        component='img'
-                        alt={`front cover for ${bookDetails.title}`}
-                        src={bookDetails.coverimg}
-                        classes= {{media: classes.detailsCardImage}}
-                    />
-                    <div className={classes.detailsCardInfoAndActions}>
-                        <CardHeader
-                            title = {bookDetails.title}
-                            subheader = {
-                                <React.Fragment>
-                                    {bookDetails.author} <br/> 
-                                    {bookDetails.publisher}
-                                </React.Fragment>
-                            }
-                            classes = {{root: classes.detailsCardBookInfo, title: classes.detailsCardTitle, subheader: classes.detailsCardSubheader}}
+        if (bookDetails === undefined || bookDetails === null || bookDetails === []){
+            console.log(`No details found for book of index ${targetIndex}`)
+            console.log('Book data passed to DetailsCardRender:')
+            console.log(props.bookData);
+        } else {
+            let parsedBookComments = JSON.parse(bookDetails.comments);
+                
+            let detailsCard = [
+                <Card classes={{root: classes.detailsCard}} key='detailsCard'>
+                    <div className={classes.detailsCardInfoBox}>
+                        <CardMedia
+                            component='img'
+                            alt={`front cover for ${bookDetails.title}`}
+                            src={bookDetails.coverimg}
+                            classes= {{media: classes.detailsCardImage}}
                         />
-                        <CardActions classes={{root: classes.detailsCardActions}}>
-                            {borrowButtonRender(bookId)}
-                            <Button size="small" color="primary" onClick={() => {hideDetailsCard();}}>
-                                Close
-                            </Button>
-                        </CardActions>
-                    </div>
-                </div>
-                <ExpansionPanel>
-                    {/**ExpansionPanel automatically rotates <ExpandMore/> by 180 deg onClick*/}
-                    <ExpansionPanelSummary
-                        expandIcon={<ExpandMore/>}
-                        aria-controls={'bookDetails.'+bookId}
-                        id={'bookDetails.'+bookId}
-                    >
-                        <Typography className={classes.heading}>Synopsis</Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails>
-                        <Typography variant="body1" component="div" noWrap={false}>
-                            {bookDetails.synopsis}
-                        </Typography>
-                    </ExpansionPanelDetails>
-                </ExpansionPanel>
-                <CardContent>
-                    <Typography variant="body1" component="div" noWrap={false}>
-                        Comments
-                    </Typography>
-                    <form id={`newCommentInput_commentBox`}
-                    onSubmit={(event) => {event.preventDefault(); handleCommentSubmit('newCommentInput_commentBox', bookId,'', '');}} > 
-                        <TextField
-                            id='newCommentInput_commentBox_comment' type='text' autoComplete='off'
-                            label=''
-                            InputLabelProps={{
-                                //Stops the animation where label shrinks and moves to the top of 
-                                //<TextField>
-                                shrink: true,
-                            }}
-                            placeholder='Add public comment...'
-                            classes={{root: classes.commentBox_comment}}
-                            margin="normal"
-                            onClick={() => {
-                                document.getElementById(`newCommentInput_commentBox_actions`).style.display = 'block'
-                            }}
-                        />
-                        <div id={`newCommentInput_commentBox_actions`} style={{display: 'none'}}>
-                            <TextField
-                                id='newCommentInput_commentBox_userid' type='text' autoComplete='off'
-                                label="Username (required)"
-                                classes={{root: classes.commentBox_userName}}
-                                margin="normal"
+                        <div className={classes.detailsCardInfoAndActions}>
+                            <CardHeader
+                                title = {bookDetails.title}
+                                subheader = {
+                                    <React.Fragment>
+                                        {bookDetails.author} <br/> 
+                                        {bookDetails.publisher}
+                                    </React.Fragment>
+                                }
+                                classes = {{root: classes.detailsCardBookInfo, title: classes.detailsCardTitle, subheader: classes.detailsCardSubheader}}
                             />
-                            <Button variant='contained' color='inherit'
-                            onClick={() => {
-                                document.getElementById('newCommentInput_commentBox_actions').style.display = 'none'
-                            }}>
-                                Cancel
-                            </Button>
-                            {/*Necessary to allow submitting on Enter key*/}
-                            <Button variant='contained' color='secondary' type='submit'
-                            id='newCommentInput_commentBox_submitButton'
-                            classes={{root: classes.commentBox_submitButton}}>
-                                Submit
-                            </Button>
+                            <CardActions classes={{root: classes.detailsCardActions}}>
+                                {borrowButtonRender(bookId)}
+                                <Button size="small" color="primary" onClick={() => {hideDetailsCard();}}>
+                                    Close
+                                </Button>
+                            </CardActions>
                         </div>
-                    </form>
-                    <List>
-                        {renderCommentsList(bookId, parsedBookComments)}
-                    </List>
-                </CardContent>
-            </Card>
-        ]
-        setStoredDetailsCard([...detailsCard]);
-        detailsOverlay.style.display= 'block';
+                    </div>
+                    <ExpansionPanel>
+                        {/**ExpansionPanel automatically rotates <ExpandMore/> by 180 deg onClick*/}
+                        <ExpansionPanelSummary
+                            expandIcon={<ExpandMore/>}
+                            aria-controls={'bookDetails.'+bookId}
+                            id={'bookDetails.'+bookId}
+                        >
+                            <Typography className={classes.heading}>Synopsis</Typography>
+                        </ExpansionPanelSummary>
+                        <ExpansionPanelDetails>
+                            <Typography variant="body1" component="div" noWrap={false}>
+                                {bookDetails.synopsis}
+                            </Typography>
+                        </ExpansionPanelDetails>
+                    </ExpansionPanel>
+                    <CardContent>
+                        <Typography variant="body1" component="div" noWrap={false}>
+                            Comments
+                        </Typography>
+                        <form id={`newCommentInput_commentBox`}
+                        onSubmit={(event) => {event.preventDefault(); handleCommentSubmit('newCommentInput_commentBox', bookId,'', '');}} > 
+                            <TextField
+                                id='newCommentInput_commentBox_comment' type='text' autoComplete='off'
+                                label=''
+                                InputLabelProps={{
+                                    //Stops the animation where label shrinks and moves to the top of 
+                                    //<TextField>
+                                    shrink: true,
+                                }}
+                                placeholder='Add public comment...'
+                                classes={{root: classes.commentBox_comment}}
+                                margin="normal"
+                                onClick={() => {
+                                    document.getElementById(`newCommentInput_commentBox_actions`).style.display = 'block'
+                                }}
+                            />
+                            <div id={`newCommentInput_commentBox_actions`} style={{display: 'none'}}>
+                                <TextField
+                                    id='newCommentInput_commentBox_userid' type='text' autoComplete='off'
+                                    label="Username (required)"
+                                    classes={{root: classes.commentBox_userName}}
+                                    margin="normal"
+                                />
+                                <Button variant='contained' color='inherit'
+                                onClick={() => {
+                                    document.getElementById('newCommentInput_commentBox_actions').style.display = 'none'
+                                }}>
+                                    Cancel
+                                </Button>
+                                {/*Necessary to allow submitting on Enter key*/}
+                                <Button variant='contained' color='secondary' type='submit'
+                                id='newCommentInput_commentBox_submitButton'
+                                classes={{root: classes.commentBox_submitButton}}>
+                                    Submit
+                                </Button>
+                            </div>
+                        </form>
+                        <List>
+                            {renderCommentsList(bookId, parsedBookComments)}
+                        </List>
+                    </CardContent>
+                </Card>
+            ]
+            setStoredDetailsCard([...detailsCard]);
+            detailsOverlay.style.display= 'block';
+        }
     }
     const renderCommentsList = (bookId, bookComments) => {
         //Only render list of comments if available. Indicated when 1st entry in 'comments' array
@@ -351,8 +389,8 @@ export default function DetailsCardRender(props){
         return repliesArray;
     }
     const handleCommentSubmit = (boxId, bookId, commentUserId, replyButtonId) => {
-        let targetBookIndex = props.newArrivals.findIndex(item => item.id === bookId);
-        let bookDetails = props.newArrivals[targetBookIndex];
+        let targetBookIndex = props.bookData.findIndex(item => item.id === bookId);
+        let bookDetails = props.bookData[targetBookIndex];
 
         let bookComments = JSON.parse(bookDetails.comments);
         console.log('Comments submitted for box '+boxId);
@@ -393,9 +431,9 @@ export default function DetailsCardRender(props){
             //renderDetails pulls book comment data from state instead of db to prevent delay from 
             //call to db on each re-render after a new comment/reply 
             //Need to update otherwise the new comment will overwrite the previous one
-            let updatedNewArrivals = props.newArrivals;
-            updatedNewArrivals[targetBookIndex].comments = JSON.stringify(newBookComments);
-            props.carouselStateUpdater('newArrivals', updatedNewArrivals);
+            let updatedBookData = props.bookData;
+            updatedBookData[targetBookIndex].comments = JSON.stringify(newBookComments);
+            props.callingComponentStateUpdater('bookData', updatedBookData);
 
             //Re-render comments list to update with new changes
             //Need to stringify. renderDetails expects a JSON array straight from the db
@@ -456,9 +494,9 @@ export default function DetailsCardRender(props){
             //renderDetails pulls book comment data from state instead of db to prevent delay from 
             //call to db on each re-render after a new comment/reply 
             //Need to update otherwise the new comment will overwrite the previous one
-            let updatedNewArrivals = props.newArrivals;
-            updatedNewArrivals[targetBookIndex].comments = JSON.stringify(newBookComments);
-            props.carouselStateUpdater('newArrivals', updatedNewArrivals);
+            let updatedBookData = props.bookData;
+            updatedBookData[targetBookIndex].comments = JSON.stringify(newBookComments);
+            props.callingComponentStateUpdater('bookData', updatedBookData);
 
             //Re-render comments list to update with new changes
             //Need to stringify. renderDetails expects a JSON array straight from the db
@@ -491,49 +529,6 @@ export default function DetailsCardRender(props){
             console.log('Empty userid or empty comment/reply detected. No comment/reply submitted to db.');
             //alert('No userid/comment entered. Comment not recorded')
         }
-
-        /** 
-        //Time to build fetch request here to replace comment for bookId 'x' with the new one built above
-        const DELETEReqInit = {
-            method:"DELETE", 
-            cache:"no-cache",
-            headers:{
-                "Content-Type": "application/json",
-            },
-            redirect: "error",
-            //Contains data to send. Need to JSON.stringify, pg's auto-convert bugged 
-            //and pg only accepts arrays as JSON, since PSQL does the same
-            body: JSON.stringify(deleteTarget) 
-        }
-        //Both parameters are initialised with blanks
-        fetch("/Delete-Borrowings", DELETEReqInit)
-            .then(function(response){
-                return response.json()
-                .then(function(data){
-                    //Returns confirmation of record deleted for borrowerid = x                
-                    console.log(data)
-                })
-            })  
-            .catch(function(error){
-                console.log('Request failed', error)
-            })
-        */
-    }
-    const hideDetailsCard = () => {
-        //Should not keep appended Details card. Otherwise, async will not trigger borrowButtonRender
-        //resulting in button innerHTML left in 'Cancel' for next detailsCard rendered
-        document.getElementById(`detailsOverlay`).style.display = 'none';
-
-        //Odd how doing this the immutable way (with splice) does not trigger borrowButtonRender
-        //to set the button innerHTML
-        //state.storedDetailsCard.splice(0, state.storedDetailsCard.length);
-        setStoredDetailsCard([]);
-
-        //Necessary to allow reopening of clicked book on exit
-        //This is because ComponentDidUpdate() will not trigger if the same bookId is setState
-        //to this.state.targetBookId
-        //Note that this trigger componentDidUpdate() but it will disregard need to render detailsCard
-        props.carouselStateUpdater('targetBookId',null)
     }
     const borrowButtonRender = (bookId) => {
         //To change innerHTML of 'borrow' button to "Cancel" if book has been borrowed
@@ -556,6 +551,22 @@ export default function DetailsCardRender(props){
             )
         }
     }
+    const hideDetailsCard = () => {
+        //Should not keep appended Details card. Otherwise, async will not trigger borrowButtonRender
+        //resulting in button innerHTML left in 'Cancel' for next detailsCard rendered
+        document.getElementById(`detailsOverlay`).style.display = 'none';
+
+        //Odd how doing this the immutable way (with splice) does not trigger borrowButtonRender
+        //to set the button innerHTML
+        //state.storedDetailsCard.splice(0, state.storedDetailsCard.length);
+        setStoredDetailsCard([]);
+
+        //Necessary to allow reopening of clicked book on exit
+        //This is because ComponentDidUpdate() will not trigger if the same bookId is setState
+        //to this.state.targetBookId
+        //Note that this trigger componentDidUpdate() but it will disregard need to render detailsCard
+        props.callingComponentStateUpdater('targetBookId',null)
+    }
     const borrowRequest = (idx) => {
         /*'id' here is the book id. It allows access to other data related to 
         the book */
@@ -565,7 +576,7 @@ export default function DetailsCardRender(props){
         const buttonText = targetButton.getElementsByClassName('MuiButton-label')[0].innerHTML;
         
         const cart = props.borrowCart;
-        const searchResults = props.newArrivals;
+        const searchResults = props.bookData;
     
         if(buttonText === "Borrow"){
             //Retrieves index position in searchResults of object having input book id

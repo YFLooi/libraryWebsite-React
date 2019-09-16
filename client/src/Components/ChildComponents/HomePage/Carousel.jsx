@@ -3,7 +3,7 @@ import AliceCarousel from 'react-alice-carousel';
 import Typography from "@material-ui/core/Typography";
 import "./Carousel.css";
 import "react-alice-carousel/lib/alice-carousel.css";
-import CarouselDetails from './CarouselDetails.jsx'
+import DetailsCardRender from '../DetailsCardRender/DetailsCardRender.jsx'
 
 //Do not attempt to style with Material UI's withStyle(). It weirds out handleOnSlideChange()
 class Carousel extends Component {
@@ -16,7 +16,7 @@ class Carousel extends Component {
             responsive: { 0: { items: 2 }}, //Number of cards shown per section
             galleryItems: [],
             targetBookId: null,
-            newArrivals: [],
+            bookData: [],
         }
 
         this.galleryItems = this.galleryItems.bind(this);
@@ -36,17 +36,18 @@ class Carousel extends Component {
                 return response.json()
                 //Examines data in response
                 .then(function(data){
+                    console.log('Data on new arrivals:')
                     console.log(data)
 
                     if(data.length > 0){
-                        that.state.newArrivals.splice(0, that.state.newArrivals.length);
+                        that.state.bookData.splice(0, that.state.bookData.length);
                         that.setState({
-                            newArrivals: [...data]
+                            bookData: [...data]
                         })
                         //Send data directly to rendering function. This skips use of state for storage
                         that.galleryItems(data);
                     }else{
-                        console.log("Render failed: newarrivals data not found")
+                        console.log("Render failed: Book data not found")
                     }
                 })
             }).catch(function(error){
@@ -80,15 +81,16 @@ class Carousel extends Component {
         console.log('New viewport dimensions: Width: '+window.innerWidth+' Height: '+ window.innerHeight)
     }
     galleryItems(data) {  //Every item to insert into slide
-        let newArrivals = data;
+        let bookData = data;
 
         //'20' means the array goes from 0-19.
         let newArrivalsArray = Array(20).fill().map((item, i) => 
             <div className='card' onDragStart={this.handleOnDragStart}>
-                <img className='cardImage' src={newArrivals[i].coverimg} alt={`carouselImage.${i}`} onClick={() => {this.triggerDetailsRender(newArrivals[i].id)}}/>
+                {/**ComponentDidUpdate() in DetailsCardRender.jsx detects the change in this.state,targetBookId to render the Details card*/}
+                <img className='cardImage' src={bookData[i].coverimg} alt={`carouselImage.${i}`} onClick={() => {this.carouselStateUpdater('targetBookId', bookData[i].id)}}/>
                 {/**On mobile, it looks really crowded with the text. Maybe enable only on desktop? */}
-                <Typography variant='body1' color='inherit' className="cardTitle" noWrap={true}>{newArrivals[i].title}</Typography>
-                <Typography variant='subtitle1' color='inherit' className="cardAuthor" noWrap={true}>{newArrivals[i].author}</Typography>
+                <Typography variant='body1' color='inherit' className="cardTitle" noWrap={true}>{bookData[i].title}</Typography>
+                <Typography variant='subtitle1' color='inherit' className="cardAuthor" noWrap={true}>{bookData[i].author}</Typography>
             </div>
         )
 
@@ -97,11 +99,6 @@ class Carousel extends Component {
             galleryItems: [...newArrivalsArray]
         })
         document.getElementsByClassName("carouselPlaceholder")[0].style.display = "none";
-    }
-    triggerDetailsRender = (bookId) => {
-        this.setState ({
-            targetBookId: bookId,
-        }) //ComponentDidUpdate() in CarouselDetails.jsx detects this change
     }
     slidePrevPage = () => {
         const currentIndex = this.state.currentIndex - this.state.itemsInSlide
@@ -150,12 +147,12 @@ class Carousel extends Component {
                     {/*Using divs as button provider better customisation*/}
                     <div className='nextButtonContainer' onClick={this.slideNextPage}></div>
                 </div>
-                <CarouselDetails
+                <DetailsCardRender
                     targetBookId={this.state.targetBookId}
-                    newArrivals={this.state.newArrivals}
+                    bookData={this.state.bookData}
                     borrowCart={this.props.borrowCart}
                     stateUpdater={this.props.stateUpdater}
-                    carouselStateUpdater={this.carouselStateUpdater}
+                    callingComponentStateUpdater={this.carouselStateUpdater}
                 />
                 <div className='carouselDivider'></div>
             </React.Fragment> 
