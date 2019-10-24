@@ -12,17 +12,14 @@ const useStyles = makeStyles(theme => ({
     },
     title: {
         marginTop: '5%',
-        marginLeft: '2%',
     },
     form: {
-        marginLeft: '2%',
         width: '100%'
     },
     //General styling for each <input> box 
     inputBox: {
         marginTop: '1%',
         marginBottom: '1%',
-        marginLeft: '2%',
         width: '90%',
         height: 48
     },
@@ -121,7 +118,7 @@ function SuggestBooks (props) {
         */
     }
     return(
-        <React.Fragment>
+        <div class={classes.outerContainer}>
             <TypoGraphy variant='h4' className={classes.title} color='inherit'>Suggest books</TypoGraphy>
             <TypoGraphy variant='body1' className={classes.title} color='inherit'>
                 *Required: Title, author, year
@@ -146,13 +143,16 @@ function SuggestBooks (props) {
                     <InputLabel htmlFor='Publisher'>Publisher</InputLabel>
                     <Input id='advPublisher' name='publisher' type='text' autoComplete='on' onChange = {handleSuggestionChange}/>
                 </FormControl>
-                <Button variant='contained' color='primary' size='medium' type='submit' classes={{root: classes.submitButton}}>
-                    Submit
-                </Button>
+                <div>
+                    <Button variant='contained' color='primary' size='medium' type='submit' classes={{root: classes.submitButton}}>
+                        Submit
+                    </Button>
+                </div>
             </form>
 
             <TypoGraphy variant='h4' className={classes.title} color='inherit'>Prior suggestions</TypoGraphy>
-        </React.Fragment> 
+            <TypoGraphy variant='body1' color='inherit'>None so far. Make one!</TypoGraphy>
+        </div> 
     )   
 }
 
