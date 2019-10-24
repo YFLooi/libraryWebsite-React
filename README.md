@@ -31,12 +31,16 @@ Dependencies:
 ### Installing
 1. Clone this repo at https://github.com/YFLooi/libraryWebsite-React.git
 2. There are 2 package.json files in this repo, the first in the root folder, the second in /root/client. Open the console in both and run 'npm install' in both. This should create a 'node_modules' folder in the root and /root/client folders
-2. Download and install [PostgreSQL](https://www.postgresql.org/download/). Make sure a path is created to the /bin and /lib files of the installation ([Example for Windows](https://stackoverflow.com/questions/11460823/setting-windows-path-for-postgres-tools)) so that the database can be accessed from the console
-3. Download and install a GUI-based PostgreSQL administration tool to simplify the uploading process to PostgreSQL. I use [dBeaver](https://dbeaver.io)
-4. Open a console then create a new user, password, and link it to a database. Use these instructions by [LogRocket](https://blog.logrocket.com/setting-up-a-restful-api-with-node-js-and-postgresql-d96d6fc892d8/)
-5. Open your GUI PostgreSQL administration tool and upload the data in /root/DataTables into the new database. There MUST be two tables: One named 'catalog' which must contain the data of catalog.csv and another named 'borrowings' which must contain the data in borrowings.csv. 
-6. Go to queries.js and look for 'const dbaseUrl'. Paste in your database login details in the form of this URL: postgres://username:password@localhost:5432/NameOfDatabase
-7. Run 'npm start' in the root folder and in the /root/clients folder. This starts up the Express backend and the React front end respectively. If all goes well, the Carousel on the main page should display a selection of books.
+3. Run 'npm start' in the root folder and in the /root/clients folder. This starts up the Express backend and the React front end respectively. If all goes well, queries.js will pull the data from my ElephantSQL db so that the Carousel on the main page should display a selection of books.
+
+**If you instead wish to run this app with your own local PostgreSQL database:**
+1. Download and install [PostgreSQL](https://www.postgresql.org/download/). Make sure a path is created to the /bin and /lib files of the installation ([Example for Windows](https://stackoverflow.com/questions/11460823/setting-windows-path-for-postgres-tools)) so that the database can be accessed from the console
+2. Download and install a GUI-based PostgreSQL administration tool to simplify the uploading process to PostgreSQL. I use [dBeaver](https://dbeaver.io)
+3. Open a console then create a new user, password, and link it to a database. Use these instructions by [LogRocket](https://blog.logrocket.com/setting-up-a-restful-api-with-node-js-and-postgresql-d96d6fc892d8/)
+4. Open your GUI PostgreSQL administration tool and upload the data in /root/DataTables into the new database. There **MUST** be two tables: One named 'catalog' which must contain the data of catalog.csv and another named 'borrowings' which must contain the data in borrowings.csv. 
+5. Go to queries.js and look for 'const dbaseUrl'. Paste in your database login details in the form of this URL: postgres://username:password@localhost:5432/NameOfDatabase
+6. Run 'npm start' in the root folder and in the /root/clients folder. This starts up the Express backend and the React front end respectively. If all goes well, the Carousel on the main page should display a selection of books.
+
 
 ## Authors
 Looi Yih Foo (https://github.com/YFLooi/)
