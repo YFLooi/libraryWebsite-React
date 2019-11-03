@@ -65,10 +65,14 @@ class BasicSearch extends React.Component {
                             console.log("Results of BasicSrch:");
                             console.log(data);
  
-                            //Prevents rendering if no results returned from search
-                            if (data.length === 0) {
+                            //'typeof' ensures code below runs only if an array is returned
+                            //Otherwise, the code WILL run on the response.json() error message 
+                            //string (string.length !== 0)!!!
+                            //For first IF case, if an empty array if returned, the browser window
+                            //directs to a /NoResults page to prompt further action
+                            if (data.length === 0 && typeof data ==='object') {
                                 that.props.history.push('/NoResults');
-                            } else {
+                            } else if (data.length !== 0 && typeof data ==='object'){
                                 let currentResults = that.props.searchResults
                                 currentResults.splice(0, currentResults.length);
                                 let newResults = [...currentResults, ...data];

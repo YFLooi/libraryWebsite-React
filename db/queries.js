@@ -13,8 +13,9 @@ async function getNewArrivals (request, response) {
 
     try{
         const rowList = await dbase.query('SELECT * FROM catalog ORDER BY id ASC OFFSET 99 LIMIT 20');
-        response.send(rowList);
+        response.status(200).send(rowList);
     } catch (error){
+        response.status(400).json('SERVER RESP: Error retrieving new arrivals. Log:'+error)
         console.log('Error retrieving new arrivals. Log:')
         console.log(error);
     }
@@ -30,9 +31,10 @@ async function getSuggestions (request, response){
             const results = await dbase.query(`SELECT title FROM catalog WHERE title ~* $1 ORDER BY id ASC`, [suggestionString]);
             response.status(200).send(results);
         } else {
-            response.status(400).json('Blank suggestionString received')
+            response.status(400).json('SERVER RESP: Blank suggestionString received')
         }
     } catch (error){
+        response.status(400).json('SERVER RESP: Error getting suggestions. Log:'+error)
         console.log('Error getting suggestions. Log:')
         console.log(error)
     }
@@ -51,9 +53,10 @@ async function getBasicSearch(request, response){
             const results = await dbase.query('SELECT * FROM catalog WHERE title ~* $1 OR author ~* $1 OR titlekeyword ~* $1 ORDER BY id ASC', [basicInput]);
             response.status(200).send(results);
         } else {
-            response.status(400).json('Blank basicInput received')
+            response.status(400).json('SERVER RESP: Blank basicInput received')
         }
     } catch (error){
+        response.status(400).json('Error getting basic search results. Log:'+error)
         console.log('Error getting basic search results. Log:')
         console.log(error)
     }
@@ -92,6 +95,7 @@ async function getAdvSearch(request, response){
         const results = await dbase.query(query, values);
         response.status(200).send(results);    
     } catch (error){
+        response.status(400).json('SERVER RESP: Error getting advanced search results. Log: '+error)
         console.log('Error getting advanced search results. Log:')
         console.log(error)
     }
@@ -106,17 +110,27 @@ async function postCommentReply (request,response){
         const values = [newComment,bookId]
         await dbase.query(query, values);
        
-        response.status(200).json(`SERVER RESP: Comments added to book of ID ${bookId}`);
+        response.status(201).json(`SERVER RESP: Comments added to book of ID ${bookId}`);
     } catch (error) {
         console.log(error)
-        response.status(404).json(`SERVER RESP: Error adding comments to book of ID ${bookId}`);
+        response.status(400).json(`SERVER RESP: Error adding comments to book of ID ${bookId}`);
     }
 }
 async function updateCommentReply (request,response){
-    console.log('updateComment triggered');
+    try{
+        console.log('updateCommentReply() triggered');
+        response.status(201).json(`SERVER RESP: updateCommentReply() triggered`);
+    } catch (error) {
+        response.status(400).json(`SERVER RESP: Error running function updateCommentReply(). Log: ${error}`);
+    }
 }
 async function deleteCommentReply (request,response){
-    console.log('deleteComment triggered');
+    try{
+        console.log('deleteCommentReply() triggered');
+        response.status(201).json(`SERVER RESP: deleteCommentReply() triggered`);
+    } catch (error) {
+        response.status(400).json(`SERVER RESP: Error running function deleteCommentReply(). Log: ${error}`);
+    }
 }
 
 async function createBorrowings(request, response){
@@ -145,8 +159,9 @@ async function createBorrowings(request, response){
     const values = [borrowerid, borrowdate, returndue, books];
     try{
         await dbase.query(query, values);
-        response.status(200).json(`SERVER RESP: Borrowings added for borrower ${request.body.borrowerid}`);
+        response.status(201).json(`SERVER RESP: Borrowings added for borrower ${request.body.borrowerid}`);
     } catch (error){
+        response.status(400).json(`SERVER RESP: Error adding borrowings for borrower ${request.body.borrowerid}. Log: ${error}`);
         console.log('Error creating new borrowing entry. Log:')
         console.log(error)
     }
@@ -157,6 +172,7 @@ async function checkBorrowings(request, response){
         const results = await dbase.query('SELECT * FROM borrowings');
         response.status(200).send(results);
     } catch (error){
+        response.status(400).json(`SERVER RESP: Error checking borrowings. Log: ${error}`);
         console.log('Error retriving borrowings. Log:')
         console.log(error)
     }
@@ -174,8 +190,9 @@ async function deleteBorrowings(request, response){
 
     try{
         await dbase.query(query, values);
-        response.status(200).json(`SERVER RESP: Borrow record on ${new Date(parseInt(borrowdate)).toDateString()} deleted for userID: ${borrowerid}`);
+        response.status(202).json(`SERVER RESP: Borrow record on ${new Date(parseInt(borrowdate)).toDateString()} deleted for userID: ${borrowerid}`);
     } catch (error){
+        response.status(400).json(`SERVER RESP: Error deleting borrowing record. Log: ${error}`);
         console.log('Error deleting borrowing. Log:')
         console.log(error)
     }
@@ -189,6 +206,7 @@ async function getExploreData (request, response) {
         const rowList = await dbase.query('SELECT * FROM catalog WHERE genre = $1 ORDER BY id ASC', [targetGenre]);
         response.status(200).send(rowList);
     } catch (error){
+        response.status(400).json(`SERVER RESP: Error getting Explore data. Log: ${error}`);
         console.log('Error getting "Explore" suggestions. Log:')
         console.log(error)
     }
